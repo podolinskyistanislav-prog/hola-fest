@@ -113,24 +113,50 @@ jobs:
           git worktree add /tmp/main origin/main
           (cd /tmp/main && graphify update . >/dev/null) || true
           graphify update .
-      - uses: anthropics/claude-code-action@v1
+      - name: Code review
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed_bots: 'claude'
+          show_full_output: true
           prompt: |
             REPO: ${{ github.repository }}
             PR: #${{ github.event.pull_request.number }}
 
-            Run two independent reviews of this PR, using the subagents defined in .claude/agents/:
-            1. the `reviewer` agent,
-            2. the `security-qa` agent (review mode).
-            Each posts its own verdict comment as its agent file describes.
-            The graph of main is at /tmp/main/graphify-out/GRAPH_REPORT.md, the PR's graph at
-            graphify-out/GRAPH_REPORT.md — the reviewer compares them.
-            Do not edit any files.
+            Read .claude/agents/reviewer.md and act strictly as that agent, in review mode.
+            Compare /tmp/main/graphify-out/GRAPH_REPORT.md (main) with graphify-out/GRAPH_REPORT.md (this PR).
+            Read the diff with `gh pr diff ${{ github.event.pull_request.number }}` and the linked issue.
+            Run shell commands one at a time (no pipes or `&&`).
+            Post exactly one verdict with
+            `gh pr review ${{ github.event.pull_request.number }} --comment --body "<verdict>"`
+            where the body starts with `APPROVE` or `CHANGES REQUESTED`, headed `## Code review`.
+            Do not edit, commit or push anything.
           claude_args: |
             --max-turns 40
-            --allowedTools "Read,Glob,Grep,LS,Task,Bash(gh pr:*),Bash(gh issue view:*),Bash(gh api:*),Bash(git diff:*),Bash(git log:*),Bash(graphify:*),Bash(diff:*),Bash(cat:*)"
+            --allowedTools "Read,Glob,Grep,LS,Bash(gh:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(graphify:*),Bash(diff:*),Bash(cat:*),Bash(ls:*)"
+      - name: Security review
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: 'claude'
+          show_full_output: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR: #${{ github.event.pull_request.number }}
+
+            Read .claude/agents/security-qa.md and act strictly as that agent, in review mode.
+            Focus on RLS, grants, secrets and anything a user could cheat.
+            Read the diff with `gh pr diff ${{ github.event.pull_request.number }}` and the linked issue.
+            Run shell commands one at a time (no pipes or `&&`).
+            Post exactly one verdict with
+            `gh pr review ${{ github.event.pull_request.number }} --comment --body "<verdict>"`
+            where the body starts with `APPROVE` or `CHANGES REQUESTED`, headed `## Security review`.
+            Do not edit, commit or push anything.
+          claude_args: |
+            --max-turns 40
+            --allowedTools "Read,Glob,Grep,LS,Bash(gh:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(graphify:*),Bash(diff:*),Bash(cat:*),Bash(ls:*)"
 
   after-merge:
     # When the founder merges a PR, the orchestrator unblocks the next tasks
