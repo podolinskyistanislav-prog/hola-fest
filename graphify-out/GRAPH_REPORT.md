@@ -1,17 +1,17 @@
 # Graph Report - hola-fest  (2026-11-04)
 
 ## Corpus Check
-- 62 files · ~17,951 words
+- 65 files · ~18,490 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
 ## Summary
-- 479 nodes · 641 edges · 47 communities (32 shown, 15 thin omitted)
+- 481 nodes · 642 edges · 48 communities (32 shown, 16 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.95)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `47e14d66`
+- Built from commit: `dc7e7964`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -55,6 +55,7 @@
 - expo-linking@~58.0.16
 - react-dom@19.3.0
 - steps
+- 0003-block-public-email-signup.md
 - jobs
 - expo-web-browser@~58.0.7
 - react-native-web@~0.21.4
@@ -91,7 +92,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (47 total, 15 thin omitted)
+## Communities (48 total, 16 thin omitted)
 
 ### Community 0 - "package.json"
 Cohesion: 0.15
@@ -223,14 +224,14 @@ Nodes (5): concurrency, cancel-in-progress, group, concurrency, concurrency
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `expo/tsconfig.base`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 237 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 239 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **16 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react-native` connect `Button.tsx` to `package.json`, `dependencies`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `devDependencies` be split into smaller, more focused modules?**
