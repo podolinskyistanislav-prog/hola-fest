@@ -1,7 +1,7 @@
 # Graph Report - hola-fest  (2026-11-04)
 
 ## Corpus Check
-- 60 files · ~17,384 words
+- 62 files · ~17,951 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e038951d`
+- Built from commit: `47e14d66`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,9 +19,9 @@
 - package.json
 - devDependencies
 - expo
-- expo-constants@~58.0.15
+- Hola Fest — Architecture
 - compilerOptions
-- auth.ts
+- supabase.ts
 - scripts
 - Hola Fest — Product
 - with
@@ -44,15 +44,15 @@
 - pull_request_template.md
 - expo-constants@~58.0.15
 - expo-glass-effect@~58.0.5
-- expo-glass-effect
+- expo-image@~58.0.18
 - expo-linking@~58.0.16
 - fonts.ts
 - ui-ux.md
-- react-dom@19.3.0
+- expo-symbols@~58.0.4
 - expo-system-ui@~58.0.7
 - @expo/ui@~58.0.27
 - expo-device@~58.0.5
-- react-native-screens@~4.30.1
+- expo-linking@~58.0.16
 - react-dom@19.3.0
 - steps
 - jobs
@@ -109,7 +109,7 @@ Nodes (27): backgroundColor, backgroundImage, foregroundImage, monochromeImage, 
 Cohesion: 0.17
 Nodes (11): expo/tsconfig.base, compilerOptions, noFallthroughCasesInSwitch, noUncheckedIndexedAccess, paths, strict, types, exclude (+3 more)
 
-### Community 5 - "auth.ts"
+### Community 5 - "supabase.ts"
 Cohesion: 0.19
 Nodes (14): @supabase/supabase-js, env, AuthError, AuthErrorCode, ClientError, ensureGuestSession(), getSession(), onAuthChange() (+6 more)
 
@@ -235,11 +235,11 @@ _Questions this graph is uniquely positioned to answer:_
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.07126436781609195 - nodes in this community are weakly interconnected._
-- **Why does `@supabase/supabase-js` connect `auth.ts` to `package.json`, `dependencies`?**
+- **Why does `@supabase/supabase-js` connect `supabase.ts` to `package.json`, `dependencies`?**
   _High betweenness centrality (0.024) - this node is a cross-community bridge._
 - **Should `expo` be split into smaller, more focused modules?**
   _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
-- **Why does `dependencies` connect `dependencies` to `package.json`, `expo-system-ui@~58.0.7`, `react-dom@19.3.0`, `expo-device@~58.0.5`, `expo-constants@~58.0.15`, `react-dom@19.3.0`, `react-native-screens@~4.30.1`, `expo-web-browser@~58.0.7`, `react-native-web@~0.21.4`, `_layout.tsx`, `expo-glass-effect`, `expo-linking@~58.0.16`, `fonts.ts`?**
+- **Why does `dependencies` connect `dependencies` to `package.json`, `expo-system-ui@~58.0.7`, `expo-symbols@~58.0.4`, `expo-device@~58.0.5`, `Hola Fest — Architecture`, `react-dom@19.3.0`, `expo-linking@~58.0.16`, `expo-web-browser@~58.0.7`, `react-native-web@~0.21.4`, `_layout.tsx`, `expo-image@~58.0.18`, `expo-linking@~58.0.16`, `fonts.ts`?**
   _High betweenness centrality (0.024) - this node is a cross-community bridge._
 - **Should `Hola Fest — Product` be split into smaller, more focused modules?**
   _Cohesion score 0.047619047619047616 - nodes in this community are weakly interconnected._
