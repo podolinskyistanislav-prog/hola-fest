@@ -1,7 +1,7 @@
 # Graph Report - hola-fest  (2026-11-04)
 
 ## Corpus Check
-- 37 files · ~9,837 words
+- 39 files · ~10,951 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `98580a24`
+- Built from commit: `356a7643`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -32,7 +32,7 @@
 - .prettierrc.json
 - db-backend.md
 - mobile.md
-- dependencies
+- expo-router
 - orchestrator.md
 - reviewer.md
 - security-qa.md
@@ -50,13 +50,13 @@
 - expo-status-bar@~58.0.4
 - expo-symbols@~58.0.4
 - expo-system-ui@~58.0.7
-- expo-constants@~58.0.15
-- expo-image@~58.0.18
+- @expo/ui@~58.0.27
+- expo-web-browser@~58.0.7
 - react@19.3.0
 - react-dom@19.3.0
 - react-native-gesture-handler@~3.3.0
 - react-native-reanimated@4.7.1
-- expo-linking@~58.0.16
+- react-native-safe-area-context@~5.11.1
 - react-native-worklets@0.13.0
 - react@19.3.0
 - react-native-safe-area-context@~5.11.1
@@ -142,7 +142,7 @@ Nodes (3): How you work, Never, You may edit only
 Cohesion: 0.50
 Nodes (3): How you work, Never, You may edit only
 
-### Community 16 - "dependencies"
+### Community 16 - "expo-router"
 Cohesion: 0.22
 Nodes (9): dependencies, expo@~58.0.23, expo-device@~58.0.5, expo-glass-effect@~58.0.5, @react-native-async-storage/async-storage@2.2.0, expo, expo-device, expo-glass-effect (+1 more)
 
@@ -178,7 +178,7 @@ Nodes (25): steps, mention, if, runs-on, steps, timeout-minutes, steps, continue
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dependencies` to `package.json`, `react-native`, `dependencies`, `expo-image@~58.0.18`, `expo-linking@~58.0.16`, `expo-splash-screen@~58.0.13`, `expo-status-bar@~58.0.4`, `expo-symbols@~58.0.4`, `expo-system-ui@~58.0.7`, `expo-constants@~58.0.15`, `expo-image@~58.0.18`, `react@19.3.0`, `react-dom@19.3.0`, `react-native-gesture-handler@~3.3.0`, `react-native-reanimated@4.7.1`, `expo-linking@~58.0.16`, `react-native-worklets@0.13.0`, `react@19.3.0`, `react-native-safe-area-context@~5.11.1`, `react-native-screens@~4.30.1`?**
+- **Why does `dependencies` connect `expo-router` to `package.json`, `react-native`, `dependencies`, `expo-image@~58.0.18`, `expo-linking@~58.0.16`, `expo-splash-screen@~58.0.13`, `expo-status-bar@~58.0.4`, `expo-symbols@~58.0.4`, `expo-system-ui@~58.0.7`, `@expo/ui@~58.0.27`, `expo-web-browser@~58.0.7`, `react@19.3.0`, `react-dom@19.3.0`, `react-native-gesture-handler@~3.3.0`, `react-native-reanimated@4.7.1`, `react-native-safe-area-context@~5.11.1`, `react-native-worklets@0.13.0`, `react@19.3.0`, `react-native-safe-area-context@~5.11.1`, `react-native-screens@~4.30.1`?**
   _High betweenness centrality (0.022) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
