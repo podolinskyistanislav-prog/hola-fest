@@ -1,7 +1,7 @@
 # Graph Report - hola-fest  (2026-11-04)
 
 ## Corpus Check
-- 97 files · ~26,473 words
+- 97 files · ~26,608 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8f4d9939`
+- Built from commit: `cd6845d5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -48,17 +48,17 @@
 - expo-linking@~58.0.16
 - fonts.ts
 - ui-ux.md
-- expo-constants@~58.0.15
-- expo-router
+- expo-symbols@~58.0.4
+- expo-system-ui@~58.0.7
 - @expo/ui@~58.0.27
-- expo-splash-screen
-- expo-status-bar
+- expo-device@~58.0.5
+- expo-linking@~58.0.16
 - react-dom@19.3.0
 - steps
 - react-native-reanimated@4.7.1
 - jobs
 - react-native-worklets@0.13.0
-- expo-symbols@~58.0.4
+- expo-web-browser@~58.0.7
 - @react-native-async-storage/async-storage
 - react-native-web@~0.21.4
 - fonts.ts
