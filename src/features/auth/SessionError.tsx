@@ -2,9 +2,8 @@ import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button } from '@/components/ui';
+import { t } from '@/lib/i18n';
 import { space, useTheme } from '@/theme';
-
-import { authStrings } from './strings';
 
 type SessionErrorProps = { onRetry: () => void; isRetrying?: boolean };
 
@@ -13,13 +12,13 @@ export function SessionError({ onRetry, isRetrying = false }: SessionErrorProps)
   return (
     <SafeAreaView style={[styles.screen, { backgroundColor: colors.background }]}>
       <AppText variant="title" accessibilityRole="header">
-        {authStrings.errorTitle}
+        {t('auth.errorTitle')}
       </AppText>
       <AppText tone="muted" accessibilityLiveRegion="polite">
-        {authStrings.errorBody}
+        {t('auth.errorBody')}
       </AppText>
       <Button
-        label={authStrings.retry}
+        label={t('auth.retry')}
         onPress={onRetry}
         disabled={isRetrying}
         accessibilityState={{ disabled: isRetrying, busy: isRetrying }}

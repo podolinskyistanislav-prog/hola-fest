@@ -1,8 +1,7 @@
 import { useState } from 'react';
 
+import { t } from '@/lib/i18n';
 import { signInStaff, signOut } from '@/services/auth';
-
-import { authStrings } from './strings';
 
 type Deps = {
   signInStaff: (email: string, password: string) => Promise<unknown>;
@@ -38,8 +37,8 @@ export function useStaffLogin(deps: Deps = { signInStaff, signOut }): UseStaffLo
 
   return {
     signIn: (email, password) =>
-      run(() => deps.signInStaff(email.trim(), password), authStrings.signInFailed),
-    signOut: () => run(() => deps.signOut(), authStrings.signOutFailed),
+      run(() => deps.signInStaff(email.trim(), password), t('auth.signInFailed')),
+    signOut: () => run(() => deps.signOut(), t('auth.signOutFailed')),
     isLoading,
     error,
   };

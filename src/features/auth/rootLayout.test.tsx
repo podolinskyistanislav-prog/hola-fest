@@ -1,9 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import RootLayout from '@/app/_layout';
+import { t } from '@/lib/i18n';
 import { ensureGuestSession } from '@/services/auth';
-
-import { authStrings } from './strings';
 
 jest.mock('expo-glass-effect', () => {
   const { View } = jest.requireActual('react-native');
@@ -32,14 +31,14 @@ describe('RootLayout session gate', () => {
       .mockReturnValueOnce(new Promise(() => undefined));
 
     await render(<RootLayout />);
-    const retry = await screen.findByRole('button', { name: authStrings.retry });
+    const retry = await screen.findByRole('button', { name: t('auth.retry') });
     expect(retry).toBeEnabled();
 
     await fireEvent.press(retry);
 
-    const busy = screen.getByRole('button', { name: authStrings.retry });
+    const busy = screen.getByRole('button', { name: t('auth.retry') });
     expect(busy).toBeDisabled();
     expect(busy).toBeBusy();
-    expect(screen.getByText(authStrings.errorTitle)).toBeTruthy();
+    expect(screen.getByText(t('auth.errorTitle'))).toBeTruthy();
   });
 });
