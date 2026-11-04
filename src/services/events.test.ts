@@ -80,6 +80,17 @@ describe('getEventsForRange', () => {
     await expect(getEventsForRange(new Date(0), new Date(1000))).resolves.toEqual([]);
   });
 
+  it('keeps the server order and requires an inner venue join', async () => {
+    const later = { ...eventRow, id: 'e2', starts_at: '2026-11-06T20:00:00+00:00' };
+    const q = mockQuery({ data: [eventRow, later], error: null });
+    const result = await getEventsForRange(
+      new Date('2026-11-05T00:00:00Z'),
+      new Date('2026-11-12T00:00:00Z'),
+    );
+    expect(result.map((e) => e.id)).toEqual(['e1', 'e2']);
+    expect(q.select).toHaveBeenCalledWith(expect.stringContaining('venue:venues!inner('));
+  });
+
   it('throws a typed error without leaking the server message', async () => {
     mockQuery({ data: null, error: { message: 'secret db detail' } });
     const err = await getEventsForRange(new Date(0), new Date(1000)).catch((e: unknown) => e);
@@ -153,6 +164,15 @@ describe('getEventById', () => {
   it('returns null when the event is not visible', async () => {
     mockQuery({ data: null, error: null });
     await expect(getEventById('missing')).resolves.toBeNull();
+  });
+
+  it('only reads the events table and joins the venue, so hidden data stays filtered', async () => {
+    const q = mockQuery({ data: null, error: null });
+    await getEventById('draft-id');
+    expect(from).toHaveBeenCalledTimes(1);
+    expect(from).toHaveBeenCalledWith('events');
+    expect(q.select).toHaveBeenCalledWith(expect.stringContaining('venue:venues!inner('));
+    expect(q.eq).toHaveBeenCalledWith('status', 'published');
   });
 
   it('throws a typed error on failure', async () => {
