@@ -17,7 +17,8 @@ insert into public.profiles (id, display_name, is_superadmin) values
   ('00000000-0000-0000-0000-0000000000a1', 'root', true),
   ('00000000-0000-0000-0000-0000000000a2', 'admin', false),
   ('00000000-0000-0000-0000-0000000000a3', 'host', false),
-  ('00000000-0000-0000-0000-0000000000a4', 'stranger', false);
+  ('00000000-0000-0000-0000-0000000000a4', 'stranger', false)
+on conflict (id) do update set display_name = excluded.display_name, is_superadmin = excluded.is_superadmin;
 
 insert into public.venues (id, slug, name, is_published) values
   ('00000000-0000-0000-0000-0000000000b1', 'open', 'Open', true),
