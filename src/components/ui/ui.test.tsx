@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { Button } from './Button';
 import { Chip } from './Chip';
 import { DayStrip } from './DayStrip';
+import { EventCard } from './EventCard';
 import { OfferRow } from './OfferRow';
 import { TAB_BAR_FLOAT_GAP, TAB_BAR_HEIGHT, TabBar, tabBarInset } from './TabBar';
 import { TextField } from './TextField';
@@ -161,6 +162,36 @@ describe('TabBar', () => {
       <TabBar items={[{ id: 'a', label: 'A', renderIcon }]} activeId="a" onSelect={jest.fn()} />,
     );
     expect(renderIcon).toHaveBeenCalledWith({ color: expect.any(String), size: 24 });
+  });
+});
+
+describe('EventCard', () => {
+  const base = { title: 'Techno Night', venue: 'Closer', time: '22:00' };
+
+  it('shows title, venue, time, price and offer badge', async () => {
+    await render(<EventCard {...base} priceFrom="від 350 ₴" offerBadge="−20% на напої" />);
+    for (const text of ['Techno Night', 'Closer', '22:00', 'від 350 ₴', '−20% на напої']) {
+      expect(screen.getByText(text)).toBeTruthy();
+    }
+  });
+
+  it('omits price when absent', async () => {
+    await render(<EventCard {...base} />);
+    expect(screen.queryByText('від 350 ₴')).toBeNull();
+  });
+
+  it('is a button with a summary label that calls onPress', async () => {
+    const onPress = jest.fn();
+    await render(<EventCard {...base} priceFrom="від 350 ₴" onPress={onPress} />);
+    await fireEvent.press(
+      screen.getByRole('button', { name: 'Techno Night, Closer, 22:00, від 350 ₴' }),
+    );
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the pink cover variant', async () => {
+    await render(<EventCard {...base} coverColor="pink" />);
+    expect(screen.getByText('Techno Night')).toBeTruthy();
   });
 });
 
