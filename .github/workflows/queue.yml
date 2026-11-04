@@ -1,0 +1,35 @@
+name: Queue
+
+# Moves the agent task queue forward. Plain script, no AI, so it costs no usage.
+# Runs whenever a slot may have freed up or a dependency may have closed.
+on:
+  pull_request:
+    types: [closed]
+  issues:
+    types: [closed, labeled]
+  workflow_dispatch:
+
+concurrency:
+  group: queue
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+  actions: write
+
+jobs:
+  advance:
+    if: >
+      github.event_name != 'issues' ||
+      github.event.action == 'closed' ||
+      github.event.label.name == 'status:needs-founder' ||
+      github.event.label.name == 'status:queued'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Advance the queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AGENTS_MAX_PARALLEL: ${{ vars.AGENTS_MAX_PARALLEL || '1' }}
+        run: .github/scripts/queue.sh

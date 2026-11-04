@@ -8,6 +8,11 @@ name: Agents
 # Requires the repo secret CLAUDE_CODE_OAUTH_TOKEN (run `claude setup-token` once).
 
 on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: 'Issue number for an agent to work on (used by the queue)'
+        required: true
   issues:
     types: [labeled]
   pull_request:
@@ -31,6 +36,7 @@ jobs:
     # orchestrator) — but only if it has an owner and is not blocked. Several label events
     # at once (agent:db + status:todo on creation) collapse into one run via concurrency.
     if: >
+      github.event_name == 'workflow_dispatch' ||
       github.event_name == 'issues' &&
       github.event.issue.state == 'open' &&
       (startsWith(github.event.label.name, 'agent:') || github.event.label.name == 'status:todo') &&
@@ -39,8 +45,10 @@ jobs:
       !contains(github.event.issue.labels.*.name, 'status:queued')
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      ISSUE: ${{ github.event.issue.number || inputs.issue }}
     concurrency:
-      group: agent-issue-${{ github.event.issue.number }}
+      group: agent-issue-${{ github.event.issue.number || inputs.issue }}
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
@@ -62,26 +70,26 @@ jobs:
         if: ${{ !contains(github.event.issue.labels.*.name, 'agent:orchestrator') }}
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue edit ${{ github.event.issue.number }} --add-label status:in-progress --remove-label status:todo
+        run: gh issue edit "$ISSUE" --add-label status:in-progress --remove-label status:todo
       - name: Agent
         id: agent
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          track_progress: true
+          track_progress: ${{ github.event_name == 'issues' }}
           # Agents create issues/PRs as the claude bot; let those events start other agents.
           allowed_bots: 'claude'
           prompt: |
             REPO: ${{ github.repository }}
-            ISSUE: #${{ github.event.issue.number }}
-            LABELS: ${{ join(github.event.issue.labels.*.name, ', ') }}
+            ISSUE: #${{ env.ISSUE }}
 
-            Find the issue's agent:* label and map it to an agent: agent:orchestrator → orchestrator, agent:db → db-backend,
+            Read the issue and its labels with `gh issue view ${{ env.ISSUE }}`. Find its agent:* label and map it to an agent: agent:orchestrator → orchestrator, agent:db → db-backend,
             agent:mobile → mobile, agent:ui → ui-ux, agent:qa → security-qa. Act strictly as that agent, following
             its file in .claude/agents/, CLAUDE.md and docs/WORKFLOW.md.
 
-            Read the issue with `gh issue view ${{ github.event.issue.number }}`.
-            If it is blocked by an open issue, comment that and stop.
+                        If it is blocked by an open issue, comment that and stop.
+            If you cannot finish without a decision, secret or paid service from the founder:
+            ask ONE clear question in a comment, set the label status:needs-founder and stop.
             Otherwise do the work.
 
             Database work: a real local Supabase is available. Run `supabase start`, then
@@ -91,7 +99,7 @@ jobs:
             Do not say "done" unless migrations apply and all DB tests pass.
 
             Finish: commit, push, and OPEN THE PULL REQUEST YOURSELF with
-            `gh pr create --base main --title "..." --body "Closes #${{ github.event.issue.number }} ..."`
+            `gh pr create --base main --title "..." --body "Closes #${{ env.ISSUE }} ..."`
             (do not just post a "Create PR" link). Then set the issue label to status:review.
             The orchestrator creates issues instead of a PR.
           claude_args: |
@@ -103,8 +111,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue edit ${{ github.event.issue.number }} --add-label status:blocked --remove-label status:in-progress
-          gh issue comment ${{ github.event.issue.number }} --body "Агент не завершив задачу: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}. Позначено status:blocked. Щоб перезапустити, прибери blocked і постав status:todo."
+          gh issue edit "$ISSUE" --add-label status:needs-founder --remove-label status:in-progress
+          gh issue comment "$ISSUE" --body "Агент не завершив задачу: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}. Позначено status:needs-founder. Щоб перезапустити, прибери цю мітку й постав status:queued."
 
   sync-status:
     # Deterministic status bookkeeping: an open PR marks its issues status:review.
@@ -228,49 +236,6 @@ jobs:
           claude_args: |
             --max-turns 40
             --allowedTools "Read,Glob,Grep,LS,Bash(gh:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(cat:*),Bash(ls:*)"
-
-  after-merge:
-    # When the founder merges a PR, the orchestrator unblocks the next tasks
-    # and writes a short progress note — this is what keeps the chain moving.
-    if: >
-      github.event_name == 'pull_request' &&
-      github.event.action == 'closed' &&
-      github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    concurrency:
-      group: agent-after-merge
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-      - uses: anthropics/claude-code-action@v1
-        with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          allowed_bots: 'claude'
-          prompt: |
-            REPO: ${{ github.repository }}
-            MERGED PR: #${{ github.event.pull_request.number }} — ${{ github.event.pull_request.title }}
-
-            MAX ACTIVE TASKS: ${{ vars.AGENTS_MAX_PARALLEL || '1' }}
-
-            Act as the orchestrator (.claude/agents/orchestrator.md).
-            1. Find the issues this PR closed.
-            2. Unblock: every open issue labelled status:blocked whose "Blocked by" issues are now
-               all closed → remove status:blocked, add status:queued.
-            3. Release from the queue (this is what keeps usage limits in check):
-               ACTIVE = open issues with an agent:db / agent:mobile / agent:ui / agent:qa label
-               AND status:todo or status:in-progress. While ACTIVE < MAX ACTIVE TASKS, take the
-               queued issue (status:queued, no status:blocked) with the lowest milestone order,
-               then the lowest number, and release it: remove status:queued, then add status:todo
-               as a separate gh call (adding status:todo starts its agent).
-            4. If every task of a milestone issue is closed, comment on it and close it.
-            5. Post a short progress comment in Ukrainian on the parent milestone issue:
-               what was merged, what started now, what is next in the queue, what needs the founder.
-            Do not edit any files.
-          claude_args: |
-            --max-turns 30
-            --allowedTools "Read,Glob,Grep,LS,Bash(gh:*)"
 
   mention:
     if: >

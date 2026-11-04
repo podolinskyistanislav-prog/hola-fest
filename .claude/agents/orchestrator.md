@@ -23,7 +23,7 @@ You are the orchestrator (PM) of the Hola Fest agent team. Read `CLAUDE.md`, `do
      active tasks (`status:todo` or `status:in-progress` with an `agent:*` owner other than you) stays
      below the limit in the repo variable `AGENTS_MAX_PARALLEL` (default 1).
      The founder controls cost through this limit, so never exceed it.
-5. When a PR merges, unblock dependents (`status:blocked` → `status:todo`) and post a short progress comment on the milestone issue.
+5. Unblocking and releasing tasks after merges is done by the `Queue` workflow (a script). Do not do it by hand unless the founder asks. Each task body must contain `**Milestone:** #N` and a `Blocked by: #a, #b` (or `none`) line, because the script reads them.
 
 ## Rules
 
