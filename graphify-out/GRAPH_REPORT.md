@@ -1,17 +1,17 @@
 # Graph Report - hola-fest  (2026-11-04)
 
 ## Corpus Check
-- 31 files · ~6,517 words
+- 31 files · ~6,734 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
 ## Summary
-- 344 nodes · 384 edges · 43 communities (20 shown, 23 thin omitted)
+- 351 nodes · 395 edges · 43 communities (22 shown, 21 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5d36f5b2`
+- Built from commit: `c3e0e30f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -39,33 +39,33 @@
 - jest
 - 0001-foundation.md
 - on
-- expo-router
+- dependencies
 - task.md
 - pull_request_template.md
 - expo-constants@~58.0.15
-- expo-font@~58.0.11
+- with
 - expo-image@~58.0.18
 - expo-linking@~58.0.16
 - expo-splash-screen@~58.0.13
 - expo-status-bar@~58.0.4
 - expo-symbols@~58.0.4
 - expo-system-ui@~58.0.7
-- @expo/ui@~58.0.27
+- expo-glass-effect@~58.0.5
+- expo-web-browser@~58.0.7
 - react@19.3.0
 - react-dom@19.3.0
 - react-native-gesture-handler@~3.3.0
 - react-native-reanimated@4.7.1
-- react-native-safe-area-context@~5.11.1
-- react-native-screens@~4.30.1
+- @react-native-async-storage/async-storage
 - react-native-worklets@0.13.0
-- @supabase/supabase-js
+- react-native-web@~0.21.4
 
 ## God Nodes (most connected - your core abstractions)
-1. `with` - 14 edges
+1. `with` - 15 edges
 2. `expo` - 13 edges
-3. `Hola Fest — Architecture` - 10 edges
-4. `scripts` - 10 edges
-5. `with` - 9 edges
+3. `with` - 11 edges
+4. `Hola Fest — Architecture` - 10 edges
+5. `scripts` - 10 edges
 6. `Hola Fest — Product` - 8 edges
 7. `permissions` - 6 edges
 8. `work-on-issue` - 6 edges
@@ -78,11 +78,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (43 total, 23 thin omitted)
+## Communities (43 total, 21 thin omitted)
 
 ### Community 0 - "package.json"
 Cohesion: 0.22
-Nodes (8): expo-web-browser@~58.0.7, react-native-web@~0.21.4, main, name, private, version, expo-web-browser, react-native-web
+Nodes (8): expo-device@~58.0.5, expo-font@~58.0.11, main, name, private, version, expo-device, expo-font
 
 ### Community 1 - "devDependencies"
 Cohesion: 0.07
@@ -100,6 +100,10 @@ Nodes (11): Access rules (RLS), Allowed dependencies (enforced by ESLint where p
 Cohesion: 0.17
 Nodes (11): expo/tsconfig.base, compilerOptions, noFallthroughCasesInSwitch, noUncheckedIndexedAccess, paths, strict, types, exclude (+3 more)
 
+### Community 5 - "supabase.ts"
+Cohesion: 0.32
+Nodes (4): @supabase/supabase-js@^2.118.0, @supabase/supabase-js, env, supabase
+
 ### Community 6 - "scripts"
 Cohesion: 0.20
 Nodes (10): scripts, android, check, format, ios, lint, start, test (+2 more)
@@ -109,12 +113,12 @@ Cohesion: 0.06
 Nodes (25): Code quality, Database, Decisions, Golden rules, Hola Fest — rules for every agent, Security (non-negotiable), Explicitly NOT in the MVP, Hola Fest — Product (+17 more)
 
 ### Community 8 - "with"
-Cohesion: 0.05
-Nodes (47): concurrency, if, runs-on, steps, timeout-minutes, cancel-in-progress, group, jobs (+39 more)
+Cohesion: 0.07
+Nodes (29): concurrency, if, runs-on, timeout-minutes, cancel-in-progress, group, jobs, after-merge (+21 more)
 
 ### Community 9 - "with"
 Cohesion: 0.06
-Nodes (37): name, runs-on, steps, concurrency, cancel-in-progress, group, GITHUB_TOKEN, name (+29 more)
+Nodes (43): name, runs-on, steps, concurrency, cancel-in-progress, group, name, runs-on (+35 more)
 
 ### Community 10 - "AGENTS.md"
 Cohesion: 0.33
@@ -142,7 +146,7 @@ Nodes (3): How you work, Never, You may edit only
 
 ### Community 16 - "dependencies"
 Cohesion: 0.22
-Nodes (9): dependencies, expo@~58.0.23, expo-device@~58.0.5, expo-glass-effect@~58.0.5, @react-native-async-storage/async-storage@2.2.0, expo, expo-device, expo-glass-effect (+1 more)
+Nodes (9): dependencies, expo@~58.0.23, @expo/ui@~58.0.27, react@19.3.0, react-native-screens@~4.30.1, expo, @expo/ui, react (+1 more)
 
 ### Community 20 - "jest"
 Cohesion: 0.67
@@ -160,25 +164,29 @@ Nodes (5): Acceptance criteria, Dependencies, Goal, Out of scope, Owner & allowe
 Cohesion: 0.50
 Nodes (3): How it was verified, Security checklist (if data, auth or offers are touched), What changed
 
+### Community 27 - "with"
+Cohesion: 0.13
+Nodes (19): steps, steps, steps, name, run, uses, with, allowed_bots (+11 more)
+
 ## Knowledge Gaps
 - **1 isolated node(s):** `expo/tsconfig.base`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 180 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 184 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dependencies` to `package.json`, `react-native`, `expo-router`, `expo-constants@~58.0.15`, `expo-font@~58.0.11`, `expo-image@~58.0.18`, `expo-linking@~58.0.16`, `expo-splash-screen@~58.0.13`, `expo-status-bar@~58.0.4`, `expo-symbols@~58.0.4`, `expo-system-ui@~58.0.7`, `@expo/ui@~58.0.27`, `react@19.3.0`, `react-dom@19.3.0`, `react-native-gesture-handler@~3.3.0`, `react-native-reanimated@4.7.1`, `react-native-safe-area-context@~5.11.1`, `react-native-screens@~4.30.1`, `react-native-worklets@0.13.0`, `@supabase/supabase-js`?**
-  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `dependencies` to `package.json`, `supabase.ts`, `react-native`, `dependencies`, `expo-constants@~58.0.15`, `expo-image@~58.0.18`, `expo-linking@~58.0.16`, `expo-splash-screen@~58.0.13`, `expo-status-bar@~58.0.4`, `expo-symbols@~58.0.4`, `expo-system-ui@~58.0.7`, `expo-glass-effect@~58.0.5`, `expo-web-browser@~58.0.7`, `react@19.3.0`, `react-dom@19.3.0`, `react-native-gesture-handler@~3.3.0`, `react-native-reanimated@4.7.1`, `@react-native-async-storage/async-storage`, `react-native-worklets@0.13.0`, `react-native-web@~0.21.4`?**
+  _High betweenness centrality (0.024) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.07126436781609195 - nodes in this community are weakly interconnected._
 - **Why does `scripts` connect `scripts` to `package.json`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
 - **Should `expo` be split into smaller, more focused modules?**
   _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
 - **Should `Hola Fest — Product` be split into smaller, more focused modules?**
   _Cohesion score 0.06451612903225806 - nodes in this community are weakly interconnected._
 - **Should `with` be split into smaller, more focused modules?**
-  _Cohesion score 0.05053191489361702 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0735632183908046 - nodes in this community are weakly interconnected._
