@@ -1,17 +1,17 @@
 # Graph Report - hola-fest  (2026-11-04)
 
 ## Corpus Check
-- 31 files · ~6,281 words
+- 31 files · ~6,517 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
 ## Summary
-- 337 nodes · 373 edges · 24 communities (19 shown, 5 thin omitted)
+- 344 nodes · 384 edges · 43 communities (20 shown, 23 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `42bb1a14`
+- Built from commit: `5d36f5b2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -32,18 +32,37 @@
 - .prettierrc.json
 - db-backend.md
 - mobile.md
+- dependencies
 - orchestrator.md
 - reviewer.md
 - security-qa.md
 - jest
 - 0001-foundation.md
 - on
+- expo-router
 - task.md
 - pull_request_template.md
+- expo-constants@~58.0.15
+- expo-font@~58.0.11
+- expo-image@~58.0.18
+- expo-linking@~58.0.16
+- expo-splash-screen@~58.0.13
+- expo-status-bar@~58.0.4
+- expo-symbols@~58.0.4
+- expo-system-ui@~58.0.7
+- @expo/ui@~58.0.27
+- react@19.3.0
+- react-dom@19.3.0
+- react-native-gesture-handler@~3.3.0
+- react-native-reanimated@4.7.1
+- react-native-safe-area-context@~5.11.1
+- react-native-screens@~4.30.1
+- react-native-worklets@0.13.0
+- @supabase/supabase-js
 
 ## God Nodes (most connected - your core abstractions)
-1. `expo` - 13 edges
-2. `with` - 12 edges
+1. `with` - 14 edges
+2. `expo` - 13 edges
 3. `Hola Fest — Architecture` - 10 edges
 4. `scripts` - 10 edges
 5. `with` - 9 edges
@@ -51,7 +70,7 @@
 7. `permissions` - 6 edges
 8. `work-on-issue` - 6 edges
 9. `review-pr` - 6 edges
-10. `compilerOptions` - 6 edges
+10. `after-merge` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
 - None detected - all connections are within the same source files.
@@ -59,11 +78,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (24 total, 5 thin omitted)
+## Communities (43 total, 23 thin omitted)
 
 ### Community 0 - "package.json"
-Cohesion: 0.05
-Nodes (53): dependencies, expo@~58.0.23, expo-constants@~58.0.15, expo-device@~58.0.5, expo-font@~58.0.11, expo-glass-effect@~58.0.5, expo-image@~58.0.18, expo-linking@~58.0.16 (+45 more)
+Cohesion: 0.22
+Nodes (8): expo-web-browser@~58.0.7, react-native-web@~0.21.4, main, name, private, version, expo-web-browser, react-native-web
 
 ### Community 1 - "devDependencies"
 Cohesion: 0.07
@@ -90,8 +109,8 @@ Cohesion: 0.06
 Nodes (25): Code quality, Database, Decisions, Golden rules, Hola Fest — rules for every agent, Security (non-negotiable), Explicitly NOT in the MVP, Hola Fest — Product (+17 more)
 
 ### Community 8 - "with"
-Cohesion: 0.06
-Nodes (40): cancel-in-progress, group, jobs, mention, review-pr, work-on-issue, if, runs-on (+32 more)
+Cohesion: 0.05
+Nodes (47): concurrency, if, runs-on, steps, timeout-minutes, cancel-in-progress, group, jobs (+39 more)
 
 ### Community 9 - "with"
 Cohesion: 0.06
@@ -121,6 +140,10 @@ Nodes (3): How you work, Never, You may edit only
 Cohesion: 0.50
 Nodes (3): How you work, Never, You may edit only
 
+### Community 16 - "dependencies"
+Cohesion: 0.22
+Nodes (9): dependencies, expo@~58.0.23, expo-device@~58.0.5, expo-glass-effect@~58.0.5, @react-native-async-storage/async-storage@2.2.0, expo, expo-device, expo-glass-effect (+1 more)
+
 ### Community 20 - "jest"
 Cohesion: 0.67
 Nodes (3): jest, preset, testPathIgnorePatterns
@@ -139,23 +162,23 @@ Nodes (3): How it was verified, Security checklist (if data, auth or offers are 
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `expo/tsconfig.base`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 177 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 180 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `package.json` to `react-native`?**
-  _High betweenness centrality (0.026) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `dependencies` to `package.json`, `react-native`, `expo-router`, `expo-constants@~58.0.15`, `expo-font@~58.0.11`, `expo-image@~58.0.18`, `expo-linking@~58.0.16`, `expo-splash-screen@~58.0.13`, `expo-status-bar@~58.0.4`, `expo-symbols@~58.0.4`, `expo-system-ui@~58.0.7`, `@expo/ui@~58.0.27`, `react@19.3.0`, `react-dom@19.3.0`, `react-native-gesture-handler@~3.3.0`, `react-native-reanimated@4.7.1`, `react-native-safe-area-context@~5.11.1`, `react-native-screens@~4.30.1`, `react-native-worklets@0.13.0`, `@supabase/supabase-js`?**
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `package.json` be split into smaller, more focused modules?**
-  _Cohesion score 0.0512987012987013 - nodes in this community are weakly interconnected._
-- **Why does `scripts` connect `scripts` to `package.json`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.07126436781609195 - nodes in this community are weakly interconnected._
+- **Why does `scripts` connect `scripts` to `package.json`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
 - **Should `expo` be split into smaller, more focused modules?**
   _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
 - **Should `Hola Fest — Product` be split into smaller, more focused modules?**
   _Cohesion score 0.06451612903225806 - nodes in this community are weakly interconnected._
+- **Should `with` be split into smaller, more focused modules?**
+  _Cohesion score 0.05053191489361702 - nodes in this community are weakly interconnected._
