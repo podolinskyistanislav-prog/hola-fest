@@ -4,4 +4,12 @@ export { Chip, type ChipProps } from './Chip';
 export { DayStrip, type DayStripDay, type DayStripProps } from './DayStrip';
 export { GlassSurface, type GlassSurfaceProps } from './GlassSurface';
 export { OfferRow, type OfferRowProps, type OfferRowStatus } from './OfferRow';
+export {
+  TabBar,
+  tabBarInset,
+  TAB_BAR_HEIGHT,
+  TAB_BAR_FLOAT_GAP,
+  type TabBarItem,
+  type TabBarProps,
+} from './TabBar';
 export { TextField, type TextFieldProps } from './TextField';
