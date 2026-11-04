@@ -29,7 +29,7 @@ Funnel we measure: event viewed → offer claimed → offer redeemed → taxi bu
 1. As a guest, I see a map of Kyiv with partner venues, so I know where to go.
 2. As a guest, I see a list of events for **today** and **this week**, so I can choose.
 3. As a guest, I open an event and see photo, lineup, time, entry price and the offer.
-4. As a guest, I sign in with Apple or Google in one tap when I want an offer.
+4. As a guest, I can claim an offer without signing up. The app creates a guest account for me silently.
 5. As a guest, I claim an offer and get a one-time QR code that works offline at the door.
 6. As a guest, I tap Uklon / Bolt / Uber and the taxi app opens with the venue as destination.
 7. As a guest, I see whether the event ends before curfew and whether the venue has a shelter.
@@ -40,7 +40,8 @@ Funnel we measure: event viewed → offer claimed → offer redeemed → taxi bu
 
 ## Explicitly NOT in the MVP
 
-- Phone-number login, SMS, email/password
+- Phone-number login, SMS, email/password **for guests** (staff use email/password)
+- Sign in with Apple / Google (after the MVP, with guest-account linking)
 - In-app payments or ticket sales
 - Social features (friends, chat, check-ins)
 - Recommendations / personalization

@@ -95,8 +95,16 @@ Implemented: `profiles`, `venues`, `venue_members` (migration `rls_profiles_venu
 
 ## Auth
 
-- Sign in with Apple + Google via Supabase Auth. No phone, no email/password.
-- Browsing does not require login; claiming does.
+MVP (decision 0002):
+
+- **Guests:** Supabase anonymous sign-in, created silently on first launch. No sign-in screen.
+  Anonymous users are real `auth.users` rows (`is_anonymous = true`), so RLS and `claims.user_id` work unchanged.
+  A `profiles` row is created for them like for any user.
+- **Venue staff and superadmin:** email + password. The founder creates these accounts in the Supabase
+  dashboard. They are never created by public sign-up from the app. Roles come from `venue_members` / `profiles.is_superadmin`.
+- Anti-abuse in MVP: Supabase's per-IP limit on anonymous sign-ins plus `per_user_limit` on offers.
+  A reinstall gives a new guest. That risk is accepted for the MVP.
+- Later: Sign in with Apple + Google, linking the anonymous account (`linkIdentity`) so a guest keeps their claims.
 - Session stored with AsyncStorage on device.
 
 ## Taxi deep links
