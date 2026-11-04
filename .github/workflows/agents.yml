@@ -23,6 +23,7 @@ permissions:
   issues: write
   id-token: write
   actions: read
+  checks: read
 
 jobs:
   work-on-issue:
@@ -113,6 +114,7 @@ jobs:
           git worktree add /tmp/main origin/main
           (cd /tmp/main && graphify update . >/dev/null) || true
           graphify update .
+          mkdir -p .review && cp /tmp/main/graphify-out/GRAPH_REPORT.md .review/GRAPH_REPORT.main.md || true
       - name: Code review
         continue-on-error: true
         uses: anthropics/claude-code-action@v1
@@ -125,7 +127,7 @@ jobs:
             PR: #${{ github.event.pull_request.number }}
 
             Read .claude/agents/reviewer.md and act strictly as that agent, in review mode.
-            Compare /tmp/main/graphify-out/GRAPH_REPORT.md (main) with graphify-out/GRAPH_REPORT.md (this PR).
+            Compare .review/GRAPH_REPORT.main.md (main) with graphify-out/GRAPH_REPORT.md (this PR). Check CI with `gh pr checks ${{ github.event.pull_request.number }}`.
             Read the diff with `gh pr diff ${{ github.event.pull_request.number }}` and the linked issue.
             Run shell commands one at a time (no pipes or `&&`).
             Post exactly one verdict with
