@@ -77,6 +77,8 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           track_progress: ${{ github.event_name == 'issues' }}
+          # Private repo: show the agent's output in the run log, so a silent stop can be diagnosed.
+          show_full_output: true
           # Agents create issues/PRs as the claude bot; let those events start other agents.
           allowed_bots: 'claude,github-actions'
           prompt: |
@@ -106,6 +108,19 @@ jobs:
             --max-turns 80
             --allowedTools "Edit,Write,MultiEdit,Read,Glob,Grep,LS,Task,Bash(gh:*),Bash(git:*),Bash(npm:*),Bash(npx:*),Bash(graphify:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(node:*),Bash(supabase:*),Bash(docker:*)"
 
+      - name: Flag a run that ended without a PR
+        if: ${{ success() && !contains(github.event.issue.labels.*.name, 'agent:orchestrator') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          labels=$(gh issue view "$ISSUE" --json labels,state --jq 'select(.state=="OPEN") | [.labels[].name] | join(",")')
+          case ",$labels," in *",status:in-progress,"*) ;; *) exit 0 ;; esac
+          prs=$(gh pr list --state open --search "$ISSUE in:body" --json number,body,headRefName \
+            --jq "[.[] | select((.body|test(\"(?i)(close[sd]?|fix(e[sd])?|resolve[sd]?) #$ISSUE\\\\b\")) or (.headRefName|test(\"issue-$ISSUE-\")))] | length")
+          if [ "${prs:-0}" = "0" ]; then
+            gh issue edit "$ISSUE" --add-label status:needs-founder --remove-label status:in-progress
+            gh issue comment "$ISSUE" --body "Агент завершив роботу без PR і без пояснення: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}. Позначено status:needs-founder, черга йде далі. Щоб перезапустити, прибери цю мітку й постав status:queued."
+          fi
       - name: Flag failed run
         if: ${{ failure() && !contains(github.event.issue.labels.*.name, 'agent:orchestrator') }}
         env:
