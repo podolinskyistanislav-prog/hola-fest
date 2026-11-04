@@ -5,8 +5,7 @@ name: Agents
 # - every PR from a branch → reviewer + security-qa post their verdicts
 # - write "@claude ..." in any issue/PR comment → ad-hoc help
 #
-# Requires the repo secret CLAUDE_CODE_OAUTH_TOKEN (run `claude setup-token` once)
-# or ANTHROPIC_API_KEY. See README.
+# Requires the repo secret CLAUDE_CODE_OAUTH_TOKEN (run `claude setup-token` once).
 
 on:
   issues:
@@ -50,7 +49,6 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           track_progress: true
           prompt: |
             REPO: ${{ github.repository }}
@@ -66,6 +64,7 @@ jobs:
             Otherwise do the work and open a PR (or, for the orchestrator, create the issues).
           claude_args: |
             --max-turns 80
+            --allowedTools "Edit,Write,MultiEdit,Read,Glob,Grep,LS,Task,Bash(gh:*),Bash(git:*),Bash(npm:*),Bash(npx:*),Bash(graphify:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(node:*)"
 
   review-pr:
     if: >
@@ -93,7 +92,6 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
             REPO: ${{ github.repository }}
             PR: #${{ github.event.pull_request.number }}
@@ -107,6 +105,7 @@ jobs:
             Do not edit any files.
           claude_args: |
             --max-turns 40
+            --allowedTools "Read,Glob,Grep,LS,Task,Bash(gh pr:*),Bash(gh issue view:*),Bash(gh api:*),Bash(git diff:*),Bash(git log:*),Bash(graphify:*),Bash(diff:*),Bash(cat:*)"
 
   mention:
     if: >
@@ -122,5 +121,6 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           track_progress: true
+          claude_args: |
+            --allowedTools "Edit,Write,MultiEdit,Read,Glob,Grep,LS,Task,Bash(gh:*),Bash(git:*),Bash(npm:*),Bash(npx:*),Bash(graphify:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(node:*)"
