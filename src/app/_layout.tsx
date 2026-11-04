@@ -11,19 +11,27 @@ SplashScreen.preventAutoHideAsync().catch(() => undefined);
 export default function RootLayout() {
   const fontsLoaded = useAppFonts();
   const { colors, scheme } = useTheme();
-  const { isLoading, isError, retry } = useSession();
-  const ready = fontsLoaded && !isLoading;
+  const { isLoading, isError, isRetrying, retry } = useSession();
+  const ready = fontsLoaded && (!isLoading || isRetrying);
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => undefined);
   }, [ready]);
 
   if (!ready) return null;
-  if (isError) return <SessionError onRetry={retry} />;
+  const statusBar = <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />;
+  if (isError || isRetrying) {
+    return (
+      <>
+        {statusBar}
+        <SessionError onRetry={retry} isRetrying={isRetrying} />
+      </>
+    );
+  }
 
   return (
     <>
-      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      {statusBar}
       <Stack
         screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
       />

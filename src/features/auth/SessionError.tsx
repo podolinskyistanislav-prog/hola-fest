@@ -1,18 +1,30 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button } from '@/components/ui';
 import { space, useTheme } from '@/theme';
 
 import { authStrings } from './strings';
 
-export function SessionError({ onRetry }: { onRetry: () => void }) {
+type SessionErrorProps = { onRetry: () => void; isRetrying?: boolean };
+
+export function SessionError({ onRetry, isRetrying = false }: SessionErrorProps) {
   const { colors } = useTheme();
   return (
-    <View style={[styles.screen, { backgroundColor: colors.background }]}>
-      <AppText variant="title">{authStrings.errorTitle}</AppText>
-      <AppText tone="muted">{authStrings.errorBody}</AppText>
-      <Button label={authStrings.retry} onPress={onRetry} />
-    </View>
+    <SafeAreaView style={[styles.screen, { backgroundColor: colors.background }]}>
+      <AppText variant="title" accessibilityRole="header">
+        {authStrings.errorTitle}
+      </AppText>
+      <AppText tone="muted" accessibilityLiveRegion="polite">
+        {authStrings.errorBody}
+      </AppText>
+      <Button
+        label={authStrings.retry}
+        onPress={onRetry}
+        disabled={isRetrying}
+        accessibilityState={{ disabled: isRetrying, busy: isRetrying }}
+      />
+    </SafeAreaView>
   );
 }
 

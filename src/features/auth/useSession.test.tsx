@@ -45,9 +45,23 @@ describe('useSession', () => {
     const { store } = setup(ensure);
     const { result } = await renderHook(() => useSession(store));
     await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.isRetrying).toBe(false);
     await act(async () => result.current.retry());
     await waitFor(() => expect(result.current.session).toBe(guest));
     expect(result.current.isError).toBe(false);
+  });
+
+  it('reports isRetrying while a retry is pending', async () => {
+    const ensure = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('x'))
+      .mockReturnValueOnce(new Promise(() => undefined));
+    const { store } = setup(ensure);
+    const { result } = await renderHook(() => useSession(store));
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    await act(async () => result.current.retry());
+    expect(result.current.isRetrying).toBe(true);
+    expect(result.current.isLoading).toBe(true);
   });
 
   it('follows auth changes such as staff sign-in', async () => {

@@ -3,7 +3,7 @@ import { ensureGuestSession, onAuthChange } from '@/services/auth';
 export type Session = Awaited<ReturnType<typeof ensureGuestSession>>;
 
 export type SessionState =
-  | { status: 'loading'; session: null }
+  | { status: 'loading'; session: null; retrying: boolean }
   | { status: 'ready'; session: Session | null }
   | { status: 'error'; session: null };
 
@@ -25,7 +25,7 @@ export type SessionStore = {
 export function createSessionStore(
   deps: Deps = { ensureGuestSession, onAuthChange },
 ): SessionStore {
-  let state: SessionState = { status: 'loading', session: null };
+  let state: SessionState = { status: 'loading', session: null, retrying: false };
   const listeners = new Set<() => void>();
   let unsubscribeAuth: (() => void) | null = null;
   let attempt = 0;
@@ -66,7 +66,7 @@ export function createSessionStore(
     },
     getSnapshot: () => state,
     retry() {
-      set({ status: 'loading', session: null });
+      set({ status: 'loading', session: null, retrying: true });
       start();
     },
   };

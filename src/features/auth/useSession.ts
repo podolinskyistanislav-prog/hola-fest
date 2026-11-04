@@ -7,6 +7,7 @@ export type UseSession = {
   isAnonymous: boolean;
   isLoading: boolean;
   isError: boolean;
+  isRetrying: boolean;
   retry: () => void;
 };
 
@@ -17,6 +18,7 @@ export function useSession(store: SessionStore = sessionStore): UseSession {
     isAnonymous: state.session?.user.is_anonymous ?? false,
     isLoading: state.status === 'loading',
     isError: state.status === 'error',
+    isRetrying: state.status === 'loading' && state.retrying,
     retry: store.retry,
   };
 }
