@@ -1,0 +1,126 @@
+name: Agents
+
+# The agent team running in GitHub:
+# - label an issue agent:db / agent:mobile / agent:qa / agent:orchestrator → that agent picks it up
+# - every PR from a branch → reviewer + security-qa post their verdicts
+# - write "@claude ..." in any issue/PR comment → ad-hoc help
+#
+# Requires the repo secret CLAUDE_CODE_OAUTH_TOKEN (run `claude setup-token` once)
+# or ANTHROPIC_API_KEY. See README.
+
+on:
+  issues:
+    types: [labeled]
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+  actions: read
+
+jobs:
+  work-on-issue:
+    if: >
+      github.event_name == 'issues' &&
+      startsWith(github.event.label.name, 'agent:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    concurrency:
+      group: agent-issue-${{ github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install graphifyy && graphify update .
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          track_progress: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            ISSUE: #${{ github.event.issue.number }}
+            LABEL: ${{ github.event.label.name }}
+
+            Map the label to an agent: agent:orchestrator → orchestrator, agent:db → db-backend,
+            agent:mobile → mobile, agent:qa → security-qa. Act strictly as that agent, following
+            its file in .claude/agents/, CLAUDE.md and docs/WORKFLOW.md.
+
+            Read the issue with `gh issue view ${{ github.event.issue.number }}`.
+            If it is blocked by an open issue, comment that and stop.
+            Otherwise do the work and open a PR (or, for the orchestrator, create the issues).
+          claude_args: |
+            --max-turns 80
+
+  review-pr:
+    if: >
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: agent-review-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build graph for main and for this PR
+        run: |
+          pip install graphifyy
+          git worktree add /tmp/main origin/main
+          (cd /tmp/main && graphify update . >/dev/null) || true
+          graphify update .
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR: #${{ github.event.pull_request.number }}
+
+            Run two independent reviews of this PR, using the subagents defined in .claude/agents/:
+            1. the `reviewer` agent,
+            2. the `security-qa` agent (review mode).
+            Each posts its own verdict comment as its agent file describes.
+            The graph of main is at /tmp/main/graphify-out/GRAPH_REPORT.md, the PR's graph at
+            graphify-out/GRAPH_REPORT.md — the reviewer compares them.
+            Do not edit any files.
+          claude_args: |
+            --max-turns 40
+
+  mention:
+    if: >
+      (github.event_name == 'issue_comment' || github.event_name == 'pull_request_review_comment') &&
+      contains(github.event.comment.body, '@claude') &&
+      github.event.comment.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          track_progress: true
