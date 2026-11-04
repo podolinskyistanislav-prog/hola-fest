@@ -28,6 +28,8 @@ export interface Palette {
   textSubtle: string;
   /** Selected tab / link color. */
   accent: string;
+  /** Error text and error borders (validation messages). */
+  danger: string;
   /** Floating glass panels (tab bar, sheets) where native liquid glass is unavailable. */
   glass: {
     fill: string;
@@ -58,6 +60,7 @@ export const palettes: Record<ColorScheme, Palette> = {
     textMuted: '#A1A1AA',
     textSubtle: '#D4D4D8',
     accent: brand.yellow,
+    danger: '#FF6B6B',
     glass: {
       fill: 'rgba(28,28,30,0.72)',
       border: 'rgba(255,255,255,0.16)',
@@ -74,6 +77,7 @@ export const palettes: Record<ColorScheme, Palette> = {
     textMuted: '#52525B',
     textSubtle: '#71717A',
     accent: '#0A0A0A',
+    danger: '#B91C1C',
     glass: {
       fill: 'rgba(255,255,255,0.78)',
       border: 'rgba(0,0,0,0.08)',
