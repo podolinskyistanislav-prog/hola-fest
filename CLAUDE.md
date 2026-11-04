@@ -5,8 +5,9 @@ Read before every task:
 1. `docs/PRODUCT.md` — what we build and what we do NOT build.
 2. `docs/ARCHITECTURE.md` — layers, data model, RLS, trusted flows. This is law.
 3. `docs/WORKFLOW.md` — how agents hand work to each other through GitHub.
-4. `AGENTS.md` — Expo-specific rules (versioned docs, `npx expo install`, EAS).
-5. `graphify-out/GRAPH_REPORT.md` — current shape of the code. For anything you have not touched before, run `graphify query "<question>"` before opening files.
+4. `docs/DESIGN.md` — the look and UI rules (for anything visual).
+5. `AGENTS.md` — Expo-specific rules (versioned docs, `npx expo install`, EAS).
+6. `graphify-out/GRAPH_REPORT.md` — current shape of the code. For anything you have not touched before, run `graphify query "<question>"` before opening files.
 
 ## Golden rules
 

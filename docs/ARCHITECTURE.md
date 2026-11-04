@@ -21,7 +21,9 @@
 src/app/         Routes/screens. Thin: compose features, no business logic, no data access.
 src/features/X/  One folder per feature (events, offers, venues, auth, host…):
                  hooks (useEvents, useClaimOffer), feature components, feature logic + tests.
-src/components/  Shared, pure UI (Button, Card, EmptyState). Props in, JSX out.
+src/components/  Shared, pure UI. src/components/ui = design-system components (AppText, Button,
+                 Chip, GlassSurface). Props in, JSX out.
+src/theme/       Design tokens (colors, type, radii, spacing), useTheme, fonts. See docs/DESIGN.md.
 src/services/    The ONLY place that talks to Supabase or other external APIs.
                  Typed functions: getEventsForDay(), claimOffer(), redeemClaim()…
 src/lib/         Pure helpers (dates, curfew, deep links, env). No I/O.
@@ -37,13 +39,17 @@ app → features → services → (Supabase)
 app → components
 features → components, lib, types
 services → lib, types
-components → lib, types
+components → theme, lib, types
+features, app → theme
+theme → (nothing in src except lib)
 ```
 
 Forbidden:
 
 - `@supabase/*` anywhere outside `src/services` — **lint error**
 - `src/components` importing `services` or `features` — **lint error**
+- `src/theme` importing components, features or services — **lint error**
+- hex colors, font names or radii outside `src/theme` — UI/UX reviewer blocks
 - `features/A` importing internals of `features/B` (use `services` or move code to `lib`) — reviewer blocks
 - business logic inside `src/app` — reviewer blocks
 
