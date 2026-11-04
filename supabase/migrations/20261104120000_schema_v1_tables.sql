@@ -13,8 +13,8 @@ create table public.venues (
   slug text not null unique,
   name text not null,
   address text,
-  lat double precision,
-  lng double precision,
+  lat double precision check (lat between -90 and 90),
+  lng double precision check (lng between -180 and 180),
   description text,
   cover_path text,
   instagram_url text,
@@ -41,7 +41,8 @@ create table public.events (
   price_from_uah integer check (price_from_uah >= 0),
   cover_path text,
   status text not null default 'draft' check (status in ('draft', 'published')),
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  check (ends_at is null or ends_at > starts_at)
 );
 
 create table public.offers (
@@ -63,7 +64,7 @@ create table public.claims (
   status text not null default 'issued' check (status in ('issued', 'redeemed', 'void')),
   issued_at timestamptz not null default now(),
   redeemed_at timestamptz,
-  redeemed_by uuid references public.profiles (id)
+  redeemed_by uuid references public.profiles (id) on delete set null
 );
 
 create index events_venue_id_starts_at_idx on public.events (venue_id, starts_at);
