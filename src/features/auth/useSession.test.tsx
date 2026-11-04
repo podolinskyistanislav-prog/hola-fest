@@ -72,6 +72,18 @@ describe('useSession', () => {
     expect(result.current.isAnonymous).toBe(false);
   });
 
+  it('starts a fresh guest session after staff sign-out', async () => {
+    const fresh = { user: { is_anonymous: true, id: 'fresh' } } as unknown as Session;
+    const ensure = jest.fn().mockResolvedValueOnce(guest).mockResolvedValueOnce(fresh);
+    const { store, emit } = setup(ensure);
+    const { result } = await renderHook(() => useSession(store));
+    await waitFor(() => expect(result.current.session).toBe(guest));
+    await act(async () => emit(staff));
+    await act(async () => emit(null));
+    await waitFor(() => expect(result.current.session).toBe(fresh));
+    expect(ensure).toHaveBeenCalledTimes(2);
+  });
+
   it('unsubscribes from auth changes on unmount', async () => {
     const { store, unsubscribe } = setup(jest.fn().mockResolvedValue(guest));
     const { unmount } = await renderHook(() => useSession(store));
