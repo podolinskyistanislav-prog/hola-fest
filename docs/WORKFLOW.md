@@ -18,7 +18,7 @@ Shared config (`package.json`, `app.json`, CI, docs) changes only when the issue
 ## Labels
 
 - Owner: `agent:orchestrator`, `agent:db`, `agent:mobile`, `agent:ui`, `agent:qa`
-- State: `status:queued` (planned, waiting for a slot) → `status:todo` → `status:in-progress` → `status:review` → `status:changes-requested` → `status:done` (closed by merge) | `status:blocked`
+- State: `status:queued` (planned, waiting for a slot) → `status:todo` → `status:in-progress` → `status:review` → `status:changes-requested` → `status:done` (closed by merge) | `status:blocked` (waits for other issues) | `status:needs-founder` (waits for the founder)
 - Kind: `feature`, `bug`, `architecture`, `idea`
 
 ## Life of a task
@@ -40,7 +40,14 @@ Shared config (`package.json`, `app.json`, CI, docs) changes only when the issue
 
 ## Queue and usage limits
 
-Planned tasks wait as `status:queued`. After every merge the orchestrator releases queued tasks until the number of
-active tasks (`status:todo` / `status:in-progress`) reaches `AGENTS_MAX_PARALLEL`, a repo variable that defaults to 1.
-Raise it in _Settings → Secrets and variables → Actions → Variables_ to go faster, or keep it at 1 to save usage.
-Reviews do not count as active work.
+The queue is a plain script (`.github/scripts/queue.sh`, workflow `Queue`). It uses no AI and runs after every merge,
+when an issue closes, and when a task is marked `status:needs-founder` or `status:queued`. Each run does three things:
+
+1. Unblock: a `status:blocked` issue whose `Blocked by` issues are all closed becomes `status:queued`.
+2. Release: while active tasks (`status:todo` / `status:in-progress`) < `AGENTS_MAX_PARALLEL` (repo variable,
+   default 1), the lowest-numbered queued task becomes `status:todo` and its agent starts.
+3. A milestone issue whose tasks are all closed is closed.
+
+`status:needs-founder` means an agent needs the founder: a decision, a secret or a paid service. It does not count as
+active, so the queue moves on to the next task. Reviews do not count as active either.
+To retry a task, remove `status:needs-founder` and add `status:queued`.
