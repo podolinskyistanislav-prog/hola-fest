@@ -48,6 +48,10 @@ Black or white ground, Hola yellow and pink as the only accents, big soft corner
 - Keeps floating bars clear of content: the last list item must scroll above the tab bar.
 - Icons and icon-only buttons carry `accessibilityLabel`.
 
+## Day strip
+
+`DayStrip` is a horizontal day selector. The selected day is filled with Hola yellow and black text (both themes); other days use the raised surface. Weekday and date arrive already formatted, the component does no date logic. Each day is a button with a `selected` state.
+
 ## Event covers (until real photos exist)
 
 A yellow or pink block with the 4-point Hola star in the other accent color, as in the mockups.
