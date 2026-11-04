@@ -14,6 +14,7 @@ on:
       - 'src/theme/**'
       - 'app.json'
       - 'scripts/screenshots/**'
+      - '.github/workflows/screenshots.yml'
 
 concurrency:
   group: screenshots-${{ github.event.pull_request.number }}
