@@ -22,8 +22,19 @@ const MIME: Record<string, string> = {
   '.svg': 'image/svg+xml',
 };
 
+/** Reads local Supabase status, using the global CLI if installed, otherwise `npx supabase`. */
+function readSupabaseStatus(): string {
+  const args = ['status', '-o', 'env'];
+  try {
+    return execFileSync('supabase', args, { encoding: 'utf8' });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    return execFileSync('npx', ['--yes', 'supabase', ...args], { encoding: 'utf8' });
+  }
+}
+
 function exportWeb(): void {
-  const status = execFileSync('supabase', ['status', '-o', 'env'], { encoding: 'utf8' });
+  const status = readSupabaseStatus();
   const env = { ...process.env, ...appEnvFromSupabaseStatus(status) };
   rmSync(WEB_DIR, { recursive: true, force: true });
   execFileSync('npx', ['expo', 'export', '--platform', 'web', '--output-dir', WEB_DIR], {
