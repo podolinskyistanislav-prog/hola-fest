@@ -1,17 +1,17 @@
 # Graph Report - hola-fest  (2026-11-04)
 
 ## Corpus Check
-- 56 files · ~15,851 words
+- 57 files · ~16,181 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
 ## Summary
-- 458 nodes · 586 edges · 43 communities (26 shown, 17 thin omitted)
+- 460 nodes · 587 edges · 50 communities (32 shown, 18 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.95)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8c2a7fd3`
+- Built from commit: `5f11eed6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -24,7 +24,7 @@
 - supabase.ts
 - scripts
 - Hola Fest — Product
-- with
+- on
 - with
 - AGENTS.md
 - steps
@@ -54,11 +54,18 @@
 - expo-device@~58.0.5
 - expo-linking@~58.0.16
 - react-dom@19.3.0
+- steps
 - react-native-reanimated@4.7.1
+- jobs
 - react-native-worklets@0.13.0
 - expo-web-browser@~58.0.7
 - @react-native-async-storage/async-storage
 - react-native-web@~0.21.4
+- after-merge
+- permissions
+- work-on-issue
+- group
+- 0002-anonymous-auth-for-mvp.md
 
 ## God Nodes (most connected - your core abstractions)
 1. `with` - 16 edges
@@ -87,7 +94,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (43 total, 17 thin omitted)
+## Communities (50 total, 18 thin omitted)
 
 ### Community 0 - "package.json"
 Cohesion: 0.18
@@ -117,9 +124,9 @@ Nodes (10): scripts, android, check, format, ios, lint, start, test (+2 more)
 Cohesion: 0.06
 Nodes (25): Code quality, Database, Decisions, Golden rules, Hola Fest — rules for every agent, Security (non-negotiable), Explicitly NOT in the MVP, Hola Fest — Product (+17 more)
 
-### Community 8 - "with"
-Cohesion: 0.05
-Nodes (39): concurrency, if, runs-on, timeout-minutes, cancel-in-progress, group, types, types (+31 more)
+### Community 8 - "on"
+Cohesion: 0.22
+Nodes (9): types, types, on, issue_comment, issues, pull_request, pull_request_review_comment, types (+1 more)
 
 ### Community 9 - "with"
 Cohesion: 0.06
@@ -178,8 +185,8 @@ Cohesion: 0.18
 Nodes (10): CompositeTypes, Constants, Database, DatabaseWithoutInternals, DefaultSchema, Enums, Json, Tables (+2 more)
 
 ### Community 27 - "expo-glass-effect@~58.0.5"
-Cohesion: 0.10
-Nodes (23): steps, steps, steps, continue-on-error, id, if, name, run (+15 more)
+Cohesion: 0.15
+Nodes (13): with, allowed_bots, cache, claude_args, claude_code_oauth_token, fetch-depth, node-version, prompt (+5 more)
 
 ### Community 30 - "fonts.ts"
 Cohesion: 0.40
@@ -193,16 +200,40 @@ Nodes (3): How you work, Review mode (on a PR touching src/app, src/features, sr
 Cohesion: 0.06
 Nodes (30): concurrency, cancel-in-progress, group, env, name, runs-on, steps, SUPABASE_ACCESS_TOKEN (+22 more)
 
+### Community 38 - "steps"
+Cohesion: 0.22
+Nodes (9): review-pr, if, runs-on, steps, timeout-minutes, continue-on-error, id, if (+1 more)
+
+### Community 40 - "jobs"
+Cohesion: 0.29
+Nodes (6): jobs, mention, if, runs-on, timeout-minutes, name
+
+### Community 45 - "after-merge"
+Cohesion: 0.29
+Nodes (7): if, runs-on, steps, timeout-minutes, after-merge, steps, uses
+
+### Community 46 - "permissions"
+Cohesion: 0.29
+Nodes (7): permissions, actions, checks, contents, id-token, issues, pull-requests
+
+### Community 47 - "work-on-issue"
+Cohesion: 0.33
+Nodes (6): work-on-issue, run, if, runs-on, steps, timeout-minutes
+
+### Community 48 - "group"
+Cohesion: 0.50
+Nodes (5): concurrency, cancel-in-progress, group, concurrency, concurrency
+
 ## Knowledge Gaps
 - **1 isolated node(s):** `expo/tsconfig.base`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 230 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 232 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **18 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react-native` connect `Button.tsx` to `package.json`, `dependencies`?**
-  _High betweenness centrality (0.044) - this node is a cross-community bridge._
+  _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `devDependencies` be split into smaller, more focused modules?**
