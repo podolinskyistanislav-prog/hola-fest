@@ -18,7 +18,7 @@ Shared config (`package.json`, `app.json`, CI, docs) changes only when the issue
 ## Labels
 
 - Owner: `agent:orchestrator`, `agent:db`, `agent:mobile`, `agent:ui`, `agent:qa`
-- State: `status:todo` → `status:in-progress` → `status:review` → `status:changes-requested` → `status:done` (closed by merge) | `status:blocked`
+- State: `status:queued` (planned, waiting for a slot) → `status:todo` → `status:in-progress` → `status:review` → `status:changes-requested` → `status:done` (closed by merge) | `status:blocked`
 - Kind: `feature`, `bug`, `architecture`, `idea`
 
 ## Life of a task
@@ -37,3 +37,10 @@ Shared config (`package.json`, `app.json`, CI, docs) changes only when the issue
 - a task needs a new external service, a paid plan, or a secret;
 - an agent and the reviewer disagree twice on the same point.
   Label the issue `status:blocked` and write one clear question.
+
+## Queue and usage limits
+
+Planned tasks wait as `status:queued`. After every merge the orchestrator releases queued tasks until the number of
+active tasks (`status:todo` / `status:in-progress`) reaches `AGENTS_MAX_PARALLEL`, a repo variable that defaults to 1.
+Raise it in _Settings → Secrets and variables → Actions → Variables_ to go faster, or keep it at 1 to save usage.
+Reviews do not count as active work.

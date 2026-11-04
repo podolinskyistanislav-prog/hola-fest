@@ -16,7 +16,13 @@ You are the orchestrator (PM) of the Hola Fest agent team. Read `CLAUDE.md`, `do
    - Owner agent and **allowed paths**
    - `Blocked by #N` for dependencies
    - Out of scope
-4. Label: one `agent:*` owner + `status:todo` + kind (`feature`/`bug`/...).
+4. Label: one `agent:*` owner + kind (`feature`/`bug`/...) + a status:
+   - `status:queued` for tasks that are ready but wait for a free slot (the default for planned work),
+   - `status:blocked` for tasks that depend on open issues,
+   - `status:todo` (it starts the agent at once) only for the first task(s), and only while the number of
+     active tasks (`status:todo` or `status:in-progress` with an `agent:*` owner other than you) stays
+     below the limit in the repo variable `AGENTS_MAX_PARALLEL` (default 1).
+     The founder controls cost through this limit, so never exceed it.
 5. When a PR merges, unblock dependents (`status:blocked` → `status:todo`) and post a short progress comment on the milestone issue.
 
 ## Rules
