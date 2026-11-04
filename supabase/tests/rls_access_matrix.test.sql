@@ -4,6 +4,7 @@
 --   D  = denied (SQLSTATE 42501: no grant, or RLS with-check failure)
 --   N  = statement succeeded and touched/returned N rows (0 = silently filtered by RLS)
 -- Every statement is rolled back after measuring, so the fixture is identical for every role.
+-- Read statements count only fixture rows (uuid prefix), so seed data from supabase/seed.sql cannot change the counts.
 -- In statements, @xN is the fixture uuid 00000000-0000-0000-0000-0000000000xN, and @me is the caller's uuid.
 begin;
 select * from no_plan();
@@ -94,12 +95,12 @@ begin
     select label, sql, string_to_array(expected, ' ') as expected
     from (values
       -- reads                         anon stranger host adminA adminB super
-      ('read venues',                  'select 1 from public.venues',         '3 3 3 3 3 4'),
-      ('read events',                  'select 1 from public.events',         '2 2 4 4 3 6'),
-      ('read offers',                  'select 1 from public.offers',         '2 2 2 4 3 6'),
-      ('read claims',                  'select 1 from public.claims',         'D 1 2 1 1 2'),
-      ('read venue_members',           'select 1 from public.venue_members',  'D 0 1 2 1 3'),
-      ('read profiles',                'select 1 from public.profiles',       'D 1 1 1 1 1'),
+      ('read venues',                  $$select 1 from public.venues where id::text like '00000000-0000-0000-0000-0000000000%'$$,         '3 3 3 3 3 4'),
+      ('read events',                  $$select 1 from public.events where id::text like '00000000-0000-0000-0000-0000000000%'$$,         '2 2 4 4 3 6'),
+      ('read offers',                  $$select 1 from public.offers where id::text like '00000000-0000-0000-0000-0000000000%'$$,         '2 2 2 4 3 6'),
+      ('read claims',                  $$select 1 from public.claims where id::text like '00000000-0000-0000-0000-0000000000%'$$,         'D 1 2 1 1 2'),
+      ('read venue_members',           $$select 1 from public.venue_members where venue_id::text like '00000000-0000-0000-0000-0000000000%'$$, 'D 0 1 2 1 3'),
+      ('read profiles',                $$select 1 from public.profiles where id::text like '00000000-0000-0000-0000-0000000000%'$$,       'D 1 1 1 1 1'),
       ('read claims.token_hash',       'select token_hash from public.claims', 'D D D D D D'),
       ('is_superadmin()',              'select 1 where public.is_superadmin()', '0 0 0 0 0 1'),
       -- venues: only superadmin writes
