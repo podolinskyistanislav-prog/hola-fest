@@ -44,7 +44,12 @@ export function resolveStaticPath(
   requestUrl: string,
   exists: (path: string) => boolean,
 ): string | null {
-  const pathname = decodeURIComponent(requestUrl.split('?')[0] ?? '/');
+  let pathname: string;
+  try {
+    pathname = decodeURIComponent(requestUrl.split('?')[0] ?? '/');
+  } catch {
+    return null;
+  }
   if (pathname.includes('..')) return null;
   const clean = pathname.replace(/\/+$/, '');
   for (const candidate of [clean, `${clean}.html`, `${clean}/index.html`]) {

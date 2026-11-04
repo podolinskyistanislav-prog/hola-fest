@@ -68,4 +68,8 @@ describe('resolveStaticPath', () => {
   it('refuses path traversal', () => {
     expect(resolveStaticPath('/../secret', exists)).toBeNull();
   });
+
+  it('returns null for a malformed URL instead of throwing', () => {
+    expect(resolveStaticPath('/%E0%A4%A', exists)).toBeNull();
+  });
 });

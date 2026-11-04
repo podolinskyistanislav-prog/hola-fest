@@ -69,7 +69,9 @@ async function main(): Promise<void> {
       });
       for (const shot of plan.filter((s) => s.theme === theme)) {
         const page = await context.newPage();
-        await page.goto(`${server.url}${shot.path}`, { waitUntil: 'networkidle' });
+        const response = await page.goto(`${server.url}${shot.path}`, { waitUntil: 'networkidle' });
+        if (!response?.ok()) throw new Error(`Screen ${shot.screen} did not load`);
+        await page.waitForSelector('#root > *');
         await page.evaluate(() => document.fonts.ready);
         await page.screenshot({ path: join(OUTPUT_DIR, shot.file) });
         await page.close();
