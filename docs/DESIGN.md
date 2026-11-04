@@ -52,6 +52,10 @@ Black or white ground, Hola yellow and pink as the only accents, big soft corner
 
 `DayStrip` is a horizontal day selector. The selected day is filled with Hola yellow and black text (both themes); other days use the raised surface. Weekday and date arrive already formatted, the component does no date logic. Each day is a button with a `selected` state.
 
+## Tab bar
+
+`TabBar` is a floating glass pill (`GlassSurface`) with icon + label items; the active item uses the accent color and has a `selected` state. Icons come in through `renderIcon({ color, size })`, so the component stays icon-library agnostic. Screens with scrolling content set `paddingBottom: tabBarInset(insets.bottom)` so the last item clears the bar; pass the same `insets.bottom` to `TabBar` as `safeAreaBottom`.
+
 ## Event covers (until real photos exist)
 
 A yellow or pink block with the 4-point Hola star in the other accent color, as in the mockups.

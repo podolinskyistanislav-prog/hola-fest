@@ -4,6 +4,7 @@ import { Button } from './Button';
 import { Chip } from './Chip';
 import { DayStrip } from './DayStrip';
 import { OfferRow } from './OfferRow';
+import { TAB_BAR_FLOAT_GAP, TAB_BAR_HEIGHT, TabBar, tabBarInset } from './TabBar';
 import { TextField } from './TextField';
 
 jest.mock('expo-glass-effect', () => {
@@ -132,5 +133,40 @@ describe('OfferRow', () => {
     );
     expect(screen.getByText(label)).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Взяти' })).toBeNull();
+  });
+});
+
+describe('TabBar', () => {
+  const items = [
+    { id: 'events', label: 'Події', renderIcon: () => null },
+    { id: 'offers', label: 'Офери', accessibilityLabel: 'Мої офери', renderIcon: () => null },
+  ];
+
+  it('marks the active tab as selected', async () => {
+    await render(<TabBar items={items} activeId="events" onSelect={jest.fn()} />);
+    expect(screen.getByRole('tab', { name: 'Події' })).toBeSelected();
+    expect(screen.getByRole('tab', { name: 'Мої офери' })).not.toBeSelected();
+  });
+
+  it('calls onSelect with the pressed tab id', async () => {
+    const onSelect = jest.fn();
+    await render(<TabBar items={items} activeId="events" onSelect={onSelect} />);
+    await fireEvent.press(screen.getByRole('tab', { name: 'Мої офери' }));
+    expect(onSelect).toHaveBeenCalledWith('offers');
+  });
+
+  it('gives icons a color and size for the current state', async () => {
+    const renderIcon = jest.fn(() => null);
+    await render(
+      <TabBar items={[{ id: 'a', label: 'A', renderIcon }]} activeId="a" onSelect={jest.fn()} />,
+    );
+    expect(renderIcon).toHaveBeenCalledWith({ color: expect.any(String), size: 24 });
+  });
+});
+
+describe('tabBarInset', () => {
+  it('clears the bar, its float gap and the safe area', () => {
+    expect(tabBarInset(34)).toBeGreaterThan(TAB_BAR_HEIGHT + TAB_BAR_FLOAT_GAP + 34);
+    expect(tabBarInset(0)).toBeLessThan(tabBarInset(34));
   });
 });
