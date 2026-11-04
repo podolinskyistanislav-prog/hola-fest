@@ -56,6 +56,10 @@ Black or white ground, Hola yellow and pink as the only accents, big soft corner
 
 `TabBar` is a floating glass pill (`GlassSurface`) with icon + label items; the active item uses the accent color and has a `selected` state. Icons come in through `renderIcon({ color, size })`, so the component stays icon-library agnostic. Screens with scrolling content set `paddingBottom: tabBarInset(insets.bottom)` so the last item clears the bar; pass the same `insets.bottom` to `TabBar` as `safeAreaBottom`.
 
+## Event card
+
+`EventCard` is a pressable card (`radius.card`, surface fill, no glass) with a cover block, title, venue, time and price. The offer badge is `GlassSurface kind="cover"` over the cover. Time, price and badge arrive already formatted. The whole card is one button whose label summarizes its content.
+
 ## Event covers (until real photos exist)
 
 A yellow or pink block with the 4-point Hola star in the other accent color, as in the mockups.
