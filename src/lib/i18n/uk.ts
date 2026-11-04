@@ -12,4 +12,11 @@ export const uk = {
   'auth.signOut': 'Вийти',
   'auth.signingOut': 'Виходимо…',
   'auth.signOutFailed': 'Не вдалося вийти. Спробуй ще раз.',
+  'tabs.events': 'Події',
+  'tabs.map': 'Карта',
+  'events.title': 'Сьогодні в Києві',
+  'events.emptyTitle': 'Подій поки немає',
+  'events.emptyBody': 'Скоро тут з’являться події Bavovna і Panorama Bar.',
+  'map.emptyTitle': 'Карта скоро буде',
+  'map.emptyBody': 'Тут з’являться місця фестивалю та шлях до них.',
 } as const;
