@@ -279,7 +279,8 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      is_superadmin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      is_venue_member: { Args: { p_role?: string; p_venue_id: string }; Returns: boolean };
     };
     Enums: {
       [_ in never]: never;

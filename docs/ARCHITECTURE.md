@@ -79,6 +79,8 @@ Indexes: `events(venue_id, starts_at)`, `events(starts_at) where status='publish
 
 Helper SQL functions (`security definer`, `stable`, fixed `search_path`): `is_superadmin()`, `is_venue_member(venue_id, role)`.
 
+Implemented so far: `profiles`, `venues`, `venue_members` (migration `rls_profiles_venues_members`). Notes: `is_superadmin` is protected by column-level grants (`authenticated` can only insert `id, display_name` and update `display_name`); superadmin also reads unpublished venues and all `venue_members`; `anon` reads only published venues. `events`, `offers`, `claims` remain closed (no grants, no policies) until their task.
+
 ## Trusted flows (Edge Functions)
 
 - `claim-offer`: checks auth, offer active, `max_claims`, `per_user_limit`, rate limit → creates a claim with a random 32-byte token, stores only `sha256(token)`, returns the token once. The QR encodes the token.
