@@ -47,11 +47,11 @@ jobs:
       - name: Link project
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
       - name: Show pending migrations
-        run: supabase migration list
+        run: supabase migration list --remote
       - name: Push migrations
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.include_seed }}" = "true" ]; then
-            supabase db push --include-seed --yes
+            supabase db push --remote --include-seed --yes
           else
-            supabase db push --yes
+            supabase db push --remote --yes
           fi
