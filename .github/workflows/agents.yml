@@ -50,6 +50,8 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           track_progress: true
+          # TEMP: show the agent's full output so we can see why it fails. Remove after debugging.
+          show_full_output: true
           prompt: |
             REPO: ${{ github.repository }}
             ISSUE: #${{ github.event.issue.number }}
