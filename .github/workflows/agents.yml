@@ -53,6 +53,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install graphifyy && graphify update .
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -70,10 +73,21 @@ jobs:
 
             Read the issue with `gh issue view ${{ github.event.issue.number }}`.
             If it is blocked by an open issue, comment that and stop.
-            Otherwise do the work and open a PR (or, for the orchestrator, create the issues).
+            Otherwise do the work.
+
+            Database work: a real local Supabase is available. Run `supabase start`, then
+            `supabase db reset` (applies all migrations) and `supabase test db` (pgTAP tests).
+            Generate types with `supabase gen types typescript --local > src/types/database.ts`
+            and run `npx prettier --write src/types/database.ts`. Never hand-write generated types.
+            Do not say "done" unless migrations apply and all DB tests pass.
+
+            Finish: commit, push, and OPEN THE PULL REQUEST YOURSELF with
+            `gh pr create --base main --title "..." --body "Closes #${{ github.event.issue.number }} ..."`
+            (do not just post a "Create PR" link). Then set the issue label to status:review.
+            The orchestrator creates issues instead of a PR.
           claude_args: |
             --max-turns 80
-            --allowedTools "Edit,Write,MultiEdit,Read,Glob,Grep,LS,Task,Bash(gh:*),Bash(git:*),Bash(npm:*),Bash(npx:*),Bash(graphify:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(node:*)"
+            --allowedTools "Edit,Write,MultiEdit,Read,Glob,Grep,LS,Task,Bash(gh:*),Bash(git:*),Bash(npm:*),Bash(npx:*),Bash(graphify:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(node:*),Bash(supabase:*),Bash(docker:*)"
 
   review-pr:
     if: >
@@ -169,4 +183,4 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           track_progress: true
           claude_args: |
-            --allowedTools "Edit,Write,MultiEdit,Read,Glob,Grep,LS,Task,Bash(gh:*),Bash(git:*),Bash(npm:*),Bash(npx:*),Bash(graphify:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(node:*)"
+            --allowedTools "Edit,Write,MultiEdit,Read,Glob,Grep,LS,Task,Bash(gh:*),Bash(git:*),Bash(npm:*),Bash(npx:*),Bash(graphify:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(node:*),Bash(supabase:*),Bash(docker:*)"
