@@ -38,6 +38,25 @@ module.exports = defineConfig([
     },
   },
   {
+    files: ['src/theme/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            SUPABASE_ONLY_IN_SERVICES,
+            NO_SERVICES_IN_UI,
+            NO_FEATURES_IN_UI,
+            {
+              group: ['@/components', '@/components/*'],
+              message: 'The theme must not depend on components.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/components/**'],
     rules: {
       'no-restricted-imports': [
