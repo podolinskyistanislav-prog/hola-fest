@@ -1,0 +1,7 @@
+node_modules
+.expo
+dist
+graphify-out
+supabase/.temp
+package-lock.json
+.claude/skills

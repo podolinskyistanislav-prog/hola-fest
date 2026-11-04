@@ -1,0 +1,303 @@
+name: Agents
+
+# The agent team running in GitHub:
+# - label an issue agent:db / agent:mobile / agent:qa / agent:orchestrator → that agent picks it up
+# - every PR from a branch → reviewer + security-qa post their verdicts
+# - write "@claude ..." in any issue/PR comment → ad-hoc help
+#
+# Requires the repo secret CLAUDE_CODE_OAUTH_TOKEN (run `claude setup-token` once).
+
+on:
+  issues:
+    types: [labeled]
+  pull_request:
+    types: [opened, synchronize, ready_for_review, closed]
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+  actions: read
+  checks: read
+
+jobs:
+  work-on-issue:
+    # Starts when an issue gets an agent:* label or status:todo (e.g. unblocked by the
+    # orchestrator) — but only if it has an owner and is not blocked. Several label events
+    # at once (agent:db + status:todo on creation) collapse into one run via concurrency.
+    if: >
+      github.event_name == 'issues' &&
+      github.event.issue.state == 'open' &&
+      (startsWith(github.event.label.name, 'agent:') || github.event.label.name == 'status:todo') &&
+      contains(join(github.event.issue.labels.*.name, ','), 'agent:') &&
+      !contains(github.event.issue.labels.*.name, 'status:blocked') &&
+      !contains(github.event.issue.labels.*.name, 'status:queued')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    concurrency:
+      group: agent-issue-${{ github.event.issue.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install graphifyy && graphify update .
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      - name: Mark issue in progress
+        if: ${{ !contains(github.event.issue.labels.*.name, 'agent:orchestrator') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue edit ${{ github.event.issue.number }} --add-label status:in-progress --remove-label status:todo
+      - name: Agent
+        id: agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          # Agents create issues/PRs as the claude bot; let those events start other agents.
+          allowed_bots: 'claude'
+          prompt: |
+            REPO: ${{ github.repository }}
+            ISSUE: #${{ github.event.issue.number }}
+            LABELS: ${{ join(github.event.issue.labels.*.name, ', ') }}
+
+            Find the issue's agent:* label and map it to an agent: agent:orchestrator → orchestrator, agent:db → db-backend,
+            agent:mobile → mobile, agent:ui → ui-ux, agent:qa → security-qa. Act strictly as that agent, following
+            its file in .claude/agents/, CLAUDE.md and docs/WORKFLOW.md.
+
+            Read the issue with `gh issue view ${{ github.event.issue.number }}`.
+            If it is blocked by an open issue, comment that and stop.
+            Otherwise do the work.
+
+            Database work: a real local Supabase is available. Run `supabase start`, then
+            `supabase db reset` (applies all migrations) and `supabase test db` (pgTAP tests).
+            Generate types with `supabase gen types typescript --local > src/types/database.ts`
+            and run `npx prettier --write src/types/database.ts`. Never hand-write generated types.
+            Do not say "done" unless migrations apply and all DB tests pass.
+
+            Finish: commit, push, and OPEN THE PULL REQUEST YOURSELF with
+            `gh pr create --base main --title "..." --body "Closes #${{ github.event.issue.number }} ..."`
+            (do not just post a "Create PR" link). Then set the issue label to status:review.
+            The orchestrator creates issues instead of a PR.
+          claude_args: |
+            --max-turns 80
+            --allowedTools "Edit,Write,MultiEdit,Read,Glob,Grep,LS,Task,Bash(gh:*),Bash(git:*),Bash(npm:*),Bash(npx:*),Bash(graphify:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(node:*),Bash(supabase:*),Bash(docker:*)"
+
+      - name: Flag failed run
+        if: ${{ failure() && !contains(github.event.issue.labels.*.name, 'agent:orchestrator') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue edit ${{ github.event.issue.number }} --add-label status:blocked --remove-label status:in-progress
+          gh issue comment ${{ github.event.issue.number }} --body "Агент не завершив задачу: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}. Позначено status:blocked. Щоб перезапустити, прибери blocked і постав status:todo."
+
+  sync-status:
+    # Deterministic status bookkeeping: an open PR marks its issues status:review.
+    # Uses GITHUB_TOKEN, so these label changes never start agents.
+    if: >
+      github.event_name == 'pull_request' &&
+      (github.event.action == 'opened' || github.event.action == 'ready_for_review' || github.event.action == 'synchronize')
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          BODY: ${{ github.event.pull_request.body }}
+          TITLE: ${{ github.event.pull_request.title }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          nums=$( { printf '%s\n' "$BODY" | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+' | grep -oE '[0-9]+'; \
+                    printf '%s\n' "$BRANCH" | grep -oE 'issue-[0-9]+' | grep -oE '[0-9]+'; } | sort -u)
+          for n in $nums; do
+            gh issue edit "$n" --repo "${{ github.repository }}" --add-label status:review \
+              --remove-label status:in-progress --remove-label status:todo --remove-label status:blocked || true
+          done
+
+  review-pr:
+    if: >
+      github.event_name == 'pull_request' &&
+      github.event.action != 'closed' &&
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: agent-review-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build graph for main and for this PR
+        run: |
+          pip install graphifyy
+          git worktree add /tmp/main origin/main
+          (cd /tmp/main && graphify update . >/dev/null) || true
+          graphify update .
+          mkdir -p .review && cp /tmp/main/graphify-out/GRAPH_REPORT.md .review/GRAPH_REPORT.main.md || true
+      - name: Does this PR touch UI?
+        id: ui
+        run: |
+          if git diff --name-only origin/main...HEAD | grep -qE '^(src/(app|features|components|theme)/|docs/DESIGN.md)'; then
+            echo "touched=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "touched=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Code review
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: 'claude'
+          show_full_output: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR: #${{ github.event.pull_request.number }}
+
+            Read .claude/agents/reviewer.md and act strictly as that agent, in review mode.
+            Compare .review/GRAPH_REPORT.main.md (main) with graphify-out/GRAPH_REPORT.md (this PR). Check CI with `gh pr checks ${{ github.event.pull_request.number }}`.
+            Read the diff with `gh pr diff ${{ github.event.pull_request.number }}` and the linked issue.
+            Run shell commands one at a time (no pipes or `&&`).
+            Post exactly one verdict with
+            `gh pr review ${{ github.event.pull_request.number }} --comment --body "<verdict>"`
+            where the body starts with `APPROVE` or `CHANGES REQUESTED`, headed `## Code review`.
+            Do not edit, commit or push anything.
+          claude_args: |
+            --max-turns 40
+            --allowedTools "Read,Glob,Grep,LS,Bash(gh:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(graphify:*),Bash(diff:*),Bash(cat:*),Bash(ls:*)"
+      - name: Security review
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: 'claude'
+          show_full_output: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR: #${{ github.event.pull_request.number }}
+
+            Read .claude/agents/security-qa.md and act strictly as that agent, in review mode.
+            Focus on RLS, grants, secrets and anything a user could cheat.
+            Read the diff with `gh pr diff ${{ github.event.pull_request.number }}` and the linked issue.
+            Run shell commands one at a time (no pipes or `&&`).
+            Post exactly one verdict with
+            `gh pr review ${{ github.event.pull_request.number }} --comment --body "<verdict>"`
+            where the body starts with `APPROVE` or `CHANGES REQUESTED`, headed `## Security review`.
+            Do not edit, commit or push anything.
+          claude_args: |
+            --max-turns 40
+            --allowedTools "Read,Glob,Grep,LS,Bash(gh:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(graphify:*),Bash(diff:*),Bash(cat:*),Bash(ls:*)"
+
+      - name: UI/UX review
+        if: steps.ui.outputs.touched == 'true'
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: 'claude'
+          show_full_output: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR: #${{ github.event.pull_request.number }}
+
+            Read .claude/agents/ui-ux.md and act strictly as that agent, in review mode.
+            Read docs/DESIGN.md and src/theme/tokens.ts, then the diff with
+            `gh pr diff ${{ github.event.pull_request.number }}` and the linked issue.
+            Run shell commands one at a time (no pipes or `&&`).
+            Post exactly one verdict with
+            `gh pr review ${{ github.event.pull_request.number }} --comment --body "<verdict>"`
+            where the body starts with `APPROVE` or `CHANGES REQUESTED`, headed `## UI/UX review`.
+            Do not edit, commit or push anything.
+          claude_args: |
+            --max-turns 40
+            --allowedTools "Read,Glob,Grep,LS,Bash(gh:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(cat:*),Bash(ls:*)"
+
+  after-merge:
+    # When the founder merges a PR, the orchestrator unblocks the next tasks
+    # and writes a short progress note — this is what keeps the chain moving.
+    if: >
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: agent-after-merge
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: 'claude'
+          prompt: |
+            REPO: ${{ github.repository }}
+            MERGED PR: #${{ github.event.pull_request.number }} — ${{ github.event.pull_request.title }}
+
+            MAX ACTIVE TASKS: ${{ vars.AGENTS_MAX_PARALLEL || '1' }}
+
+            Act as the orchestrator (.claude/agents/orchestrator.md).
+            1. Find the issues this PR closed.
+            2. Unblock: every open issue labelled status:blocked whose "Blocked by" issues are now
+               all closed → remove status:blocked, add status:queued.
+            3. Release from the queue (this is what keeps usage limits in check):
+               ACTIVE = open issues with an agent:db / agent:mobile / agent:ui / agent:qa label
+               AND status:todo or status:in-progress. While ACTIVE < MAX ACTIVE TASKS, take the
+               queued issue (status:queued, no status:blocked) with the lowest milestone order,
+               then the lowest number, and release it: remove status:queued, then add status:todo
+               as a separate gh call (adding status:todo starts its agent).
+            4. If every task of a milestone issue is closed, comment on it and close it.
+            5. Post a short progress comment in Ukrainian on the parent milestone issue:
+               what was merged, what started now, what is next in the queue, what needs the founder.
+            Do not edit any files.
+          claude_args: |
+            --max-turns 30
+            --allowedTools "Read,Glob,Grep,LS,Bash(gh:*)"
+
+  mention:
+    if: >
+      (github.event_name == 'issue_comment' || github.event_name == 'pull_request_review_comment') &&
+      contains(github.event.comment.body, '@claude') &&
+      github.event.comment.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install graphifyy && graphify update .
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          claude_args: |
+            --allowedTools "Edit,Write,MultiEdit,Read,Glob,Grep,LS,Task,Bash(gh:*),Bash(git:*),Bash(npm:*),Bash(npx:*),Bash(graphify:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(node:*),Bash(supabase:*),Bash(docker:*)"

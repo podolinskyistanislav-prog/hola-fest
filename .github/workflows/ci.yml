@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint, typecheck, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint -- --max-warnings 0
+      - run: npm run typecheck
+      - run: npm test -- --ci
+
+  database:
+    name: Database (migrations + RLS tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Migration versions are unique
+        run: |
+          dups=$(ls supabase/migrations/*.sql | xargs -n1 basename | cut -d_ -f1 | sort | uniq -d)
+          if [ -n "$dups" ]; then echo "::error::Duplicate migration versions: $dups. Recreate yours with 'supabase migration new'."; exit 1; fi
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      - name: Start local Supabase
+        run: supabase start
+      - name: Apply all migrations from scratch
+        run: supabase db reset
+      - name: Run pgTAP tests (supabase/tests)
+        run: |
+          if ls supabase/tests/*.sql >/dev/null 2>&1; then supabase test db; else echo "No DB tests yet"; fi
+      - name: Generated types are up to date
+        run: |
+          if [ -f src/types/database.ts ]; then
+            supabase gen types typescript --local > /tmp/database.ts
+            npx --yes prettier@3 --stdin-filepath src/types/database.ts < /tmp/database.ts > /tmp/database.fmt.ts
+            diff -u src/types/database.ts /tmp/database.fmt.ts || (echo "::error::src/types/database.ts is stale. Run supabase gen types typescript --local." && exit 1)
+          fi
+      - if: always()
+        run: supabase stop --no-backup
+
+  secrets-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  graph:
+    name: Code graph (Graphify)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install graphifyy
+      - run: graphify update .
+      - name: God nodes (architecture hubs)
+        run: graphify god-nodes | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: graphify-report
+          path: |
+            graphify-out/GRAPH_REPORT.md
+            graphify-out/graph.json

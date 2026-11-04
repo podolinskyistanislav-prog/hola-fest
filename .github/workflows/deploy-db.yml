@@ -1,0 +1,57 @@
+name: Deploy database
+
+# Applies new migrations from supabase/migrations to the real Supabase project
+# after every merge to main. Run manually (Actions → Deploy database → Run workflow)
+# with "include_seed" to also load supabase/seed.sql (test clubs and events).
+#
+# Repo secrets: SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD, SUPABASE_PROJECT_ID.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/seed.sql'
+  workflow_dispatch:
+    inputs:
+      include_seed:
+        description: 'Also load supabase/seed.sql (test data)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy-db
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Push migrations to Supabase
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      - name: Check secrets are set
+        run: |
+          for v in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_ID; do
+            if [ -z "${!v}" ]; then echo "::error::Missing repo secret $v"; exit 1; fi
+          done
+      - name: Link project
+        run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+      - name: Show pending migrations
+        run: supabase migration list --remote
+      - name: Push migrations
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.include_seed }}" = "true" ]; then
+            supabase db push --remote --include-seed --yes
+          else
+            supabase db push --remote --yes
+          fi

@@ -1,0 +1,111 @@
+name: Screenshots
+
+# For every PR that changes screens, components or the theme: start a local Supabase
+# with seed data, take phone-size screenshots (light + dark) and post them in ONE
+# sticky PR comment. Images are stored on the `ci-screenshots` branch so they render
+# inline for people with access to this private repo. This job never blocks merging.
+
+on:
+  pull_request:
+    paths:
+      - 'src/app/**'
+      - 'src/features/**'
+      - 'src/components/**'
+      - 'src/theme/**'
+      - 'app.json'
+      - 'scripts/screenshots/**'
+      - '.github/workflows/screenshots.yml'
+
+concurrency:
+  group: screenshots-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  screenshots:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      - name: Start local Supabase with seed
+        run: |
+          supabase start
+          supabase db reset
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Take screenshots
+        run: npm run screenshots
+      - name: Publish images to the ci-screenshots branch
+        id: publish
+        env:
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -e
+          dir="pr-$PR/${SHA:0:7}"
+          git config user.name "screenshots-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin ci-screenshots >/dev/null; then
+            git fetch --depth 1 origin ci-screenshots
+            git worktree add /tmp/shots origin/ci-screenshots
+            git -C /tmp/shots checkout -B ci-screenshots
+          else
+            git worktree add --detach /tmp/shots
+            git -C /tmp/shots checkout --orphan ci-screenshots
+            git -C /tmp/shots rm -rq . || true
+          fi
+          mkdir -p "/tmp/shots/$dir"
+          cp dist/screenshots/*.png "/tmp/shots/$dir/"
+          git -C /tmp/shots add "$dir"
+          git -C /tmp/shots commit -qm "screenshots for PR #$PR @ ${SHA:0:7} [skip ci]"
+          git -C /tmp/shots push -q origin ci-screenshots
+          echo "dir=$dir" >> "$GITHUB_OUTPUT"
+      - name: Post or update the PR comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          DIR: ${{ steps.publish.outputs.dir }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -e
+          base="https://github.com/$REPO/raw/ci-screenshots/$DIR"
+          {
+            echo "<!-- hola-screenshots -->"
+            echo "### Скріншоти екранів (390×844)"
+            echo
+            echo "| Екран | Світла | Темна |"
+            echo "|---|---|---|"
+            for light in dist/screenshots/*.light.png; do
+              name=$(basename "$light" .light.png)
+              echo "| \`$name\` | <img src=\"$base/$name.light.png\" width=\"220\"> | <img src=\"$base/$name.dark.png\" width=\"220\"> |"
+            done
+            echo
+            echo "_Дані з локальної бази з тестовими даними (seed). Оновлюється з кожним пушем._"
+          } > /tmp/comment.md
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate --jq '.[] | select(.body | startswith("<!-- hola-screenshots -->")) | .id' | head -1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -F body=@/tmp/comment.md >/dev/null
+          else
+            gh pr comment "$PR" --body-file /tmp/comment.md
+          fi
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: dist/screenshots/
+          if-no-files-found: ignore
+      - if: always()
+        run: supabase stop --no-backup || true

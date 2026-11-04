@@ -1,0 +1,15 @@
+export const authStrings = {
+  errorTitle: 'Не вдалося увійти',
+  errorBody: 'Щось пішло не так. Спробуй ще раз.',
+  retry: 'Спробувати ще раз',
+  staffLoginTitle: 'Вхід для персоналу',
+  email: 'Електронна пошта',
+  password: 'Пароль',
+  signIn: 'Увійти',
+  signingIn: 'Входимо…',
+  signInFailed: 'Не вдалося увійти. Перевір дані й спробуй ще раз.',
+  signedInAs: 'Ти увійшов як персонал.',
+  signOut: 'Вийти',
+  signingOut: 'Виходимо…',
+  signOutFailed: 'Не вдалося вийти. Спробуй ще раз.',
+} as const;
