@@ -3,7 +3,8 @@ import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/ui';
-import { authStrings, StaffLoginForm } from '@/features/auth';
+import { StaffLoginForm } from '@/features/auth';
+import { t } from '@/lib/i18n';
 import { space, useTheme } from '@/theme';
 
 export default function StaffLogin() {
@@ -12,7 +13,7 @@ export default function StaffLogin() {
   return (
     <SafeAreaView style={[styles.screen, { backgroundColor: colors.background }]}>
       <AppText variant="title" accessibilityRole="header">
-        {authStrings.staffLoginTitle}
+        {t('auth.staffLoginTitle')}
       </AppText>
       <StaffLoginForm onSignedIn={() => router.back()} />
     </SafeAreaView>

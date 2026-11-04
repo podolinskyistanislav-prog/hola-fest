@@ -1,0 +1,15 @@
+export const uk = {
+  'auth.errorTitle': 'Не вдалося увійти',
+  'auth.errorBody': 'Щось пішло не так. Спробуй ще раз.',
+  'auth.retry': 'Спробувати ще раз',
+  'auth.staffLoginTitle': 'Вхід для персоналу',
+  'auth.email': 'Електронна пошта',
+  'auth.password': 'Пароль',
+  'auth.signIn': 'Увійти',
+  'auth.signingIn': 'Входимо…',
+  'auth.signInFailed': 'Не вдалося увійти. Перевір дані й спробуй ще раз.',
+  'auth.signedInAs': 'Ти увійшов як персонал.',
+  'auth.signOut': 'Вийти',
+  'auth.signingOut': 'Виходимо…',
+  'auth.signOutFailed': 'Не вдалося вийти. Спробуй ще раз.',
+} as const;

@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native';
 
-import { authStrings } from './strings';
+import { t } from '@/lib/i18n';
+
 import { useStaffLogin } from './useStaffLogin';
 
 jest.mock('@/services/auth', () => ({ signInStaff: jest.fn(), signOut: jest.fn() }));
@@ -27,7 +28,7 @@ describe('useStaffLogin', () => {
       ok = await result.current.signIn('a@b.ua', 'bad');
     });
     expect(ok).toBe(false);
-    expect(result.current.error).toBe(authStrings.signInFailed);
+    expect(result.current.error).toBe(t('auth.signInFailed'));
   });
 
   it('is loading while the request is pending and clears the old error on retry', async () => {
@@ -60,7 +61,7 @@ describe('useStaffLogin', () => {
     await act(async () => {
       expect(await result.current.signOut()).toBe(false);
     });
-    expect(result.current.error).toBe(authStrings.signOutFailed);
+    expect(result.current.error).toBe(t('auth.signOutFailed'));
     await act(async () => {
       expect(await result.current.signOut()).toBe(true);
     });

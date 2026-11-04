@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText, Button, TextField } from '@/components/ui';
+import { t } from '@/lib/i18n';
 import { space } from '@/theme';
 
-import { authStrings } from './strings';
 import { useSession } from './useSession';
 import { useStaffLogin } from './useStaffLogin';
 
@@ -19,14 +19,14 @@ export function StaffLoginForm({ onSignedIn }: StaffLoginFormProps) {
   if (session && !isAnonymous) {
     return (
       <View style={styles.form}>
-        <AppText tone="muted">{authStrings.signedInAs}</AppText>
+        <AppText tone="muted">{t('auth.signedInAs')}</AppText>
         {error ? (
           <AppText variant="caption" accessibilityRole="alert">
             {error}
           </AppText>
         ) : null}
         <Button
-          label={isLoading ? authStrings.signingOut : authStrings.signOut}
+          label={isLoading ? t('auth.signingOut') : t('auth.signOut')}
           onPress={signOut}
           disabled={isLoading}
           accessibilityState={{ disabled: isLoading, busy: isLoading }}
@@ -42,7 +42,7 @@ export function StaffLoginForm({ onSignedIn }: StaffLoginFormProps) {
   return (
     <View style={styles.form}>
       <TextField
-        label={authStrings.email}
+        label={t('auth.email')}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -51,7 +51,7 @@ export function StaffLoginForm({ onSignedIn }: StaffLoginFormProps) {
         editable={!isLoading}
       />
       <TextField
-        label={authStrings.password}
+        label={t('auth.password')}
         value={password}
         onChangeText={setPassword}
         secure
@@ -62,7 +62,7 @@ export function StaffLoginForm({ onSignedIn }: StaffLoginFormProps) {
         onSubmitEditing={submit}
       />
       <Button
-        label={isLoading ? authStrings.signingIn : authStrings.signIn}
+        label={isLoading ? t('auth.signingIn') : t('auth.signIn')}
         onPress={submit}
         disabled={isLoading || !email.trim() || !password}
         accessibilityState={{ disabled: isLoading, busy: isLoading }}

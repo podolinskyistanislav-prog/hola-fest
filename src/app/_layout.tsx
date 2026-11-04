@@ -1,14 +1,25 @@
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 
 import { SessionError, useSession } from '@/features/auth';
+import { createQueryClient } from '@/lib/queryClient';
 import { useAppFonts, useTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 export default function RootLayout() {
+  const [queryClient] = useState(createQueryClient);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SessionGate />
+    </QueryClientProvider>
+  );
+}
+
+function SessionGate() {
   const fontsLoaded = useAppFonts();
   const { colors, scheme } = useTheme();
   const { isLoading, isError, isRetrying, retry } = useSession();
