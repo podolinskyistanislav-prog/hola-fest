@@ -27,7 +27,8 @@
 1. **Секрет для агентів у GitHub:** на комп'ютері з Claude Code виконай `claude setup-token`, потім додай токен у _Settings → Secrets and variables → Actions_ як `CLAUDE_CODE_OAUTH_TOKEN`.
 2. **Мітки:** `agent:orchestrator`, `agent:db`, `agent:mobile`, `agent:qa`, `status:todo`, `status:in-progress`, `status:review`, `status:changes-requested`, `status:blocked`, `feature`, `bug`, `architecture`, `idea`.
 3. **Захист `main`:** _Settings → Branches_ → require PR + require status checks (`Lint, typecheck, test`, `Secret scan`).
-4. **Supabase:** скопіюй `.env.example` у `.env.local` і встав Project URL та anon/publishable key з _Project Settings → API_. Service role key сюди ніколи не потрапляє.
+4. **Деплой бази:** секрети `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID`. Після кожного мерджу міграції застосовуються автоматично (workflow «Deploy database»).
+5. **Supabase для застосунку:** скопіюй `.env.example` у `.env.local` і встав Project URL та anon/publishable key з _Project Settings → API_. Service role key сюди ніколи не потрапляє.
 
 ## Запуск на телефоні
 
