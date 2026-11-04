@@ -78,14 +78,14 @@ Indexes: `events(venue_id, starts_at)`, `events(starts_at) where status='publish
 | ------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------- |
 | venues        | everyone, where `is_published`                                                                    | superadmin                                |
 | events        | everyone, where `status='published'` and venue published; venue members see drafts of their venue | venue `admin` of that venue, superadmin   |
-| offers        | everyone, for published events                                                                    | venue `admin` of that venue, superadmin   |
+| offers        | everyone, active offers of published events; venue `admin` also sees inactive ones                | venue `admin` of that venue, superadmin   |
 | claims        | the owning user; `host`/`admin` of the claim's venue                                              | **nobody directly** — only Edge Functions |
 | venue_members | the member themself; venue admins of that venue                                                   | superadmin                                |
 | profiles      | the user themself                                                                                 | the user themself (not `is_superadmin`)   |
 
 Helper SQL functions (`security definer`, `stable`, fixed `search_path`): `is_superadmin()`, `is_venue_member(venue_id, role)`.
 
-Implemented: `profiles`, `venues`, `venue_members` (migration `rls_profiles_venues_members`) and `events`, `offers`, `claims` (migration `rls_events_offers_claims`). Notes: `is_superadmin` is protected by column-level grants (`authenticated` can only insert `id, display_name` and update `display_name`); superadmin also reads unpublished venues and all `venue_members`; `anon` reads only published venues. Venue admins also read offers of their own draft events; superadmin reads everything. `claims` has `select` only (column grant, `token_hash` excluded) for `authenticated` and no grants for `anon`; all claim writes use the service role. Extra helpers (`security definer`, `stable`, fixed `search_path`): `event_venue_id`, `offer_venue_id`, `is_event_public`.
+Implemented: `profiles`, `venues`, `venue_members` (migration `rls_profiles_venues_members`) and `events`, `offers`, `claims` (migration `rls_events_offers_claims`). Notes: `is_superadmin` is protected by column-level grants (`authenticated` can only insert `id, display_name` and update `display_name`); superadmin also reads unpublished venues and all `venue_members`; `anon` reads only published venues. Venue admins also read offers of their own draft events and their inactive offers (`is_active = false` is hidden from everyone else by `offers_select`, migration `offers_select_hide_inactive`); superadmin reads everything. `claims` has `select` only (column grant, `token_hash` excluded) for `authenticated` and no grants for `anon`; all claim writes use the service role. Extra helpers (`security definer`, `stable`, fixed `search_path`): `event_venue_id`, `offer_venue_id`, `is_event_public`.
 
 ## Trusted flows (Edge Functions)
 

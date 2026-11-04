@@ -1,6 +1,6 @@
 -- pgTAP: access rules for events, offers, claims.
 begin;
-select plan(30);
+select plan(34);
 
 -- Start from empty tables so the dev seed does not affect counts (rolled back at the end).
 delete from public.venues;
@@ -38,6 +38,8 @@ insert into public.offers (id, event_id, title) values
   ('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000c1', 'A offer'),
   ('00000000-0000-0000-0000-0000000000d2', '00000000-0000-0000-0000-0000000000c2', 'A draft offer'),
   ('00000000-0000-0000-0000-0000000000d3', '00000000-0000-0000-0000-0000000000c3', 'B offer');
+insert into public.offers (id, event_id, title, is_active) values
+  ('00000000-0000-0000-0000-0000000000d4', '00000000-0000-0000-0000-0000000000c1', 'A inactive offer', false);
 
 insert into public.claims (id, offer_id, user_id, token_hash) values
   ('00000000-0000-0000-0000-0000000000e1', '00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000a4', 'h1'),
@@ -47,6 +49,7 @@ insert into public.claims (id, offer_id, user_id, token_hash) values
 set local role anon;
 select is((select count(*)::int from public.events), 2, 'anon sees only published events of published venues');
 select is((select count(*)::int from public.offers), 2, 'anon sees only offers of public events');
+select is((select count(*)::int from public.offers where is_active = false), 0, 'anon sees no inactive offers');
 select throws_ok('select 1 from public.claims', '42501', null, 'anon cannot read claims');
 select throws_ok($$insert into public.events (venue_id, title, starts_at) values ('00000000-0000-0000-0000-0000000000b1', 'x', now())$$, '42501', null, 'anon cannot write events');
 select throws_ok($$insert into public.offers (event_id, title) values ('00000000-0000-0000-0000-0000000000c1', 'x')$$, '42501', null, 'anon cannot write offers');
@@ -57,6 +60,7 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a4', true);
 select is((select count(*)::int from public.events), 2, 'stranger sees no drafts');
 select is((select count(*)::int from public.offers), 2, 'stranger sees only public offers');
+select is((select count(*)::int from public.offers where is_active = false), 0, 'stranger sees no inactive offers');
 select is((select count(*)::int from public.claims), 1, 'stranger sees only own claim');
 select is((select count(*)::int from public.claims where id = '00000000-0000-0000-0000-0000000000e2'), 0, 'stranger cannot read another user claim');
 select throws_ok($$insert into public.claims (offer_id, user_id, token_hash) values ('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000a4', 'forged')$$, '42501', null, 'stranger cannot create a claim directly');
@@ -78,7 +82,8 @@ reset role;
 -- admin of A a2
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a2', true);
-select is((select count(*)::int from public.offers), 3, 'admin sees offers of own draft event plus public ones');
+select is((select count(*)::int from public.offers), 4, 'admin sees offers of own draft event, own inactive offer and public ones');
+select is((select count(*)::int from public.offers where is_active = false), 1, 'admin sees inactive offer of own venue');
 select is((select count(*)::int from public.claims), 1, 'admin sees only claims of own venue');
 select lives_ok($$insert into public.events (venue_id, title, starts_at) values ('00000000-0000-0000-0000-0000000000b1', 'new', now())$$, 'admin writes events in own venue');
 select lives_ok($$insert into public.offers (event_id, title) values ('00000000-0000-0000-0000-0000000000c2', 'new')$$, 'admin writes offers in own venue');
@@ -94,6 +99,7 @@ select is((select count(*)::int from public.offers where id = '00000000-0000-000
 -- superadmin a1
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', true);
+select is((select count(*)::int from public.offers where is_active = false), 1, 'superadmin sees inactive offers');
 select is((select count(*)::int from public.claims), 2, 'superadmin sees all claims');
 reset role;
 
