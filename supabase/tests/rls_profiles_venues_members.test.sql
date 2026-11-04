@@ -2,6 +2,9 @@
 begin;
 select plan(24);
 
+-- Start from empty tables so the dev seed does not affect counts (rolled back at the end).
+delete from public.venues;
+
 insert into auth.users (id, instance_id, aud, role)
 values
   ('00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated'),
