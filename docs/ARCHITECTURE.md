@@ -100,6 +100,10 @@ MVP (decision 0002):
 - **Guests:** Supabase anonymous sign-in, created silently on first launch. No sign-in screen.
   Anonymous users are real `auth.users` rows (`is_anonymous = true`), so RLS and `claims.user_id` work unchanged.
   A `profiles` row is created for them like for any user.
+- **Profile creation:** trigger `on_auth_user_created` (after insert on `auth.users`) calls `public.handle_new_user()`
+  (`security definer`, `search_path = ''`, execute revoked from `public`/`anon`/`authenticated`), which inserts
+  `profiles(id)` with `on conflict do nothing`. `is_superadmin` always stays `false`; only the founder sets it manually.
+  The migration also backfills profiles for existing users.
 - **Venue staff and superadmin:** email + password. The founder creates these accounts in the Supabase
   dashboard. They are never created by public sign-up from the app. Roles come from `venue_members` / `profiles.is_superadmin`.
 - Anti-abuse in MVP: Supabase's per-IP limit on anonymous sign-ins plus `per_user_limit` on offers.

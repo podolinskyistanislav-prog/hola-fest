@@ -41,7 +41,11 @@ insert into public.profiles (id, display_name, is_superadmin) values
   ('00000000-0000-0000-0000-0000000000a2', 'adminA', false),
   ('00000000-0000-0000-0000-0000000000a3', 'hostA', false),
   ('00000000-0000-0000-0000-0000000000a4', 'stranger', false),
-  ('00000000-0000-0000-0000-0000000000a5', 'adminB', false);
+  ('00000000-0000-0000-0000-0000000000a5', 'adminB', false)
+on conflict (id) do update set display_name = excluded.display_name, is_superadmin = excluded.is_superadmin;
+
+-- the sign-up trigger also created a6 and a7; a6 must start without a profile
+delete from public.profiles where id = '00000000-0000-0000-0000-0000000000a6';
 
 -- b1 = A, b2 = B (published); b3 hidden (unpublished, has an event); b4 published and empty (deletable)
 insert into public.venues (id, slug, name, is_published) values

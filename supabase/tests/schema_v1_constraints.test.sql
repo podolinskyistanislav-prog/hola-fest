@@ -7,7 +7,8 @@ insert into auth.users (id) values
   ('00000000-0000-0000-0000-0000000000a2');
 insert into public.profiles (id) values
   ('00000000-0000-0000-0000-0000000000a1'),
-  ('00000000-0000-0000-0000-0000000000a2');
+  ('00000000-0000-0000-0000-0000000000a2')
+on conflict (id) do nothing;
 insert into public.venues (id, slug, name) values
   ('00000000-0000-0000-0000-0000000000b1', 'v', 'v');
 insert into public.events (id, venue_id, title, starts_at) values
