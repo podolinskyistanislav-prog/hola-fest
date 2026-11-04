@@ -23,6 +23,12 @@ Black or white ground, Hola yellow and pink as the only accents, big soft corner
 - On covers use `kind="cover"` (dark glass with white text). Elsewhere use the default `floating`.
 - Native liquid glass runs on iOS 26+. Everywhere else a translucent themed fill is the fallback, and both must look acceptable.
 
+## Text fields
+
+- Use `TextField` (label above, raised-surface input, `radius.control`, height ≥ 44). Never a bare `TextInput`.
+- Error: `colors.danger` border and message under the field, announced to screen readers. Validation logic lives outside the component.
+- `secure` hides the text and adds a show/hide toggle with an accessibility label.
+
 ## Typography
 
 - Headings: **Unbounded** (`title`, `heading`, `cardTitle`). Everything else: **Inter**.

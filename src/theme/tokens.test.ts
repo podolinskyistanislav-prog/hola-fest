@@ -34,6 +34,10 @@ describe.each<ColorScheme>(['dark', 'light'])('%s palette', (scheme) => {
     ['accent on background', p.accent, p.background],
     ['text on surface', p.text, p.surface],
     ['muted text on surface', p.textMuted, p.surface],
+    ['text on raised surface', p.text, p.surfaceRaised],
+    ['muted text on raised surface', p.textMuted, p.surfaceRaised],
+    ['danger on background', p.danger, p.background],
+    ['danger on raised surface', p.danger, p.surfaceRaised],
   ])('%s meets WCAG AA', (_label, fg, bg) => {
     expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(AA_TEXT);
   });
