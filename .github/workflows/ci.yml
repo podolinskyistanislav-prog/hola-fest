@@ -32,6 +32,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Migration versions are unique
+        run: |
+          dups=$(ls supabase/migrations/*.sql | xargs -n1 basename | cut -d_ -f1 | sort | uniq -d)
+          if [ -n "$dups" ]; then echo "::error::Duplicate migration versions: $dups. Recreate yours with 'supabase migration new'."; exit 1; fi
       - uses: supabase/setup-cli@v1
         with:
           version: 3.0.0
