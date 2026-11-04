@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import { Button } from './Button';
 import { Chip } from './Chip';
+import { OfferRow } from './OfferRow';
 import { TextField } from './TextField';
 
 jest.mock('expo-glass-effect', () => {
@@ -69,5 +70,40 @@ describe('TextField', () => {
   it('is not editable when disabled', async () => {
     await render(<TextField label="Email" editable={false} />);
     expect(screen.getByLabelText('Email')).toHaveProp('editable', false);
+  });
+});
+
+describe('OfferRow', () => {
+  it('shows terms, remaining hint and the action while available', async () => {
+    await render(
+      <OfferRow
+        title="Знижка 20%"
+        terms="На весь бар"
+        status="available"
+        remaining={12}
+        limit={50}
+        action={<Button label="Взяти" />}
+      />,
+    );
+    expect(screen.getByText('Знижка 20%')).toBeTruthy();
+    expect(screen.getByText('Залишилось 12 із 50')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Взяти' })).toBeTruthy();
+  });
+
+  it.each([
+    ['claimed', 'Ви взяли цей офер'],
+    ['soldOut', 'Розібрали'],
+    ['expired', 'Офер завершився'],
+  ] as const)('shows %s state without the action', async (status, label) => {
+    await render(
+      <OfferRow
+        title="Знижка 20%"
+        terms="На весь бар"
+        status={status}
+        action={<Button label="Взяти" />}
+      />,
+    );
+    expect(screen.getByText(label)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Взяти' })).toBeNull();
   });
 });
