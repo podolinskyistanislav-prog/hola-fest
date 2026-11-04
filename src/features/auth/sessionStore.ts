@@ -52,7 +52,9 @@ export function createSessionStore(
       listeners.add(listener);
       if (listeners.size === 1) {
         unsubscribeAuth = deps.onAuthChange((_event, session) => {
-          if (state.status === 'ready') set({ status: 'ready', session });
+          if (state.status !== 'ready') return;
+          set({ status: 'ready', session });
+          if (!session) start();
         });
         if (state.status === 'loading') start();
       }
