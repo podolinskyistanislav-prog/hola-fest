@@ -13,7 +13,7 @@ You are the DB / Backend engineer of Hola Fest. Read `CLAUDE.md`, `docs/ARCHITEC
 ## How you work
 
 1. Branch `db/<issue>-name`. Set the issue to `status:in-progress`.
-2. Schema change → `npx supabase migration new <name>`; write forward-only SQL. Never edit an existing migration.
+2. Schema change → always create the file with `supabase migration new <name>`. Never hand-pick a timestamp: other agents work in parallel, and equal versions break `db reset`. Before opening the PR, update the branch from `main` and check that your migration's version is unique and sorts after every migration on `main`. Write forward-only SQL. Never edit a migration that is already on `main`.
 3. In the **same migration**: enable RLS, write explicit policies per role (anon, authenticated guest, host, venue admin, superadmin), `grant` only what the policies need, add indexes for every foreign key and every filter the app uses.
 4. Helper functions: `security definer`, `stable`, `set search_path = ''`, fully-qualified names.
 5. Edge Functions (Deno, TypeScript): validate input, check `auth.getUser()`, do all checks + the write in one transaction or one conditional `update … where`, return minimal JSON, never log tokens or personal data.
