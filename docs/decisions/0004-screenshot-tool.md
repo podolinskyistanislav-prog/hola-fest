@@ -26,3 +26,5 @@ The follow-up task will map a PR's changed files to screens: a change under `src
 
 - Web rendering approximates native (no real glass blur, fonts may differ slightly); good for layout, colour and contrast review, not pixel-perfect.
 - Adds dev dependencies `playwright` and `tsx`.
+
+The web export depends on `web.output: "single"` (see 0005). Switching back to server output breaks the screenshot run.
