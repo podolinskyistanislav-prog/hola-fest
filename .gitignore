@@ -57,3 +57,6 @@ graphify-out/cache/
 # graphify (graph.json + GRAPH_REPORT.md are committed; html is local-only)
 graphify-out/graph.html
 graphify-out/manifest.json
+
+# review scratch (CI only)
+.review/
