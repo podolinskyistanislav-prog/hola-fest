@@ -106,6 +106,17 @@ MVP (decision 0002):
   A reinstall gives a new guest. That risk is accepted for the MVP.
 - Later: Sign in with Apple + Google, linking the anonymous account (`linkIdentity`) so a guest keeps their claims.
 - Session stored with AsyncStorage on device.
+- **Public email sign-up is blocked** (decision 0003). `enable_signup=false` would also block guests, so the
+  `public.hook_before_user_created` hook only lets anonymous sign-ups through. Applied by migration + `config.toml` locally.
+
+**Founder action in the hosted Supabase dashboard** (`config.toml` is not pushed to hosted projects automatically):
+
+1. Authentication → Sign In / Providers: keep **Allow anonymous sign-ins** ON; keep **Allow new users to sign up** ON
+   (turning it off breaks guests).
+2. Authentication → Hooks → **Before User Created**: enable, type *Postgres function*, choose
+   `public.hook_before_user_created`. Do this after the migration is applied to the hosted database.
+3. Create staff accounts only via Authentication → Users → *Add user* (the hook does not apply to admin-created users).
+4. Optional: turn **Confirm email** ON and keep email rate limits low.
 
 ## Taxi deep links
 

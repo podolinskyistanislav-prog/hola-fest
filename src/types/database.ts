@@ -280,6 +280,7 @@ export type Database = {
     };
     Functions: {
       event_venue_id: { Args: { p_event_id: string }; Returns: string };
+      hook_before_user_created: { Args: { event: Json }; Returns: Json };
       is_event_public: { Args: { p_event_id: string }; Returns: boolean };
       is_superadmin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_venue_member: { Args: { p_role?: string; p_venue_id: string }; Returns: boolean };
