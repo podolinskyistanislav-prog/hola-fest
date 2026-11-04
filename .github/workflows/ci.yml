@@ -27,6 +27,31 @@ jobs:
       - run: npm run typecheck
       - run: npm test -- --ci
 
+  database:
+    name: Database (migrations + RLS tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start local Supabase
+        run: supabase start
+      - name: Apply all migrations from scratch
+        run: supabase db reset
+      - name: Run pgTAP tests (supabase/tests)
+        run: |
+          if ls supabase/tests/*.sql >/dev/null 2>&1; then supabase test db; else echo "No DB tests yet"; fi
+      - name: Generated types are up to date
+        run: |
+          if [ -f src/types/database.ts ]; then
+            supabase gen types typescript --local > /tmp/database.ts
+            npx --yes prettier@3 --stdin-filepath src/types/database.ts < /tmp/database.ts > /tmp/database.fmt.ts
+            diff -u src/types/database.ts /tmp/database.fmt.ts || (echo "::error::src/types/database.ts is stale. Run supabase gen types typescript --local." && exit 1)
+          fi
+      - if: always()
+        run: supabase stop --no-backup
+
   secrets-scan:
     name: Secret scan
     runs-on: ubuntu-latest
