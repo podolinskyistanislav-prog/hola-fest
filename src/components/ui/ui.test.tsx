@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import { Button } from './Button';
 import { Chip } from './Chip';
+import { DayStrip } from './DayStrip';
 import { OfferRow } from './OfferRow';
 import { TextField } from './TextField';
 
@@ -38,6 +39,32 @@ describe('Chip', () => {
       'accessibilityState',
       expect.objectContaining({ selected: true }),
     );
+  });
+});
+
+describe('DayStrip', () => {
+  const days = [
+    { id: '2026-06-13', weekday: 'Сб', date: '13' },
+    { id: '2026-06-14', weekday: 'Нд', date: '14', accessibilityLabel: 'Неділя, 14 червня' },
+  ];
+
+  it('marks only the selected day as selected', async () => {
+    await render(<DayStrip days={days} selectedId="2026-06-14" onSelect={jest.fn()} />);
+    expect(screen.getByRole('button', { name: 'Неділя, 14 червня' })).toHaveProp(
+      'accessibilityState',
+      expect.objectContaining({ selected: true }),
+    );
+    expect(screen.getByRole('button', { name: 'Сб 13' })).toHaveProp(
+      'accessibilityState',
+      expect.objectContaining({ selected: false }),
+    );
+  });
+
+  it('reports the id of the pressed day', async () => {
+    const onSelect = jest.fn();
+    await render(<DayStrip days={days} selectedId="2026-06-14" onSelect={onSelect} />);
+    await fireEvent.press(screen.getByRole('button', { name: 'Сб 13' }));
+    expect(onSelect).toHaveBeenCalledWith('2026-06-13');
   });
 });
 
