@@ -61,6 +61,11 @@ export const uk = {
   'event.offersEmpty': 'Для цієї події поки немає оферів.',
   'event.venueLink': 'Про заклад',
   'event.venueNoAddress': 'Адресу буде додано згодом',
-  'map.emptyTitle': 'Карта скоро буде',
-  'map.emptyBody': 'Тут з’являться місця фестивалю та шлях до них.',
+  'map.emptyTitle': 'Місць поки немає',
+  'map.emptyBody': 'Скоро тут з’являться заклади Bavovna і Panorama Bar.',
+  'map.errorTitle': 'Не вдалося завантажити карту',
+  'map.errorBody': 'Перевір з’єднання й спробуй ще раз.',
+  'map.retry': 'Спробувати ще раз',
+  'map.loading': 'Завантажуємо карту',
+  'venues.shelter': 'Є укриття',
 } as const;

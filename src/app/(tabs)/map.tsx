@@ -1,22 +1,14 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
-import { AppText } from '@/components/ui';
-import { t } from '@/lib/i18n';
-import { space, useTheme } from '@/theme';
+import { VenuesMapScreenContent } from '@/features/venues';
+import { useTheme } from '@/theme';
 
-/** Map tab: an empty state until the map milestone. */
+/** Map tab. Opening a venue is a stub until the venue page exists (#67). */
 export default function MapScreen() {
   const { colors } = useTheme();
   return (
-    <View style={[styles.screen, { backgroundColor: colors.background }]}>
-      <AppText variant="heading" accessibilityRole="header">
-        {t('map.emptyTitle')}
-      </AppText>
-      <AppText tone="muted">{t('map.emptyBody')}</AppText>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <VenuesMapScreenContent onOpenVenue={() => undefined} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1, padding: space.screen, gap: space.md, justifyContent: 'center' },
-});

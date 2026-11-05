@@ -22,6 +22,14 @@ jest.mock('@/services/events', () => ({
   getEventsForRange: jest.fn(),
   getEventById: jest.fn(),
 }));
+jest.mock('react-native-maps', () => ({
+  __esModule: true,
+  default: () => null,
+  Marker: () => null,
+}));
+jest.mock('@/services/venues', () => ({
+  getPublishedVenues: jest.fn().mockResolvedValue([]),
+}));
 jest.mock('expo-router/js-tabs', () => {
   const Tabs = ({ tabBar }: { tabBar: (props: unknown) => React.ReactNode }): React.ReactNode =>
     tabBar({
@@ -56,9 +64,13 @@ describe('tab navigation shell', () => {
     expect(mockNavigate).toHaveBeenCalledWith('index-key');
   });
 
-  it('shows an empty state on the map tab', async () => {
-    await render(<MapScreen />);
-    expect(screen.getByText(t('map.emptyTitle'))).toBeTruthy();
+  it('shows an empty state on the map tab when there are no venues', async () => {
+    await render(
+      <QueryClientProvider client={new QueryClient()}>
+        <MapScreen />
+      </QueryClientProvider>,
+    );
+    expect(await screen.findByText(t('map.emptyTitle'))).toBeTruthy();
   });
 
   it('keeps the staff-login route reachable by long-pressing the events title', async () => {
