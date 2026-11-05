@@ -126,6 +126,8 @@ MVP (decision 0002):
 
 Built in `src/lib/taxi.ts` from venue `lat/lng/address`. Each provider link is covered by a unit test and verified on a real device before release. Falls back to the store page if the app is not installed.
 
+> **Placeholder coordinates:** in `supabase/seed.sql` the `lat/lng` of Bavovna and Panorama Bar are fake (Kyiv city centre). The founder replaces them with real pins; taxi links are not valid for these venues until then.
+
 ## Performance rules
 
 - Lists are virtualized (FlashList / FlatList), never `.map()` over unbounded data.
