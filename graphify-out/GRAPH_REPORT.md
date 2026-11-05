@@ -1,17 +1,17 @@
 # Graph Report - hola-fest  (2026-11-05)
 
 ## Corpus Check
-- 118 files · ~31,891 words
+- 121 files · ~32,723 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
 ## Summary
-- 771 nodes · 1389 edges · 51 communities (39 shown, 12 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 22 edges (avg confidence: 0.9)
+- 794 nodes · 1427 edges · 49 communities (39 shown, 10 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 24 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ed3e3c39`
+- Built from commit: `3baa8a30`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,7 +21,7 @@
 - expo
 - Hola Fest — Architecture
 - compilerOptions
-- supabase.ts
+- services/venues.ts
 - scripts
 - Hola Fest — Product
 - with
@@ -48,12 +48,11 @@
 - expo-linking@~58.0.16
 - fonts.ts
 - ui-ux.md
-- expo-symbols@~58.0.4
+- expo-router
 - expo-system-ui@~58.0.7
 - @expo/ui@~58.0.27
-- expo-device@~58.0.5
+- react-native-gesture-handler@~3.3.0
 - expo-linking@~58.0.16
-- react-dom@19.3.0
 - steps
 - react-native-reanimated@4.7.1
 - jobs
@@ -63,7 +62,6 @@
 - react-native-web@~0.21.4
 - fonts.ts
 - permissions
-- react-dom@19.3.0
 - review-pr
 - 0002-anonymous-auth-for-mvp.md
 - react-native-worklets@0.13.0
@@ -95,11 +93,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (51 total, 12 thin omitted)
+## Communities (49 total, 10 thin omitted)
 
 ### Community 0 - "package.json"
-Cohesion: 0.13
-Nodes (14): expo@~58.0.23, expo-image@~58.0.18, expo-linking@~58.0.16, react-native-reanimated@4.7.1, react-native-screens@~4.30.1, main, name, private (+6 more)
+Cohesion: 0.11
+Nodes (18): expo@~58.0.23, expo-constants@~58.0.15, expo-linking@~58.0.16, expo-status-bar@~58.0.4, @expo/vector-icons@^15.0.2, react-native-reanimated@4.7.1, react-native-screens@~4.30.1, main (+10 more)
 
 ### Community 1 - "devDependencies"
 Cohesion: 0.10
@@ -117,9 +115,9 @@ Nodes (12): { defineConfig }, expoConfig, NO_FEATURES_IN_UI, NO_SERVICES_IN_UI, 
 Cohesion: 0.17
 Nodes (11): expo/tsconfig.base, compilerOptions, noFallthroughCasesInSwitch, noUncheckedIndexedAccess, paths, strict, types, exclude (+3 more)
 
-### Community 5 - "supabase.ts"
-Cohesion: 0.19
-Nodes (14): @supabase/supabase-js, env, AuthError, AuthErrorCode, ClientError, ensureGuestSession(), getSession(), onAuthChange() (+6 more)
+### Community 5 - "services/venues.ts"
+Cohesion: 0.08
+Nodes (32): @supabase/supabase-js, env, AuthError, AuthErrorCode, ClientError, ensureGuestSession(), getSession(), onAuthChange() (+24 more)
 
 ### Community 6 - "scripts"
 Cohesion: 0.18
@@ -147,7 +145,7 @@ Nodes (16): jobs, refresh, name, on, push, permissions, contents, branches (+8 m
 
 ### Community 12 - "Button.tsx"
 Cohesion: 0.08
-Nodes (65): Tab bar, react-native, react-native-safe-area-context, EventScreen(), StaffLogin(), styles, MapScreen(), styles (+57 more)
+Nodes (65): Tab bar, react, react-native, EventScreen(), AppText(), AppTextProps, Tone, Button() (+57 more)
 
 ### Community 13 - ".prettierrc.json"
 Cohesion: 0.40
@@ -162,8 +160,8 @@ Cohesion: 0.50
 Nodes (3): How you work, Never, You may edit only
 
 ### Community 16 - "dependencies"
-Cohesion: 0.09
-Nodes (23): dependencies, expo-constants@~58.0.15, expo-device@~58.0.5, expo-font@~58.0.11, expo-status-bar@~58.0.4, expo-system-ui@~58.0.7, expo-web-browser@~58.0.7, react@19.3.0 (+15 more)
+Cohesion: 0.08
+Nodes (26): dependencies, expo-device@~58.0.5, expo-font@~58.0.11, expo-glass-effect@~58.0.5, expo-image@~58.0.18, expo-symbols@~58.0.4, expo-system-ui@~58.0.7, expo-web-browser@~58.0.7 (+18 more)
 
 ### Community 18 - "reviewer.md"
 Cohesion: 0.33
@@ -202,12 +200,12 @@ Cohesion: 0.40
 Nodes (5): BODY, BRANCH, GH_TOKEN, TITLE, env
 
 ### Community 29 - "expo-linking@~58.0.16"
-Cohesion: 0.06
-Nodes (40): expo-router@~58.0.30, @tanstack/react-query@^5.105.3, expo-router, react, @tanstack/react-query, @testing-library/react-native, RootLayout(), SessionGate() (+32 more)
+Cohesion: 0.07
+Nodes (37): react-native-safe-area-context, @testing-library/react-native, RootLayout(), SessionGate(), StaffLogin(), styles, FloatingTabBar(), ITEMS (+29 more)
 
 ### Community 30 - "fonts.ts"
-Cohesion: 0.07
-Nodes (52): tabBarInset(), EventDetailsProps, dayFromId(), eventCardProps(), formatEventTime(), formatPriceFrom(), pad(), event (+44 more)
+Cohesion: 0.06
+Nodes (52): @tanstack/react-query, EventsScreen(), EventDetailsProps, dayFromId(), eventCardProps(), formatEventTime(), formatPriceFrom(), pad() (+44 more)
 
 ### Community 31 - "ui-ux.md"
 Cohesion: 0.50
@@ -255,8 +253,8 @@ Nodes (8): cancel-in-progress, group, review-pr, concurrency, if, runs-on, timeo
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `expo/tsconfig.base`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 344 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 355 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -266,7 +264,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `package.json` be split into smaller, more focused modules?**
-  _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected._
 - **Why does `main()` connect `db-backend.md` to `Hola Fest — Product`?**
   _High betweenness centrality (0.068) - this node is a cross-community bridge._
 - **Should `devDependencies` be split into smaller, more focused modules?**
