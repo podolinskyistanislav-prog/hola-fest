@@ -60,6 +60,10 @@ Black or white ground, Hola yellow and pink as the only accents, big soft corner
 
 `EventCard` is a pressable card (`radius.card`, surface fill, no glass) with a cover block, title, venue, time and price. The offer badge is `GlassSurface kind="cover"` over the cover. Time, price and badge arrive already formatted. The whole card is one button whose label summarizes its content.
 
+## Map pin and venue preview card
+
+`MapPin` is a Hola-colored disc (yellow or pink) with a black star. The selected pin is larger with a ring in the text color; the touch target is always ≥ 44. `VenuePreviewCard` is the glass card (`GlassSurface`, floating over the map) for the selected venue: name, a yellow shelter badge with black text, and the event hint for tonight. Both are pure; labels arrive already translated and formatted. The map library integration lives in a screen, not here.
+
 ## Event covers (until real photos exist)
 
 A yellow or pink block with the 4-point Hola star in the other accent color, as in the mockups.
