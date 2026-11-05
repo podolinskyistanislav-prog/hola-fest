@@ -1,7 +1,7 @@
 # Graph Report - hola-fest  (2026-11-05)
 
 ## Corpus Check
-- 121 files · ~32,723 words
+- 121 files · ~32,784 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3baa8a30`
+- Built from commit: `24e191c3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,7 +21,7 @@
 - expo
 - Hola Fest — Architecture
 - compilerOptions
-- services/venues.ts
+- supabase.ts
 - scripts
 - Hola Fest — Product
 - with
@@ -48,10 +48,10 @@
 - expo-linking@~58.0.16
 - fonts.ts
 - ui-ux.md
-- expo-router
+- expo-symbols@~58.0.4
 - expo-system-ui@~58.0.7
 - @expo/ui@~58.0.27
-- react-native-gesture-handler@~3.3.0
+- expo-device@~58.0.5
 - expo-linking@~58.0.16
 - steps
 - react-native-reanimated@4.7.1
@@ -115,7 +115,7 @@ Nodes (12): { defineConfig }, expoConfig, NO_FEATURES_IN_UI, NO_SERVICES_IN_UI, 
 Cohesion: 0.17
 Nodes (11): expo/tsconfig.base, compilerOptions, noFallthroughCasesInSwitch, noUncheckedIndexedAccess, paths, strict, types, exclude (+3 more)
 
-### Community 5 - "services/venues.ts"
+### Community 5 - "supabase.ts"
 Cohesion: 0.08
 Nodes (32): @supabase/supabase-js, env, AuthError, AuthErrorCode, ClientError, ensureGuestSession(), getSession(), onAuthChange() (+24 more)
 
