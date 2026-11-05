@@ -39,8 +39,15 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: 3.0.0
-      - name: Start local Supabase
-        run: supabase start
+      - name: Start local Supabase (only what tests need, with retries)
+        run: |
+          for attempt in 1 2 3; do
+            if supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor; then break; fi
+            echo "supabase start failed (attempt $attempt), retrying in 20s"
+            supabase stop --no-backup || true
+            sleep 20
+            [ "$attempt" = 3 ] && exit 1
+          done
       - name: Apply all migrations from scratch
         run: supabase db reset
       - name: Run pgTAP tests (supabase/tests)

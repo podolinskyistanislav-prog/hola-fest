@@ -42,7 +42,13 @@ jobs:
           version: 3.0.0
       - name: Start local Supabase with seed
         run: |
-          supabase start
+          for attempt in 1 2 3; do
+            if supabase start -x realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor; then break; fi
+            echo "supabase start failed (attempt $attempt), retrying in 20s"
+            supabase stop --no-backup || true
+            sleep 20
+            [ "$attempt" = 3 ] && exit 1
+          done
           supabase db reset
       - name: Install Chromium for Playwright
         run: npx playwright install --with-deps chromium
