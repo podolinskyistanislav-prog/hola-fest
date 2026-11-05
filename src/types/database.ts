@@ -279,6 +279,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      claim_offer: {
+        Args: { p_offer_id: string; p_token_hash: string; p_user_id: string };
+        Returns: string;
+      };
       event_venue_id: { Args: { p_event_id: string }; Returns: string };
       hook_before_user_created: { Args: { event: Json }; Returns: Json };
       is_event_public: { Args: { p_event_id: string }; Returns: boolean };
