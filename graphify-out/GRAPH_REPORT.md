@@ -1,7 +1,7 @@
 # Graph Report - hola-fest  (2026-11-05)
 
 ## Corpus Check
-- 117 files · ~31,510 words
+- 117 files · ~31,593 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c04c9611`
+- Built from commit: `ab3e6299`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,7 +21,7 @@
 - expo
 - Hola Fest — Architecture
 - compilerOptions
-- tokens.ts
+- supabase.ts
 - scripts
 - Hola Fest — Product
 - with
@@ -48,17 +48,17 @@
 - expo-linking@~58.0.16
 - fonts.ts
 - ui-ux.md
-- expo-font@~58.0.11
-- expo-web-browser@~58.0.7
+- expo-symbols@~58.0.4
+- expo-system-ui@~58.0.7
 - @expo/ui@~58.0.27
-- @react-native-async-storage/async-storage
+- expo-device@~58.0.5
 - expo-linking@~58.0.16
-- react-native-screens@~4.30.1
+- react-dom@19.3.0
 - steps
 - react-native-reanimated@4.7.1
 - jobs
 - react-native-worklets@0.13.0
-- react-native-web@~0.21.4
+- expo-web-browser@~58.0.7
 - @react-native-async-storage/async-storage
 - react-native-web@~0.21.4
 - fonts.ts
@@ -116,7 +116,7 @@ Nodes (12): { defineConfig }, expoConfig, NO_FEATURES_IN_UI, NO_SERVICES_IN_UI, 
 Cohesion: 0.17
 Nodes (11): expo/tsconfig.base, compilerOptions, noFallthroughCasesInSwitch, noUncheckedIndexedAccess, paths, strict, types, exclude (+3 more)
 
-### Community 5 - "tokens.ts"
+### Community 5 - "supabase.ts"
 Cohesion: 0.28
 Nodes (9): contrastRatio(), parseHex(), relativeLuminance(), ColorScheme, fontFamily, glassOnCover, Palette, palettes (+1 more)
 
