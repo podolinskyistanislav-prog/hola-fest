@@ -1,17 +1,17 @@
-# Graph Report - hola-fest  (2026-11-04)
+# Graph Report - hola-fest  (2026-11-05)
 
 ## Corpus Check
-- 108 files · ~28,931 words
+- 113 files · ~30,334 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
 ## Summary
-- 725 nodes · 1182 edges · 51 communities (38 shown, 13 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 20 edges (avg confidence: 0.91)
+- 749 nodes · 1291 edges · 50 communities (37 shown, 13 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e81cfa75`
+- Built from commit: `9e9cf6b9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,7 +21,6 @@
 - expo
 - Hola Fest — Architecture
 - compilerOptions
-- supabase.ts
 - scripts
 - Hola Fest — Product
 - with
@@ -45,20 +44,20 @@
 - expo-constants@~58.0.15
 - expo-glass-effect@~58.0.5
 - expo-image@~58.0.18
-- StaffLoginForm.tsx
+- expo-linking@~58.0.16
 - fonts.ts
 - ui-ux.md
-- expo-glass-effect
-- expo-router
+- expo-symbols@~58.0.4
+- expo-system-ui@~58.0.7
 - @expo/ui@~58.0.27
 - expo-device@~58.0.5
-- expo-splash-screen
+- expo-linking@~58.0.16
 - react-dom@19.3.0
 - steps
 - react-native-reanimated@4.7.1
 - jobs
 - react-native-worklets@0.13.0
-- expo-status-bar
+- expo-web-browser@~58.0.7
 - @react-native-async-storage/async-storage
 - react-native-web@~0.21.4
 - fonts.ts
@@ -69,16 +68,16 @@
 - react-native-gesture-handler@~3.3.0
 
 ## God Nodes (most connected - your core abstractions)
-1. `useTheme()` - 31 edges
-2. `AppText()` - 28 edges
-3. `t()` - 20 edges
-4. `react-native` - 18 edges
+1. `useTheme()` - 33 edges
+2. `AppText()` - 30 edges
+3. `t()` - 27 edges
+4. `react-native` - 20 edges
 5. `with` - 14 edges
-6. `expo` - 13 edges
-7. `Hola Fest — design rules` - 12 edges
-8. `with` - 11 edges
-9. `scripts` - 11 edges
-10. `GlassSurface()` - 11 edges
+6. `EventsScreenContent()` - 14 edges
+7. `expo` - 13 edges
+8. `react` - 12 edges
+9. `Button()` - 12 edges
+10. `space` - 12 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Одноразове налаштування` --references--> `main()`  [INFERRED]
@@ -95,7 +94,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (51 total, 13 thin omitted)
+## Communities (50 total, 13 thin omitted)
 
 ### Community 0 - "package.json"
 Cohesion: 0.13
@@ -116,10 +115,6 @@ Nodes (12): { defineConfig }, expoConfig, NO_FEATURES_IN_UI, NO_SERVICES_IN_UI, 
 ### Community 4 - "compilerOptions"
 Cohesion: 0.17
 Nodes (11): expo/tsconfig.base, compilerOptions, noFallthroughCasesInSwitch, noUncheckedIndexedAccess, paths, strict, types, exclude (+3 more)
-
-### Community 5 - "supabase.ts"
-Cohesion: 0.19
-Nodes (14): @supabase/supabase-js, env, AuthError, AuthErrorCode, ClientError, ensureGuestSession(), getSession(), onAuthChange() (+6 more)
 
 ### Community 6 - "scripts"
 Cohesion: 0.18
@@ -147,7 +142,7 @@ Nodes (16): jobs, refresh, name, on, push, permissions, contents, branches (+8 m
 
 ### Community 12 - "Button.tsx"
 Cohesion: 0.07
-Nodes (73): Tab bar, react-native, react-native-safe-area-context, StaffLogin(), styles, EventsScreen(), styles, FloatingTabBar() (+65 more)
+Nodes (67): Tab bar, react-native, StaffLogin(), styles, EventsScreen(), FloatingTabBar(), ITEMS, styles (+59 more)
 
 ### Community 13 - ".prettierrc.json"
 Cohesion: 0.40
@@ -201,13 +196,13 @@ Nodes (12): with, allowed_bots, cache, claude_args, claude_code_oauth_token, fet
 Cohesion: 0.40
 Nodes (5): BODY, BRANCH, GH_TOKEN, TITLE, env
 
-### Community 29 - "StaffLoginForm.tsx"
-Cohesion: 0.09
-Nodes (26): @testing-library/react-native@^14.1.0, react, @tanstack/react-query, @testing-library/react-native, RootLayout(), SessionGate(), createSessionStore(), Deps (+18 more)
+### Community 29 - "expo-linking@~58.0.16"
+Cohesion: 0.07
+Nodes (38): @testing-library/react-native@^14.1.0, react, @supabase/supabase-js, @tanstack/react-query, @testing-library/react-native, RootLayout(), SessionGate(), createSessionStore() (+30 more)
 
 ### Community 30 - "fonts.ts"
-Cohesion: 0.10
-Nodes (31): endOfWeek(), eventKeys, EVENTS_STALE_TIME_MS, localDayKey(), startOfWeek(), useEvent(), useEventsForDay(), useEventsForWeek() (+23 more)
+Cohesion: 0.06
+Nodes (57): react-native-safe-area-context, SessionError(), SessionErrorProps, styles, dayFromId(), eventCardProps(), formatEventTime(), formatPriceFrom() (+49 more)
 
 ### Community 31 - "ui-ux.md"
 Cohesion: 0.50
@@ -251,7 +246,7 @@ Nodes (8): cancel-in-progress, group, review-pr, concurrency, if, runs-on, timeo
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `expo/tsconfig.base`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 334 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 340 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
