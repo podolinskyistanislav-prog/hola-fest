@@ -1,17 +1,17 @@
 # Graph Report - hola-fest  (2026-11-05)
 
 ## Corpus Check
-- 113 files · ~30,358 words
+- 117 files · ~31,510 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
 ## Summary
-- 749 nodes · 1291 edges · 50 communities (37 shown, 13 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.91)
+- 766 nodes · 1378 edges · 50 communities (38 shown, 12 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 22 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3ede3a8c`
+- Built from commit: `c04c9611`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,6 +21,7 @@
 - expo
 - Hola Fest — Architecture
 - compilerOptions
+- tokens.ts
 - scripts
 - Hola Fest — Product
 - with
@@ -47,37 +48,36 @@
 - expo-linking@~58.0.16
 - fonts.ts
 - ui-ux.md
-- expo-symbols@~58.0.4
-- expo-system-ui@~58.0.7
+- expo-font@~58.0.11
+- expo-web-browser@~58.0.7
 - @expo/ui@~58.0.27
-- expo-device@~58.0.5
+- @react-native-async-storage/async-storage
 - expo-linking@~58.0.16
-- react-dom@19.3.0
+- react-native-screens@~4.30.1
 - steps
 - react-native-reanimated@4.7.1
 - jobs
 - react-native-worklets@0.13.0
-- expo-web-browser@~58.0.7
+- react-native-web@~0.21.4
 - @react-native-async-storage/async-storage
 - react-native-web@~0.21.4
 - fonts.ts
 - permissions
-- @expo/ui@~58.0.27
 - review-pr
 - 0002-anonymous-auth-for-mvp.md
 - react-native-gesture-handler@~3.3.0
 
 ## God Nodes (most connected - your core abstractions)
-1. `useTheme()` - 33 edges
-2. `AppText()` - 30 edges
-3. `t()` - 27 edges
-4. `react-native` - 20 edges
-5. `with` - 14 edges
-6. `EventsScreenContent()` - 14 edges
-7. `expo` - 13 edges
-8. `react` - 12 edges
-9. `Button()` - 12 edges
-10. `space` - 12 edges
+1. `useTheme()` - 37 edges
+2. `AppText()` - 35 edges
+3. `t()` - 32 edges
+4. `react-native` - 23 edges
+5. `Button()` - 16 edges
+6. `with` - 14 edges
+7. `EventsScreenContent()` - 14 edges
+8. `space` - 14 edges
+9. `expo` - 13 edges
+10. `react` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Одноразове налаштування` --references--> `main()`  [INFERRED]
@@ -94,11 +94,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (50 total, 13 thin omitted)
+## Communities (50 total, 12 thin omitted)
 
 ### Community 0 - "package.json"
 Cohesion: 0.13
-Nodes (14): expo@~58.0.23, expo-image@~58.0.18, expo-linking@~58.0.16, @react-native-async-storage/async-storage@2.2.0, react-native-worklets@0.13.0, main, name, private (+6 more)
+Nodes (14): expo@~58.0.23, expo-constants@~58.0.15, expo-device@~58.0.5, @expo/ui@~58.0.27, react-dom@19.3.0, main, name, private (+6 more)
 
 ### Community 1 - "devDependencies"
 Cohesion: 0.11
@@ -115,6 +115,10 @@ Nodes (12): { defineConfig }, expoConfig, NO_FEATURES_IN_UI, NO_SERVICES_IN_UI, 
 ### Community 4 - "compilerOptions"
 Cohesion: 0.17
 Nodes (11): expo/tsconfig.base, compilerOptions, noFallthroughCasesInSwitch, noUncheckedIndexedAccess, paths, strict, types, exclude (+3 more)
+
+### Community 5 - "tokens.ts"
+Cohesion: 0.28
+Nodes (9): contrastRatio(), parseHex(), relativeLuminance(), ColorScheme, fontFamily, glassOnCover, Palette, palettes (+1 more)
 
 ### Community 6 - "scripts"
 Cohesion: 0.18
@@ -142,7 +146,7 @@ Nodes (16): jobs, refresh, name, on, push, permissions, contents, branches (+8 m
 
 ### Community 12 - "Button.tsx"
 Cohesion: 0.07
-Nodes (67): Tab bar, react-native, StaffLogin(), styles, EventsScreen(), FloatingTabBar(), ITEMS, styles (+59 more)
+Nodes (69): Tab bar, expo-router, react-native, react-native-safe-area-context, EventScreen(), StaffLogin(), styles, EventsScreen() (+61 more)
 
 ### Community 13 - ".prettierrc.json"
 Cohesion: 0.40
@@ -158,7 +162,7 @@ Nodes (3): How you work, Never, You may edit only
 
 ### Community 16 - "dependencies"
 Cohesion: 0.09
-Nodes (22): dependencies, expo-constants@~58.0.15, expo-device@~58.0.5, expo-font@~58.0.11, expo-system-ui@~58.0.7, expo-web-browser@~58.0.7, react@19.3.0, react-native@0.88.1 (+14 more)
+Nodes (23): dependencies, expo-glass-effect@~58.0.5, expo-image@~58.0.18, expo-linking@~58.0.16, expo-router@~58.0.30, expo-status-bar@~58.0.4, expo-symbols@~58.0.4, expo-system-ui@~58.0.7 (+15 more)
 
 ### Community 18 - "reviewer.md"
 Cohesion: 0.33
@@ -198,11 +202,11 @@ Nodes (5): BODY, BRANCH, GH_TOKEN, TITLE, env
 
 ### Community 29 - "expo-linking@~58.0.16"
 Cohesion: 0.07
-Nodes (38): @testing-library/react-native@^14.1.0, react, @supabase/supabase-js, @tanstack/react-query, @testing-library/react-native, RootLayout(), SessionGate(), createSessionStore() (+30 more)
+Nodes (37): react, @supabase/supabase-js, RootLayout(), SessionGate(), SessionError(), createSessionStore(), Deps, Session (+29 more)
 
 ### Community 30 - "fonts.ts"
 Cohesion: 0.06
-Nodes (57): react-native-safe-area-context, SessionError(), SessionErrorProps, styles, dayFromId(), eventCardProps(), formatEventTime(), formatPriceFrom() (+49 more)
+Nodes (61): @testing-library/react-native@^14.1.0, @tanstack/react-query, @testing-library/react-native, EventDetailsProps, dayFromId(), eventCardProps(), formatEventTime(), formatPriceFrom() (+53 more)
 
 ### Community 31 - "ui-ux.md"
 Cohesion: 0.50
@@ -246,8 +250,8 @@ Nodes (8): cancel-in-progress, group, review-pr, concurrency, if, runs-on, timeo
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `expo/tsconfig.base`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 340 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 346 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
