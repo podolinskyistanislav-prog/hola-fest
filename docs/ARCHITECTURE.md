@@ -89,7 +89,7 @@ Implemented: `profiles`, `venues`, `venue_members` (migration `rls_profiles_venu
 
 ## Trusted flows (Edge Functions)
 
-- `claim-offer`: checks auth, offer active, `max_claims`, `per_user_limit`, rate limit → creates a claim with a random 32-byte token, stores only `sha256(token)`, returns the token once. The QR encodes the token.
+- `claim-offer` (implemented: Edge Function `supabase/functions/claim-offer` + SQL function `public.claim_offer(offer_id, user_id, token_hash)`, `security definer`, execute granted to `service_role` only; locks the offer row so limits are race-safe; rate limit 10 claims per user per minute; void claims do not count toward limits): checks auth, offer active, `max_claims`, `per_user_limit`, rate limit → creates a claim with a random 32-byte token, stores only `sha256(token)`, returns the token once. The QR encodes the token.
 - `redeem-claim`: called by a host; hashes the scanned token, checks the host belongs to the claim's venue, status `issued`, offer still valid → marks `redeemed` atomically (`update … where status='issued'`), returns result for the ✅/❌ screen.
 - Edge Functions use the service role key from Supabase secrets. That key never appears in the app, the repo or logs.
 
@@ -117,9 +117,9 @@ MVP (decision 0002):
 
 1. Authentication → Sign In / Providers: keep **Allow anonymous sign-ins** ON; keep **Allow new users to sign up** ON
    (turning it off breaks guests).
-2. Authentication → Hooks → **Before User Created**: enable, type *Postgres function*, choose
+2. Authentication → Hooks → **Before User Created**: enable, type _Postgres function_, choose
    `public.hook_before_user_created`. Do this after the migration is applied to the hosted database.
-3. Create staff accounts only via Authentication → Users → *Add user* (the hook does not apply to admin-created users).
+3. Create staff accounts only via Authentication → Users → _Add user_ (the hook does not apply to admin-created users).
 4. Optional: turn **Confirm email** ON and keep email rate limits low.
 
 ## Taxi deep links
