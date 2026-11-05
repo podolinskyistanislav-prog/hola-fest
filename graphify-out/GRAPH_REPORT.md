@@ -1,7 +1,7 @@
 # Graph Report - hola-fest  (2026-11-05)
 
 ## Corpus Check
-- 118 files · ~31,825 words
+- 118 files · ~31,891 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0ad6e0dc`
+- Built from commit: `ed3e3c39`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -49,9 +49,9 @@
 - fonts.ts
 - ui-ux.md
 - expo-symbols@~58.0.4
-- tokens.ts
+- expo-system-ui@~58.0.7
 - @expo/ui@~58.0.27
-- @expo/vector-icons
+- expo-device@~58.0.5
 - expo-linking@~58.0.16
 - react-dom@19.3.0
 - steps
@@ -213,7 +213,7 @@ Nodes (52): tabBarInset(), EventDetailsProps, dayFromId(), eventCardProps(), for
 Cohesion: 0.50
 Nodes (3): How you work, Review mode (on a PR touching src/app, src/features, src/components or src/theme), You may edit only (work mode, on an agent:ui issue)
 
-### Community 33 - "tokens.ts"
+### Community 33 - "expo-system-ui@~58.0.7"
 Cohesion: 0.28
 Nodes (9): contrastRatio(), parseHex(), relativeLuminance(), ColorScheme, fontFamily, glassOnCover, Palette, palettes (+1 more)
 
