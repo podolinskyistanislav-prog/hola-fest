@@ -64,6 +64,10 @@ Black or white ground, Hola yellow and pink as the only accents, big soft corner
 
 `MapPin` is a Hola-colored disc (yellow or pink) with a black star. The selected pin is larger with a ring in the text color; the touch target is always ≥ 44. `VenuePreviewCard` is the glass card (`GlassSurface`, floating over the map) for the selected venue: name, a yellow shelter badge with black text, and the event hint for tonight. Both are pure; labels arrive already translated and formatted. The map library integration lives in a screen, not here.
 
+## QR ticket
+
+`QRTicket` shows a claim as a big QR with offer title, venue and valid-until (already formatted). The card is always white paper with black ink (`ticket` tokens), in both themes, with a 4-module quiet zone, so scanners read it. It is drawn with plain views (library `toqr` encodes the matrix), so it works offline. Only the `active` state shows the code; `redeemed` and `expired` replace it with a status message so a stale ticket cannot be scanned. The token is never shown as text. Fetching and storing the token belongs to the screen.
+
 ## Event covers (until real photos exist)
 
 A yellow or pink block with the 4-point Hola star in the other accent color, as in the mockups.

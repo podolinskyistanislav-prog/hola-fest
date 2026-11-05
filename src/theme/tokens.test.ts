@@ -1,5 +1,5 @@
 import { contrastRatio } from './contrast';
-import { brand, palettes, type ColorScheme } from './tokens';
+import { brand, palettes, ticket, type ColorScheme } from './tokens';
 
 const AA_TEXT = 4.5;
 
@@ -38,6 +38,15 @@ describe.each<ColorScheme>(['dark', 'light'])('%s palette', (scheme) => {
     ['muted text on raised surface', p.textMuted, p.surfaceRaised],
     ['danger on background', p.danger, p.background],
     ['danger on raised surface', p.danger, p.surfaceRaised],
+  ])('%s meets WCAG AA', (_label, fg, bg) => {
+    expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(AA_TEXT);
+  });
+});
+
+describe('ticket colors', () => {
+  it.each([
+    ['ink on paper', ticket.ink, ticket.paper],
+    ['muted ink on paper', ticket.inkMuted, ticket.paper],
   ])('%s meets WCAG AA', (_label, fg, bg) => {
     expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(AA_TEXT);
   });

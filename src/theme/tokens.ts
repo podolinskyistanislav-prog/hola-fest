@@ -11,6 +11,13 @@ export const brand = {
   onAccent: '#000000',
 } as const;
 
+/** Ticket paper and ink for QR codes: always black on white, in both themes, so scanners read it. */
+export const ticket = {
+  paper: '#FFFFFF',
+  ink: '#000000',
+  inkMuted: '#52525B',
+} as const;
+
 export type ColorScheme = 'dark' | 'light';
 
 export interface Palette {
