@@ -117,9 +117,9 @@ MVP (decision 0002):
 
 1. Authentication → Sign In / Providers: keep **Allow anonymous sign-ins** ON; keep **Allow new users to sign up** ON
    (turning it off breaks guests).
-2. Authentication → Hooks → **Before User Created**: enable, type _Postgres function_, choose
+2. Authentication → Hooks → **Before User Created**: enable, type *Postgres function*, choose
    `public.hook_before_user_created`. Do this after the migration is applied to the hosted database.
-3. Create staff accounts only via Authentication → Users → _Add user_ (the hook does not apply to admin-created users).
+3. Create staff accounts only via Authentication → Users → *Add user* (the hook does not apply to admin-created users).
 4. Optional: turn **Confirm email** ON and keep email rate limits low.
 
 ## Taxi deep links

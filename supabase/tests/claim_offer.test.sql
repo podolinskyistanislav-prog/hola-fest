@@ -1,6 +1,6 @@
 -- pgTAP: claim_offer enforces all limits, stores the hash, and is service-role only.
 begin;
-select plan(15);
+select plan(16);
 
 insert into auth.users (id, instance_id, aud, role, is_anonymous)
 values
@@ -35,6 +35,8 @@ update public.offers set max_claims = null, per_user_limit = 100 where id = '000
 insert into public.claims (offer_id, user_id, token_hash)
 select '00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-0000000000c2', 'rl' || g from generate_series(1, 10) g;
 select is(public.claim_offer('00000000-0000-0000-0000-0000000000a1', '00000000-0000-0000-0000-0000000000c2', repeat('3', 64)), 'rate_limited', 'rate limit enforced');
+
+select is((select count(*)::int from public.claims where user_id = '00000000-0000-0000-0000-0000000000c2' and token_hash like 'rl%'), 10, 'rate limit still holds: no extra claim inserted');
 
 -- strangers cannot call it
 set local role authenticated;

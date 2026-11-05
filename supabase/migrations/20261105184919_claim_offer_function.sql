@@ -1,6 +1,9 @@
 -- Race-safe claim issuing. Called only by the claim-offer Edge Function (service role).
 -- The offer row is locked (FOR UPDATE) so parallel claims for one offer are serialised and
 -- max_claims / per_user_limit cannot be exceeded. Only the sha256 hash of the token is stored.
+-- The rate limit counts a user's recent claims; claims_user_id_idx alone does not cover issued_at.
+create index if not exists claims_user_id_issued_at_idx on public.claims (user_id, issued_at);
+
 create or replace function public.claim_offer(p_offer_id uuid, p_user_id uuid, p_token_hash text)
 returns text
 language plpgsql
@@ -33,7 +36,9 @@ begin
     return 'unavailable';
   end if;
 
-  -- Rate limit: at most 10 claims per user per minute (any offer).
+  -- Rate limit: at most 10 claims per user per minute (any offer). The per-user advisory lock
+  -- serialises one user's parallel claims on different offers so the count cannot be raced.
+  perform pg_advisory_xact_lock(hashtext(p_user_id::text));
   select count(*) into v_recent from public.claims
     where user_id = p_user_id and issued_at > now() - interval '1 minute';
   if v_recent >= 10 then
