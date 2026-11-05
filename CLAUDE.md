@@ -16,6 +16,7 @@ Read before every task:
 - **Never review or approve your own work.** Never merge — the founder merges.
 - **No scope creep.** If it is not in the issue's acceptance criteria, do not build it. Ideas go into a new issue labelled `idea`.
 - **Small PRs.** Aim for < 400 changed lines excluding generated files. Split otherwise.
+- Agents run headless: run every command in the foreground and wait for it. Never background a command or end your turn waiting for a notification.
 - Before saying "done": `npm run check` passes (lint + typecheck + tests). Paste the result in the PR.
 
 ## Code quality
