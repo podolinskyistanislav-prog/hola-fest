@@ -20,12 +20,19 @@ function wrapper({ children }: { children: ReactNode }) {
 beforeEach(() => jest.resetAllMocks());
 
 describe('useEventsForDay', () => {
-  it('is loading, then returns events from the service', async () => {
+  it('is loading while the service is pending', async () => {
+    jest.mocked(getEventsForDay).mockReturnValue(new Promise(() => undefined));
+    const { result } = await renderHook(() => useEventsForDay(new Date(2026, 10, 4)), {
+      wrapper,
+    });
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it('returns events from the service', async () => {
     const events = [{ id: 'e1' }];
     jest.mocked(getEventsForDay).mockResolvedValue(events as never);
     const day = new Date(2026, 10, 4);
     const { result } = await renderHook(() => useEventsForDay(day), { wrapper });
-    expect(result.current.isLoading).toBe(true);
     await waitFor(() => expect(result.current.data).toEqual(events));
     expect(getEventsForDay).toHaveBeenCalledWith(day);
   });

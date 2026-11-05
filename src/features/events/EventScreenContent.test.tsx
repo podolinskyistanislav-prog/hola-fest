@@ -57,10 +57,15 @@ async function renderScreen() {
 beforeEach(() => jest.resetAllMocks());
 
 describe('EventScreenContent', () => {
-  it('shows loading, then venue, time, price, lineup and offers', async () => {
-    jest.mocked(getEventById).mockResolvedValue(event);
+  it('shows a loading state while the event is pending', async () => {
+    jest.mocked(getEventById).mockReturnValue(new Promise(() => undefined));
     await renderScreen();
     expect(screen.getByLabelText(t('event.loading'))).toBeTruthy();
+  });
+
+  it('shows venue, time, price, lineup and offers once loaded', async () => {
+    jest.mocked(getEventById).mockResolvedValue(event);
+    await renderScreen();
     expect(await screen.findByText('Hola Night')).toBeTruthy();
     expect(screen.getByText('Bavovna')).toBeTruthy();
     expect(screen.getByText('вул. Хрещатик, 1')).toBeTruthy();

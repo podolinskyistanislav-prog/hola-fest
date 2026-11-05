@@ -54,10 +54,15 @@ async function renderScreen() {
 beforeEach(() => jest.resetAllMocks());
 
 describe('EventsScreenContent', () => {
-  it('shows a loading state, then the events', async () => {
-    jest.mocked(getEventsForDay).mockResolvedValue([event]);
+  it('shows a loading state while the events are pending', async () => {
+    jest.mocked(getEventsForDay).mockReturnValue(new Promise(() => undefined));
     await renderScreen();
     expect(screen.getByLabelText(t('events.loading'))).toBeTruthy();
+  });
+
+  it('shows the events once loaded', async () => {
+    jest.mocked(getEventsForDay).mockResolvedValue([event]);
+    await renderScreen();
     expect(await screen.findByText('Hola Night')).toBeTruthy();
     expect(screen.getByText('Bavovna')).toBeTruthy();
   });
