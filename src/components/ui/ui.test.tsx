@@ -5,10 +5,12 @@ import { Button } from './Button';
 import { Chip } from './Chip';
 import { DAY_PILL_HEIGHT, DayStrip } from './DayStrip';
 import { EventCard } from './EventCard';
+import { MapPin } from './MapPin';
 import { OfferRow } from './OfferRow';
 import { TAB_BAR_FLOAT_GAP, TAB_BAR_HEIGHT, TabBar, tabBarInset } from './TabBar';
 import { TabIcon } from './TabIcon';
 import { TextField } from './TextField';
+import { VenuePreviewCard } from './VenuePreviewCard';
 
 jest.mock('expo-glass-effect', () => {
   const { View } = jest.requireActual('react-native');
@@ -214,6 +216,44 @@ describe('EventCard', () => {
   it('renders the pink cover variant', async () => {
     await render(<EventCard {...base} coverColor="pink" />);
     expect(screen.getByText('Techno Night')).toBeTruthy();
+  });
+});
+
+describe('MapPin', () => {
+  it('is a labelled button that reports its selected state and calls onPress', async () => {
+    const onPress = jest.fn();
+    await render(<MapPin label="Closer" selected onPress={onPress} />);
+    const pin = screen.getByRole('button', { name: 'Closer', selected: true });
+    await fireEvent.press(pin);
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('is not selected by default and renders the pink variant', async () => {
+    await render(<MapPin label="Closer" color="pink" />);
+    expect(screen.getByRole('button', { name: 'Closer', selected: false })).toBeTruthy();
+  });
+});
+
+describe('VenuePreviewCard', () => {
+  it('shows name, shelter badge and event hint', async () => {
+    await render(
+      <VenuePreviewCard name="Closer" shelterBadge="Є укриття" eventHint="Сьогодні 22:00" />,
+    );
+    for (const text of ['Closer', 'Є укриття', 'Сьогодні 22:00']) {
+      expect(screen.getByText(text)).toBeTruthy();
+    }
+  });
+
+  it('omits the badge and hint when absent', async () => {
+    await render(<VenuePreviewCard name="Closer" />);
+    expect(screen.queryByText('Є укриття')).toBeNull();
+  });
+
+  it('is a button with a summary label that calls onPress', async () => {
+    const onPress = jest.fn();
+    await render(<VenuePreviewCard name="Closer" shelterBadge="Є укриття" onPress={onPress} />);
+    await fireEvent.press(screen.getByRole('button', { name: 'Closer, Є укриття' }));
+    expect(onPress).toHaveBeenCalledTimes(1);
   });
 });
 

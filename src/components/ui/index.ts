@@ -4,6 +4,7 @@ export { Chip, type ChipProps } from './Chip';
 export { DayStrip, type DayStripDay, type DayStripProps } from './DayStrip';
 export { EventCard, type EventCardProps, type EventCoverColor } from './EventCard';
 export { GlassSurface, type GlassSurfaceProps } from './GlassSurface';
+export { MapPin, type MapPinColor, type MapPinProps } from './MapPin';
 export { OfferRow, type OfferRowProps, type OfferRowStatus } from './OfferRow';
 export {
   TabBar,
@@ -15,3 +16,4 @@ export {
 } from './TabBar';
 export { TabIcon, type TabIconName, type TabIconProps } from './TabIcon';
 export { TextField, type TextFieldProps } from './TextField';
+export { VenuePreviewCard, type VenuePreviewCardProps } from './VenuePreviewCard';
