@@ -1,7 +1,7 @@
 # Graph Report - hola-fest  (2026-11-05)
 
 ## Corpus Check
-- 121 files · ~32,784 words
+- 121 files · ~32,857 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `24e191c3`
+- Built from commit: `0fe6e766`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
