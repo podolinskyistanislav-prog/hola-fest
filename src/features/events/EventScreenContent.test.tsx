@@ -112,7 +112,7 @@ describe('EventScreenContent', () => {
     jest.mocked(getEventById).mockResolvedValue(event);
     await renderScreen();
     await fireEvent.press(await screen.findByRole('button', { name: t('event.venueLink') }));
-    expect(onOpenVenue).toHaveBeenCalled();
+    expect(onOpenVenue).toHaveBeenCalledWith('v1');
     await fireEvent.press(screen.getByRole('button', { name: t('event.back') }));
     expect(onBack).toHaveBeenCalled();
   });

@@ -11,7 +11,7 @@ import { useEvent } from './useEvents';
 export interface EventScreenContentProps {
   eventId: string | undefined;
   onBack: () => void;
-  onOpenVenue: () => void;
+  onOpenVenue: (venueId: string) => void;
 }
 
 const SKELETON_HEIGHT = 220;

@@ -13,8 +13,7 @@ export interface EventDetailsProps {
   /** Bottom safe-area inset so the last row clears the screen edge. */
   safeAreaBottom: number;
   onBack: () => void;
-  /** Stub until the venue page exists (milestone 4). */
-  onOpenVenue: () => void;
+  onOpenVenue: (venueId: string) => void;
   /** Injectable clock for the "expired" offer status. */
   now?: Date;
 }
@@ -79,7 +78,11 @@ export function EventDetails({
         <View style={styles.venue}>
           <AppText variant="bodyStrong">{event.venue.name}</AppText>
           <AppText tone="muted">{event.venue.address ?? t('event.venueNoAddress')}</AppText>
-          <Button label={t('event.venueLink')} variant="inverse" onPress={onOpenVenue} />
+          <Button
+            label={t('event.venueLink')}
+            variant="inverse"
+            onPress={() => onOpenVenue(event.venue.id)}
+          />
         </View>
 
         {event.description ? <AppText>{event.description}</AppText> : null}
