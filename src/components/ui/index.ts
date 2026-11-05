@@ -13,4 +13,5 @@ export {
   type TabBarItem,
   type TabBarProps,
 } from './TabBar';
+export { TabIcon, type TabIconName, type TabIconProps } from './TabIcon';
 export { TextField, type TextFieldProps } from './TextField';

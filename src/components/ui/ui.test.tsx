@@ -7,6 +7,7 @@ import { DAY_PILL_HEIGHT, DayStrip } from './DayStrip';
 import { EventCard } from './EventCard';
 import { OfferRow } from './OfferRow';
 import { TAB_BAR_FLOAT_GAP, TAB_BAR_HEIGHT, TabBar, tabBarInset } from './TabBar';
+import { TabIcon } from './TabIcon';
 import { TextField } from './TextField';
 
 jest.mock('expo-glass-effect', () => {
@@ -175,6 +176,14 @@ describe('TabBar', () => {
       <TabBar items={[{ id: 'a', label: 'A', renderIcon }]} activeId="a" onSelect={jest.fn()} />,
     );
     expect(renderIcon).toHaveBeenCalledWith({ color: expect.any(String), size: 24 });
+  });
+});
+
+describe('TabIcon', () => {
+  it('is hidden from accessibility so the tab label carries the name', async () => {
+    await render(<TabIcon name="calendar" color="#FFE600" size={24} />);
+    expect(screen.queryByRole('image')).toBeNull();
+    expect(screen.queryByLabelText('calendar')).toBeNull();
   });
 });
 
