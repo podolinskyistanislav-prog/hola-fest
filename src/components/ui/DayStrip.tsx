@@ -1,6 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { brand, radius, space, touchTarget, useTheme } from '@/theme';
+import { brand, radius, space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 
@@ -28,6 +28,7 @@ export function DayStrip({ days, selectedId, onSelect }: DayStripProps) {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
+      style={styles.strip}
       contentContainerStyle={styles.content}
     >
       {days.map((day) => {
@@ -61,14 +62,19 @@ export function DayStrip({ days, selectedId, onSelect }: DayStripProps) {
   );
 }
 
+/** Fixed pill height, so the strip never stretches with its parent. */
+export const DAY_PILL_HEIGHT = 60;
+
 const styles = StyleSheet.create({
+  strip: { flexGrow: 0, flexShrink: 0 },
   content: {
     paddingHorizontal: space.screen,
     gap: space.sm,
   },
   day: {
     minWidth: 56,
-    minHeight: touchTarget,
+    height: DAY_PILL_HEIGHT,
+    alignSelf: 'flex-start',
     paddingVertical: space.sm,
     paddingHorizontal: space.md,
     borderRadius: radius.control,
