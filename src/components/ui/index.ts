@@ -6,6 +6,7 @@ export { EventCard, type EventCardProps, type EventCoverColor } from './EventCar
 export { GlassSurface, type GlassSurfaceProps } from './GlassSurface';
 export { MapPin, type MapPinColor, type MapPinProps } from './MapPin';
 export { OfferRow, type OfferRowProps, type OfferRowStatus } from './OfferRow';
+export { QRTicket, qrDarkRuns, type QRTicketProps, type QRTicketStatus } from './QRTicket';
 export {
   TabBar,
   tabBarInset,
