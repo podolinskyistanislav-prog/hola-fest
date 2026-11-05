@@ -63,6 +63,22 @@ jobs:
       - if: always()
         run: supabase stop --no-backup
 
+  edge-functions:
+    name: Edge Functions (Deno tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Test Edge Functions
+        run: |
+          if ls supabase/functions/*/*.test.ts >/dev/null 2>&1; then
+            deno test --allow-env --allow-net --allow-read supabase/functions
+          else
+            echo "No Edge Function tests yet"
+          fi
+
   secrets-scan:
     name: Secret scan
     runs-on: ubuntu-latest

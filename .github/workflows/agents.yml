@@ -66,6 +66,9 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: 3.0.0
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
       - name: Mark issue in progress
         if: ${{ !contains(github.event.issue.labels.*.name, 'agent:orchestrator') }}
         env:
@@ -207,6 +210,8 @@ jobs:
             Post exactly one verdict with
             `gh pr review ${{ github.event.pull_request.number }} --comment --body "<verdict>"`
             where the body starts with `APPROVE` or `CHANGES REQUESTED`, headed `## Code review`.
+            CI status may be unreadable for you ('Resource not accessible by integration').
+            Then do NOT block on it: write "CI: not visible to reviewer" and judge the code. The founder checks CI.
             Do not edit, commit or push anything.
           claude_args: |
             --max-turns 40
@@ -229,6 +234,8 @@ jobs:
             Post exactly one verdict with
             `gh pr review ${{ github.event.pull_request.number }} --comment --body "<verdict>"`
             where the body starts with `APPROVE` or `CHANGES REQUESTED`, headed `## Security review`.
+            CI status may be unreadable for you ('Resource not accessible by integration').
+            Then do NOT block on it: write "CI: not visible to reviewer" and judge the code. The founder checks CI.
             Do not edit, commit or push anything.
           claude_args: |
             --max-turns 40
@@ -253,6 +260,8 @@ jobs:
             Post exactly one verdict with
             `gh pr review ${{ github.event.pull_request.number }} --comment --body "<verdict>"`
             where the body starts with `APPROVE` or `CHANGES REQUESTED`, headed `## UI/UX review`.
+            CI status may be unreadable for you ('Resource not accessible by integration').
+            Then do NOT block on it: write "CI: not visible to reviewer" and judge the code. The founder checks CI.
             Do not edit, commit or push anything.
           claude_args: |
             --max-turns 40
@@ -281,6 +290,9 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: 3.0.0
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
       - uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
