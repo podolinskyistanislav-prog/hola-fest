@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import MapScreen from '@/app/(tabs)/map';
@@ -13,6 +14,14 @@ jest.mock('expo-glass-effect', () => {
   return { GlassView: View, isLiquidGlassAvailable: () => false };
 });
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }) }));
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
+jest.mock('@/services/events', () => ({
+  getEventsForDay: jest.fn().mockResolvedValue([]),
+  getEventsForRange: jest.fn(),
+  getEventById: jest.fn(),
+}));
 jest.mock('expo-router/js-tabs', () => {
   const Tabs = ({ tabBar }: { tabBar: (props: unknown) => React.ReactNode }): React.ReactNode =>
     tabBar({
@@ -53,7 +62,11 @@ describe('tab navigation shell', () => {
   });
 
   it('keeps the staff-login route reachable by long-pressing the events title', async () => {
-    await render(<EventsScreen />);
+    await render(
+      <QueryClientProvider client={new QueryClient()}>
+        <EventsScreen />
+      </QueryClientProvider>,
+    );
     await fireEvent(screen.getByText(t('events.title')), 'longPress');
     expect(mockPush).toHaveBeenCalledWith('/staff-login');
   });
