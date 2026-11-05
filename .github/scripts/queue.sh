@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Deterministic task queue: no AI, so it costs nothing and never misses a step.
 #  1. Unblock: status:blocked issues whose "Blocked by" issues are all closed → status:queued.
-#  2. Release: while active tasks < AGENTS_MAX_PARALLEL, move the lowest-numbered queued
+#  2. Release: while active tasks < AGENTS_MAX_PARALLEL, move the next queued (priority:high first,
+#     then lowest number)
 #     task to status:todo and start its agent (workflow_dispatch of agents.yml).
 #  3. Close milestone issues whose tasks are all closed.
 # Labels set here use GITHUB_TOKEN, so they never trigger workflows by themselves.
@@ -40,7 +41,8 @@ echo "active=$active max=$MAX"
 for n in $(jq -r --arg w "$WORKERS" '[.[] | select(.state=="open")
   | select(.labels|index("status:queued"))
   | select((.labels|index("status:blocked")|not) and (.labels|index("status:needs-founder")|not))
-  | select(any(.labels[]; test("^(" + $w + ")$")))] | sort_by(.n) | .[].n' <<<"$all"); do
+  | select(any(.labels[]; test("^(" + $w + ")$")))]
+  | sort_by([(if (.labels|index("priority:high")) then 0 else 1 end), .n]) | .[].n' <<<"$all"); do
   [ "$active" -ge "$MAX" ] && break
   echo "release #$n"
   act gh issue edit "$n" --repo "$REPO" --remove-label status:queued --add-label status:todo

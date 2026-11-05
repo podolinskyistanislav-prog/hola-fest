@@ -45,7 +45,7 @@ when an issue closes, and when a task is marked `status:needs-founder` or `statu
 
 1. Unblock: a `status:blocked` issue whose `Blocked by` issues are all closed becomes `status:queued`.
 2. Release: while active tasks (`status:todo` / `status:in-progress`) < `AGENTS_MAX_PARALLEL` (repo variable,
-   default 1), the lowest-numbered queued task becomes `status:todo` and its agent starts.
+   default 1), the next queued task becomes `status:todo` and its agent starts. Tasks labelled `priority:high` (bugs, fixes) go first, then the lowest number.
 3. A milestone issue whose tasks are all closed is closed.
 
 `status:needs-founder` means an agent needs the founder: a decision, a secret or a paid service. It does not count as
