@@ -1,8 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Button } from './Button';
 import { Chip } from './Chip';
-import { DayStrip } from './DayStrip';
+import { DAY_PILL_HEIGHT, DayStrip } from './DayStrip';
 import { EventCard } from './EventCard';
 import { OfferRow } from './OfferRow';
 import { TAB_BAR_FLOAT_GAP, TAB_BAR_HEIGHT, TabBar, tabBarInset } from './TabBar';
@@ -67,6 +68,18 @@ describe('DayStrip', () => {
     await render(<DayStrip days={days} selectedId="2026-06-14" onSelect={onSelect} />);
     await fireEvent.press(screen.getByRole('button', { name: 'Сб 13' }));
     expect(onSelect).toHaveBeenCalledWith('2026-06-13');
+  });
+
+  it('keeps a fixed pill height regardless of the parent height', async () => {
+    await render(
+      <View style={{ height: 600, flexDirection: 'column' }}>
+        <DayStrip days={days} selectedId="2026-06-14" onSelect={jest.fn()} />
+      </View>,
+    );
+    const style = StyleSheet.flatten(screen.getByRole('button', { name: 'Сб 13' }).props.style);
+    expect(style.height).toBe(DAY_PILL_HEIGHT);
+    expect(style.alignSelf).toBe('flex-start');
+    expect(DAY_PILL_HEIGHT).toBe(60);
   });
 });
 
