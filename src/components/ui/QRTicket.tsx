@@ -54,7 +54,7 @@ export function qrDarkRuns(token: string): { size: number; runs: DarkRun[] } {
   return { size, runs };
 }
 
-function QRCode({ token, side }: { token: string; side: number }) {
+export function QRCode({ token, side }: { token: string; side: number }) {
   const { size, runs } = useMemo(() => qrDarkRuns(token), [token]);
   const total = size + QUIET_ZONE_MODULES * 2;
   const moduleSize = Math.floor(side / total);
