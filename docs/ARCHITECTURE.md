@@ -62,7 +62,7 @@ profiles      id (= auth.users.id) PK, display_name, is_superadmin bool default 
 venues        id uuid PK, slug unique, name, address, lat, lng, description, cover_path,
               instagram_url, has_shelter bool, is_published bool, created_at
 venue_members venue_id → venues, user_id → profiles, role ('admin' | 'host'), PK(venue_id, user_id)
-events        id uuid PK, venue_id → venues, title, description, lineup text[], starts_at timestamptz,
+events        id uuid PK, venue_id → venues, title, description, lineup text[], tags text[] (genre: techno/house/rooftop), starts_at timestamptz,
               ends_at timestamptz, price_from_uah int, cover_path, status ('draft' | 'published'), created_at
 offers        id uuid PK, event_id → events, title, terms, max_claims int null,
               per_user_limit int default 1, valid_until timestamptz, is_active bool,
@@ -71,7 +71,7 @@ claims        id uuid PK, offer_id → offers, user_id → profiles, token_hash 
               status ('issued' | 'redeemed' | 'void'), issued_at, redeemed_at, redeemed_by → profiles
 ```
 
-Indexes: `events(venue_id, starts_at)`, `events(starts_at) where status='published'`, `claims(offer_id)`, `claims(user_id)`.
+Indexes: `events(venue_id, starts_at)`, `events using gin(tags)`, `events(starts_at) where status='published'`, `claims(offer_id)`, `claims(user_id)`.
 
 ## Access rules (RLS)
 

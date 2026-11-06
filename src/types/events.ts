@@ -23,6 +23,8 @@ export type EventSummary = {
   endsAt: Date | null;
   priceFromUah: number | null;
   coverPath: string | null;
+  /** Genre tags (`techno`, `house`, `rooftop`). The service always fills it; optional so fixtures outside src/services stay valid. */
+  tags?: string[];
   venue: EventVenue;
 };
 

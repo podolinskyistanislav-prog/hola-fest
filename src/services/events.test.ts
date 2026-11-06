@@ -9,7 +9,8 @@ type Result = { data: unknown; error: { message: string } | null };
 
 function mockQuery(result: Result) {
   const query: Record<string, jest.Mock> = {};
-  for (const m of ['select', 'eq', 'gte', 'lt', 'order']) query[m] = jest.fn(() => query);
+  for (const m of ['select', 'eq', 'gte', 'lt', 'order', 'contains'])
+    query[m] = jest.fn(() => query);
   query.returns = jest.fn(() => Promise.resolve(result));
   query.maybeSingle = jest.fn(() => Promise.resolve(result));
   from.mockReturnValue(query);
@@ -34,6 +35,7 @@ const eventRow = {
   ends_at: null,
   price_from_uah: 200,
   cover_path: null,
+  tags: ['techno', 'rooftop'],
   venue: venueRow,
 };
 
@@ -55,6 +57,7 @@ describe('getEventsForRange', () => {
         endsAt: null,
         priceFromUah: 200,
         coverPath: null,
+        tags: ['techno', 'rooftop'],
         venue: {
           id: 'v1',
           slug: 'club',
@@ -104,6 +107,32 @@ describe('getEventsForRange', () => {
     await expect(getEventsForRange(new Date(0), new Date(1000))).rejects.toMatchObject({
       code: 'network',
     });
+  });
+
+  it('defaults missing tags to an empty list', async () => {
+    mockQuery({ data: [{ ...eventRow, tags: null }], error: null });
+    const result = await getEventsForRange(new Date(0), new Date(1000));
+    expect(result[0]?.tags).toEqual([]);
+  });
+
+  it('does not filter by tag or offers without a filter', async () => {
+    const q = mockQuery({ data: [], error: null });
+    await getEventsForRange(new Date(0), new Date(1000));
+    expect(q.contains).not.toHaveBeenCalled();
+    expect(q.select).toHaveBeenCalledWith(expect.not.stringContaining('offers!inner'));
+  });
+
+  it('filters by genre tag', async () => {
+    const q = mockQuery({ data: [eventRow], error: null });
+    await getEventsForRange(new Date(0), new Date(1000), { tag: 'techno' });
+    expect(q.contains).toHaveBeenCalledWith('tags', ['techno']);
+  });
+
+  it('filters by has-active-offer with an inner join on active offers', async () => {
+    const q = mockQuery({ data: [eventRow], error: null });
+    await getEventsForRange(new Date(0), new Date(1000), { hasActiveOffer: true });
+    expect(q.select).toHaveBeenCalledWith(expect.stringContaining('offers!inner(id)'));
+    expect(q.eq).toHaveBeenCalledWith('offers.is_active', true);
   });
 
   it('rejects an empty or reversed range without querying', async () => {

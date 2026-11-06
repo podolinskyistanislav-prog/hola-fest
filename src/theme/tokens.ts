@@ -58,6 +58,11 @@ export interface Palette {
     border: string;
     highlight: string;
   };
+  /** Small translucent buttons sitting on a glass panel (taxi providers, "Поїхати"). */
+  glassButton: {
+    fill: string;
+    border: string;
+  };
   /** Glass placed over a colored cover (chips and info panels on event covers). Same in both themes. */
   glassOnCover: {
     fill: string;
@@ -97,6 +102,7 @@ export const palettes: Record<ColorScheme, Palette> = {
       border: 'rgba(255,255,255,0.16)',
       highlight: 'rgba(255,255,255,0.22)',
     },
+    glassButton: { fill: 'rgba(255,255,255,0.1)', border: 'rgba(255,255,255,0.18)' },
     glassOnCover,
   },
   light: {
@@ -120,6 +126,7 @@ export const palettes: Record<ColorScheme, Palette> = {
       border: 'rgba(0,0,0,0.08)',
       highlight: 'rgba(255,255,255,0.95)',
     },
+    glassButton: { fill: 'rgba(0,0,0,0.06)', border: 'rgba(0,0,0,0.1)' },
     glassOnCover,
   },
 };

@@ -1,4 +1,4 @@
-import { StyleSheet, View, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { brand, radius } from '@/theme';
@@ -10,7 +10,7 @@ const STAR_PATH = 'M50 0C55 35 65 45 100 50C65 55 55 65 50 100C45 65 35 55 0 50C
 export interface HolaStarProps {
   size: number;
   color: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 /** The four-point Hola star from the logo. Decorative. */
@@ -20,7 +20,7 @@ export function HolaStar({ size, color, style }: HolaStarProps) {
       pointerEvents="none"
       accessible={false}
       importantForAccessibility="no-hide-descendants"
-      style={[styles.star, { width: size, height: size }, style]}
+      style={[{ width: size, height: size }, style]}
     >
       <Svg width={size} height={size} viewBox="0 0 100 100">
         <Path d={STAR_PATH} fill={color} />
@@ -46,12 +46,12 @@ export function HolaStarCover({ color }: HolaStarCoverProps) {
   if (color === 'yellow') {
     return (
       <>
-        <HolaStar size={190} color={star} style={{ right: -30, top: -30 }} />
-        <HolaStar size={80} color={star} style={{ left: 30, top: 50 }} />
+        <HolaStar size={190} color={star} style={[styles.abs, { right: -30, top: -30 }]} />
+        <HolaStar size={80} color={star} style={[styles.abs, { left: 30, top: 50 }]} />
       </>
     );
   }
-  return <HolaStar size={150} color={star} style={{ left: -20, top: -30 }} />;
+  return <HolaStar size={150} color={star} style={[styles.abs, { left: -20, top: -30 }]} />;
 }
 
 export interface HolaStarThumbProps {
@@ -68,12 +68,12 @@ export function HolaStarThumb({ color, size }: HolaStarThumbProps) {
       importantForAccessibility="no-hide-descendants"
       style={[styles.thumb, { width: size, height: size, backgroundColor: background }]}
     >
-      <HolaStar size={44} color={star} style={{ left: 6, top: 6 }} />
+      <HolaStar size={44} color={star} style={[styles.abs, { left: 6, top: 6 }]} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  star: { position: 'absolute' },
+  abs: { position: 'absolute' },
   thumb: { borderRadius: radius.chip, overflow: 'hidden', flexShrink: 0 },
 });

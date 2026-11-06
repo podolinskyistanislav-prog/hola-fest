@@ -18,32 +18,36 @@ values
    false, -- TODO: confirm with venue
    true);
 
-insert into public.events (id, venue_id, title, starts_at, ends_at, status)
+insert into public.events (id, venue_id, title, starts_at, ends_at, status, tags)
 values
   -- Bavovna: past, this week
   ('00000000-0000-4000-8000-000000000011', '00000000-0000-4000-8000-000000000001',
-   '[TEST] Past night', now() - interval '7 days', now() - interval '7 days' + interval '8 hours', 'published'),
+   '[TEST] Past night', now() - interval '7 days', now() - interval '7 days' + interval '8 hours', 'published',
+   '{techno}'),
   ('00000000-0000-4000-8000-000000000012', '00000000-0000-4000-8000-000000000001',
-   '[TEST] This week night', now() + interval '2 days', now() + interval '2 days' + interval '8 hours', 'published'),
+   '[TEST] This week night', now() + interval '2 days', now() + interval '2 days' + interval '8 hours', 'published',
+   '{house,rooftop}'),
   -- Panorama Bar: this week, draft
   ('00000000-0000-4000-8000-000000000021', '00000000-0000-4000-8000-000000000002',
-   '[TEST] This week night', now() + interval '3 days', now() + interval '3 days' + interval '8 hours', 'published'),
+   '[TEST] This week night', now() + interval '3 days', now() + interval '3 days' + interval '8 hours', 'published',
+   '{techno}'),
   ('00000000-0000-4000-8000-000000000022', '00000000-0000-4000-8000-000000000002',
-   '[TEST] Draft night', now() + interval '10 days', now() + interval '10 days' + interval '8 hours', 'draft');
+   '[TEST] Draft night', now() + interval '10 days', now() + interval '10 days' + interval '8 hours', 'draft',
+   '{house}');
 
 -- Tonight in Kyiv: 20:00-23:00 local time today, one event per venue.
-insert into public.events (id, venue_id, title, starts_at, ends_at, status)
+insert into public.events (id, venue_id, title, starts_at, ends_at, status, tags)
 values
   ('00000000-0000-4000-8000-000000000013', '00000000-0000-4000-8000-000000000001',
    '[TEST] Tonight',
    (date_trunc('day', now() at time zone 'Europe/Kyiv') + interval '20 hours') at time zone 'Europe/Kyiv',
    (date_trunc('day', now() at time zone 'Europe/Kyiv') + interval '23 hours') at time zone 'Europe/Kyiv',
-   'published'),
+   'published', '{techno}'),
   ('00000000-0000-4000-8000-000000000023', '00000000-0000-4000-8000-000000000002',
    '[TEST] Tonight',
    (date_trunc('day', now() at time zone 'Europe/Kyiv') + interval '20 hours') at time zone 'Europe/Kyiv',
    (date_trunc('day', now() at time zone 'Europe/Kyiv') + interval '23 hours') at time zone 'Europe/Kyiv',
-   'published');
+   'published', '{house,rooftop}');
 
 insert into public.offers (id, event_id, title, terms, max_claims, per_user_limit, is_active)
 values
