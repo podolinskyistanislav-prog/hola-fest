@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { TaxiBar } from '@/components/TaxiBar';
 import { AppText, Button, Chip, EventCard, GlassSurface } from '@/components/ui';
 import { t, type TranslationKey } from '@/lib/i18n';
 import { brand, radius, space, useTheme } from '@/theme';
@@ -79,6 +80,15 @@ function VenueBody({
             <Chip label={t('venues.shelter')} />
           </View>
         ) : null}
+
+        <TaxiBar
+          destination={{
+            name: venue.name,
+            address: venue.address,
+            lat: venue.lat,
+            lng: venue.lng,
+          }}
+        />
 
         <View style={styles.section}>
           <AppText variant="heading" accessibilityRole="header">
