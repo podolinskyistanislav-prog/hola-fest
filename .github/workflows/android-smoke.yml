@@ -18,7 +18,7 @@ on:
     branches: [ci/android-smoke]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   smoke:
@@ -61,3 +61,12 @@ jobs:
             logcat.txt
             screen.png
           if-no-files-found: ignore
+      - name: Publish screenshot to ci-screenshots branch
+        if: always()
+        run: |
+          [ -f screen.png ] || exit 0
+          git config --global user.name github-actions
+          git config --global user.email github-actions@users.noreply.github.com
+          git clone --depth 1 --branch ci-screenshots "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" shots
+          mkdir -p shots/android && cp screen.png shots/android/smoke.png
+          cd shots && git add android/smoke.png && git commit -m "android smoke screenshot ${{ github.run_id }}" && git push
