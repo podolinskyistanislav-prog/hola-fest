@@ -246,6 +246,19 @@ export async function listVenueEvents(venueId: string): Promise<AdminEventListIt
   }));
 }
 
+/** One event of the caller's venue with every editable field, drafts included. RLS decides access. */
+export async function getVenueEvent(eventId: string): Promise<AdminEvent> {
+  const { data, error } = await supabase
+    .from('events')
+    .select(EVENT_COLUMNS)
+    .eq('id', eventId)
+    .single<EventRow>();
+
+  // A malformed id (22P02) is as good as an unknown one.
+  if (error) throw error.code === '22P02' ? new AdminError('not_found') : toAdminError(error);
+  return toAdminEvent(data);
+}
+
 /** Activates an offer or hides it from guests without deleting its claims. */
 export async function setOfferActive(offerId: string, isActive: boolean): Promise<AdminOffer> {
   const { data, error } = await supabase
