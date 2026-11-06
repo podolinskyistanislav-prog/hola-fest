@@ -11,7 +11,13 @@ export {
 export { StringListField, type StringListFieldProps } from './StringListField';
 export { SwitchField, type SwitchFieldProps } from './SwitchField';
 export { EventCard, type EventCardProps, type EventCoverColor } from './EventCard';
+export { EventCarouselCard, type EventCarouselCardProps } from './EventCarouselCard';
+export { FilterChips, type FilterChipItem, type FilterChipsProps } from './FilterChips';
 export { GlassSurface, type GlassSurfaceProps } from './GlassSurface';
+export { HolaStar, type CoverColor, type HolaStarProps } from './HolaStar';
+export { HomeHeader, formatHomeDate, type HomeHeaderProps } from './HomeHeader';
+export { SectionHeader, type SectionHeaderProps } from './SectionHeader';
+export { WeekOfferRow, type WeekOfferRowProps } from './WeekOfferRow';
 export { MapPin, type MapPinColor, type MapPinProps } from './MapPin';
 export { OfferRow, type OfferRowProps, type OfferRowStatus } from './OfferRow';
 export { QRTicket, qrDarkRuns, type QRTicketProps, type QRTicketStatus } from './QRTicket';

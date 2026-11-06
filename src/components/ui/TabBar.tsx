@@ -1,15 +1,15 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { radius, space, touchTarget, useTheme } from '@/theme';
+import { layout, shadowInk, space, touchTarget, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 import { GlassSurface } from './GlassSurface';
 
 /** Height of the floating tab bar itself, in points. */
-export const TAB_BAR_HEIGHT = 64;
-/** Gap between the tab bar and the bottom safe-area edge. */
-export const TAB_BAR_FLOAT_GAP = space.sm;
+export const TAB_BAR_HEIGHT = layout.tabBarHeight;
+/** Minimum gap between the tab bar and the bottom screen edge. */
+export const TAB_BAR_FLOAT_GAP = layout.tabBarBottom;
 
 /**
  * Bottom padding a scrollable screen needs so its last item scrolls above the floating tab bar.
@@ -17,7 +17,7 @@ export const TAB_BAR_FLOAT_GAP = space.sm;
  * Example: `<FlatList contentContainerStyle={{ paddingBottom: tabBarInset(insets.bottom) }} />`.
  */
 export function tabBarInset(safeAreaBottom: number): number {
-  return TAB_BAR_HEIGHT + TAB_BAR_FLOAT_GAP + safeAreaBottom + space.lg;
+  return TAB_BAR_HEIGHT + Math.max(safeAreaBottom, TAB_BAR_FLOAT_GAP) + space.lg;
 }
 
 export interface TabBarItem {
@@ -35,11 +35,9 @@ export interface TabBarProps {
   items: readonly TabBarItem[];
   activeId: string;
   onSelect: (id: string) => void;
-  /** Bottom safe-area inset; the bar floats above it. */
+  /** Bottom safe-area inset; the bar floats at least `TAB_BAR_FLOAT_GAP` above the screen edge. */
   safeAreaBottom?: number;
 }
-
-const ICON_SIZE = 24;
 
 /** Floating glass tab bar. Position it at the bottom of the screen; it does not know about routing. */
 export function TabBar({ items, activeId, onSelect, safeAreaBottom = 0 }: TabBarProps) {
@@ -47,29 +45,31 @@ export function TabBar({ items, activeId, onSelect, safeAreaBottom = 0 }: TabBar
   return (
     <View
       pointerEvents="box-none"
-      style={[styles.wrapper, { bottom: safeAreaBottom + TAB_BAR_FLOAT_GAP }]}
+      style={[styles.wrapper, { bottom: Math.max(safeAreaBottom, TAB_BAR_FLOAT_GAP) }]}
     >
-      <GlassSurface style={styles.bar}>
-        {items.map((item) => {
-          const active = item.id === activeId;
-          const color = active ? colors.accent : colors.textSubtle;
-          return (
-            <Pressable
-              key={item.id}
-              accessibilityRole="tab"
-              accessibilityLabel={item.accessibilityLabel ?? item.label}
-              accessibilityState={{ selected: active }}
-              onPress={() => onSelect(item.id)}
-              style={styles.item}
-            >
-              {item.renderIcon({ color, size: ICON_SIZE })}
-              <AppText variant="label" tone={active ? 'default' : 'muted'}>
-                {item.label}
-              </AppText>
-            </Pressable>
-          );
-        })}
-      </GlassSurface>
+      <View style={styles.shadow}>
+        <GlassSurface style={styles.bar}>
+          {items.map((item) => {
+            const active = item.id === activeId;
+            const color = active ? colors.accent : colors.textSubtle;
+            return (
+              <Pressable
+                key={item.id}
+                accessibilityRole="tab"
+                accessibilityLabel={item.accessibilityLabel ?? item.label}
+                accessibilityState={{ selected: active }}
+                onPress={() => onSelect(item.id)}
+                style={styles.item}
+              >
+                {item.renderIcon({ color, size: layout.tabIconSize })}
+                <AppText variant={active ? 'tabActive' : 'tab'} style={{ color }} numberOfLines={1}>
+                  {item.label}
+                </AppText>
+              </Pressable>
+            );
+          })}
+        </GlassSurface>
+      </View>
     </View>
   );
 }
@@ -80,9 +80,17 @@ const styles = StyleSheet.create({
     left: space.screen,
     right: space.screen,
   },
+  shadow: {
+    borderRadius: layout.tabBarRadius,
+    shadowColor: shadowInk,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.4,
+    shadowRadius: 15,
+    elevation: 12,
+  },
   bar: {
-    height: TAB_BAR_HEIGHT,
-    borderRadius: radius.pill,
+    height: layout.tabBarHeight,
+    borderRadius: layout.tabBarRadius,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: space.sm,
@@ -92,6 +100,6 @@ const styles = StyleSheet.create({
     minHeight: touchTarget,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 2,
+    gap: space.xs,
   },
 });

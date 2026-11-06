@@ -1,6 +1,6 @@
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { brand, radius, space, useTheme } from '@/theme';
+import { brand, layout, radius, space, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 
@@ -13,6 +13,8 @@ export interface DayStripDay {
   date: string;
   /** Full spoken label for screen readers (e.g. "П'ятниця, 14 червня"). */
   accessibilityLabel?: string;
+  /** Shows the pink dot: there are events on this day. */
+  hasEvents?: boolean;
 }
 
 export interface DayStripProps {
@@ -21,16 +23,17 @@ export interface DayStripProps {
   onSelect: (id: string) => void;
 }
 
-/** Horizontal day selector. The selected day is filled with the accent and uses black text. */
+/** Fixed tile height, so the strip never stretches with its parent. */
+export const DAY_PILL_HEIGHT = layout.dayTileHeight;
+
+/**
+ * Row of equal-width day tiles. The selected day is yellow with black text;
+ * a pink dot marks days that have events.
+ */
 export function DayStrip({ days, selectedId, onSelect }: DayStripProps) {
   const { colors } = useTheme();
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.strip}
-      contentContainerStyle={styles.content}
-    >
+    <View style={styles.strip}>
       {days.map((day) => {
         const selected = day.id === selectedId;
         return (
@@ -47,40 +50,52 @@ export function DayStrip({ days, selectedId, onSelect }: DayStripProps) {
                 : { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
             ]}
           >
-            <View style={styles.labels}>
-              <AppText variant="label" tone={selected ? 'onAccent' : 'muted'}>
-                {day.weekday}
-              </AppText>
-              <AppText variant="cardTitle" tone={selected ? 'onAccent' : 'default'}>
-                {day.date}
-              </AppText>
-            </View>
+            <AppText variant="dayWeekday" tone={selected ? 'onAccent' : 'muted'}>
+              {day.weekday}
+            </AppText>
+            <AppText variant="dayDate" tone={selected ? 'onAccent' : 'default'}>
+              {day.date}
+            </AppText>
+            {day.hasEvents ? (
+              <View
+                testID={`day-dot-${day.id}`}
+                accessible={false}
+                importantForAccessibility="no-hide-descendants"
+                style={[styles.dot, { backgroundColor: brand.pink }]}
+              />
+            ) : null}
           </Pressable>
         );
       })}
-    </ScrollView>
+    </View>
   );
 }
 
-/** Fixed pill height, so the strip never stretches with its parent. */
-export const DAY_PILL_HEIGHT = 60;
-
 const styles = StyleSheet.create({
-  strip: { flexGrow: 0, flexShrink: 0 },
-  content: {
-    paddingHorizontal: space.screen,
+  strip: {
+    flexDirection: 'row',
     gap: space.sm,
+    paddingHorizontal: space.screen,
+    alignSelf: 'stretch',
+    flexGrow: 0,
+    flexShrink: 0,
   },
   day: {
-    minWidth: 56,
+    flex: 1,
+    minWidth: 0,
     height: DAY_PILL_HEIGHT,
     alignSelf: 'flex-start',
-    paddingVertical: space.sm,
-    paddingHorizontal: space.md,
     borderRadius: radius.control,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 2,
   },
-  labels: { alignItems: 'center', gap: 2 },
+  dot: {
+    position: 'absolute',
+    bottom: 7,
+    width: layout.dayDotSize,
+    height: layout.dayDotSize,
+    borderRadius: layout.dayDotSize / 2,
+  },
 });

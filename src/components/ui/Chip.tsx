@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet } from 'react-native';
 
-import { radius, useTheme } from '@/theme';
+import { layout, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 
@@ -26,7 +26,10 @@ export function Chip({ label, selected = false, onPress }: ChipProps) {
           : { backgroundColor: colors.surfaceRaised, borderColor: colors.border },
       ]}
     >
-      <AppText variant="label" style={{ color: selected ? colors.background : colors.text }}>
+      <AppText
+        variant={selected ? 'label' : 'chip'}
+        style={{ color: selected ? colors.background : colors.text }}
+      >
         {label}
       </AppText>
     </Pressable>
@@ -35,10 +38,10 @@ export function Chip({ label, selected = false, onPress }: ChipProps) {
 
 const styles = StyleSheet.create({
   base: {
-    height: 34,
+    height: layout.chipHeight,
     paddingHorizontal: 14,
-    borderRadius: radius.chip,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: layout.chipHeight / 2,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

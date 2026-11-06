@@ -177,7 +177,7 @@ describe('TabBar', () => {
     await render(
       <TabBar items={[{ id: 'a', label: 'A', renderIcon }]} activeId="a" onSelect={jest.fn()} />,
     );
-    expect(renderIcon).toHaveBeenCalledWith({ color: expect.any(String), size: 24 });
+    expect(renderIcon).toHaveBeenCalledWith({ color: expect.any(String), size: 22 });
   });
 });
 
@@ -259,7 +259,7 @@ describe('VenuePreviewCard', () => {
 
 describe('tabBarInset', () => {
   it('clears the bar, its float gap and the safe area', () => {
-    expect(tabBarInset(34)).toBeGreaterThan(TAB_BAR_HEIGHT + TAB_BAR_FLOAT_GAP + 34);
-    expect(tabBarInset(0)).toBeLessThan(tabBarInset(34));
+    expect(tabBarInset(0)).toBeGreaterThan(TAB_BAR_HEIGHT + TAB_BAR_FLOAT_GAP);
+    expect(tabBarInset(0)).toBeLessThan(tabBarInset(60));
   });
 });

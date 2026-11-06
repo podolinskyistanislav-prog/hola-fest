@@ -32,6 +32,7 @@ describe.each<ColorScheme>(['dark', 'light'])('%s palette', (scheme) => {
     ['muted text on background', p.textMuted, p.background],
     ['subtle text on background', p.textSubtle, p.background],
     ['accent on background', p.accent, p.background],
+    ['selected chip label on inverse fill', p.background, p.text],
     ['text on surface', p.text, p.surface],
     ['muted text on surface', p.textMuted, p.surface],
     ['text on raised surface', p.text, p.surfaceRaised],

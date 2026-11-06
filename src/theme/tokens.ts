@@ -35,6 +35,8 @@ export interface Palette {
   /** Chips, inactive pills, inputs. */
   surfaceRaised: string;
   border: string;
+  /** Border of list rows that sit on `surface` (offer rows on the home screen). */
+  rowBorder: string;
   text: string;
   /** Secondary text: dates, venues, captions. */
   textMuted: string;
@@ -50,11 +52,19 @@ export interface Palette {
     border: string;
     highlight: string;
   };
+  /** Small glass buttons on the screen background (the search button). */
+  glassControl: {
+    fill: string;
+    border: string;
+    highlight: string;
+  };
   /** Glass placed over a colored cover (chips and info panels on event covers). Same in both themes. */
   glassOnCover: {
     fill: string;
     border: string;
     text: string;
+    /** Secondary text on the glass panel (venue and time). */
+    subtext: string;
   };
 }
 
@@ -62,6 +72,7 @@ const glassOnCover = {
   fill: 'rgba(0,0,0,0.42)',
   border: 'rgba(255,255,255,0.26)',
   text: '#FFFFFF',
+  subtext: '#F4F4F5',
 } as const;
 
 export const palettes: Record<ColorScheme, Palette> = {
@@ -70,13 +81,19 @@ export const palettes: Record<ColorScheme, Palette> = {
     surface: '#111113',
     surfaceRaised: '#18181B',
     border: '#27272A',
+    rowBorder: '#1F1F23',
     text: '#FFFFFF',
     textMuted: '#A1A1AA',
     textSubtle: '#D4D4D8',
     accent: brand.yellow,
     danger: '#FF6B6B',
     glass: {
-      fill: 'rgba(28,28,30,0.72)',
+      fill: 'rgba(28,28,30,0.55)',
+      border: 'rgba(255,255,255,0.16)',
+      highlight: 'rgba(255,255,255,0.22)',
+    },
+    glassControl: {
+      fill: 'rgba(255,255,255,0.08)',
       border: 'rgba(255,255,255,0.16)',
       highlight: 'rgba(255,255,255,0.22)',
     },
@@ -87,13 +104,19 @@ export const palettes: Record<ColorScheme, Palette> = {
     surface: '#F4F4F5',
     surfaceRaised: '#F4F4F5',
     border: '#E4E4E7',
+    rowBorder: '#E4E4E7',
     text: '#0A0A0A',
     textMuted: '#52525B',
     textSubtle: '#71717A',
     accent: '#0A0A0A',
     danger: '#B91C1C',
     glass: {
-      fill: 'rgba(255,255,255,0.78)',
+      fill: 'rgba(244,244,245,0.7)',
+      border: 'rgba(0,0,0,0.08)',
+      highlight: 'rgba(255,255,255,0.95)',
+    },
+    glassControl: {
+      fill: 'rgba(244,244,245,0.7)',
       border: 'rgba(0,0,0,0.08)',
       highlight: 'rgba(255,255,255,0.95)',
     },
@@ -109,6 +132,28 @@ export const radius = {
   card: 28,
   sheet: 32,
   pill: 999,
+} as const;
+
+/** Color of drop shadows under floating UI, same in both themes. */
+export const shadowInk = '#000000';
+
+/** Fixed sizes of the home screen and navigation components (from the Main mockup). */
+export const layout = {
+  tabBarHeight: 68,
+  tabBarRadius: 34,
+  /** Distance from the bottom screen edge to the floating tab bar. */
+  tabBarBottom: 30,
+  tabIconSize: 22,
+  logoSize: 36,
+  logoRadius: 10,
+  searchButtonSize: 44,
+  dayTileHeight: 60,
+  dayDotSize: 5,
+  chipHeight: 34,
+  carouselCardWidth: 290,
+  carouselCardHeight: 230,
+  offerThumbSize: 56,
+  offerPillHeight: 30,
 } as const;
 
 /** 4-point spacing scale. Screen edge padding is `screen`. */
@@ -143,6 +188,14 @@ export const typography = {
   caption: { fontFamily: fontFamily.body, fontSize: 13, lineHeight: 18 },
   label: { fontFamily: fontFamily.bodySemibold, fontSize: 13, lineHeight: 18 },
   tab: { fontFamily: fontFamily.bodyMedium, fontSize: 11, lineHeight: 14 },
+  tabActive: { fontFamily: fontFamily.bodySemibold, fontSize: 11, lineHeight: 14 },
+  brandTitle: { fontFamily: fontFamily.display, fontSize: 17, lineHeight: 22 },
+  meta: { fontFamily: fontFamily.body, fontSize: 12, lineHeight: 16 },
+  badge: { fontFamily: fontFamily.bodySemibold, fontSize: 12, lineHeight: 16 },
+  dayWeekday: { fontFamily: fontFamily.bodyMedium, fontSize: 12, lineHeight: 16 },
+  dayDate: { fontFamily: fontFamily.bodySemibold, fontSize: 18, lineHeight: 22 },
+  chip: { fontFamily: fontFamily.bodyMedium, fontSize: 13, lineHeight: 18 },
+  link: { fontFamily: fontFamily.bodyMedium, fontSize: 14, lineHeight: 20 },
 } as const;
 
 export type TypographyVariant = keyof typeof typography;
