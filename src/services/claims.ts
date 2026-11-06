@@ -23,7 +23,7 @@ export class ClaimsError extends Error {
 
 // token_hash is deliberately not listed: clients must never read it.
 const CLAIM_COLUMNS =
-  'id, status, issued_at, redeemed_at, offer:offers!inner(id, title, terms, valid_until, event:events!inner(id, title, starts_at, venue:venues!inner(id, name, address)))';
+  'id, status, issued_at, redeemed_at, offer:offers!inner(id, title, terms, valid_until, event:events!inner(id, title, starts_at, ends_at, venue:venues!inner(id, name, address, lat, lng)))';
 
 type ClaimRow = {
   id: string;
@@ -39,7 +39,14 @@ type ClaimRow = {
       id: string;
       title: string;
       starts_at: string;
-      venue: { id: string; name: string; address: string | null };
+      ends_at: string | null;
+      venue: {
+        id: string;
+        name: string;
+        address: string | null;
+        lat: number | null;
+        lng: number | null;
+      };
     };
   };
 };
@@ -155,10 +162,13 @@ function toMyClaim(row: ClaimRow): MyClaim {
         id: offer.event.id,
         title: offer.event.title,
         startsAt: new Date(offer.event.starts_at),
+        endsAt: offer.event.ends_at ? new Date(offer.event.ends_at) : null,
         venue: {
           id: offer.event.venue.id,
           name: offer.event.venue.name,
           address: offer.event.venue.address,
+          lat: offer.event.venue.lat,
+          lng: offer.event.venue.lng,
         },
       },
     },
