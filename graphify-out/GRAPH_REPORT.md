@@ -1,7 +1,7 @@
 # Graph Report - hola-fest  (2026-11-06)
 
 ## Corpus Check
-- 242 files · ~70,668 words
+- 242 files · ~70,671 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 12 file(s) not represented in the graph (top: (none) 10, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0c67b26a`
+- Built from commit: `506fb4ed`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,9 +21,9 @@
 - expo
 - Hola Fest — Architecture
 - compilerOptions
-- services/venues.ts
+- supabase.ts
 - scripts
-- Hola Fest — rules for every agent
+- Hola Fest — Product
 - with
 - with
 - AGENTS.md
@@ -38,7 +38,7 @@
 - security-qa.md
 - jest
 - 0001-foundation.md
-- VenueScreenContent.tsx
+- Hola Fest — design rules
 - _layout.tsx
 - task.md
 - pull_request_template.md
@@ -53,7 +53,7 @@
 - @expo/ui@~58.0.27
 - expo-device@~58.0.5
 - expo-linking@~58.0.16
-- types/admin.ts
+- react-dom@19.3.0
 - steps
 - react-native-reanimated@4.7.1
 - jobs
@@ -161,7 +161,7 @@ Nodes (12): { defineConfig }, expoConfig, NO_FEATURES_IN_UI, NO_SERVICES_IN_UI, 
 Cohesion: 0.17
 Nodes (11): expo/tsconfig.base, compilerOptions, noFallthroughCasesInSwitch, noUncheckedIndexedAccess, paths, strict, types, exclude (+3 more)
 
-### Community 5 - "services/venues.ts"
+### Community 5 - "supabase.ts"
 Cohesion: 0.08
 Nodes (32): useVenue(), useVenues(), venueKeys, VENUES_STALE_TIME_MS, KYIV_REGION, mappableVenues(), base, onBack (+24 more)
 
@@ -169,7 +169,7 @@ Nodes (32): useVenue(), useVenues(), venueKeys, VENUES_STALE_TIME_MS, KYIV_REGIO
 Cohesion: 0.15
 Nodes (13): scripts, android, check, db:types, db:verify, format, ios, lint (+5 more)
 
-### Community 7 - "Hola Fest — rules for every agent"
+### Community 7 - "Hola Fest — Product"
 Cohesion: 0.17
 Nodes (7): Code quality, Database, Decisions, Golden rules, Hola Fest — rules for every agent, Security (non-negotiable), MVP roadmap
 
@@ -217,7 +217,7 @@ Nodes (5): 0004 — Screenshot tool: Playwright on the Expo web build, Consequen
 Cohesion: 0.50
 Nodes (4): jest, moduleNameMapper, preset, testPathIgnorePatterns
 
-### Community 22 - "VenueScreenContent.tsx"
+### Community 22 - "Hola Fest — design rules"
 Cohesion: 0.14
 Nodes (18): Chip(), EventCard(), tabBarInset(), EventsList(), EventsListProps, LoadingSkeleton(), Message(), styles (+10 more)
 
@@ -273,7 +273,7 @@ Nodes (30): concurrency, cancel-in-progress, group, env, name, runs-on, steps, S
 Cohesion: 0.08
 Nodes (42): Tab bar, FloatingTabBar(), ITEMS, TabsLayout(), AppTextProps, Tone, ButtonProps, ButtonVariant (+34 more)
 
-### Community 37 - "types/admin.ts"
+### Community 37 - "react-dom@19.3.0"
 Cohesion: 0.31
 Nodes (4): EventOffersSectionProps, base, offer, AdminVenue
 
@@ -473,17 +473,17 @@ Nodes (4): base, draft, published, VenueEventsListProps
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `claimOffer()` connect `useClaimOffer.ts` to `claims.test.ts`, `ClaimOfferButton.tsx`, `Button.tsx`, `Hola Fest — rules for every agent`?**
+- **Why does `claimOffer()` connect `useClaimOffer.ts` to `claims.test.ts`, `ClaimOfferButton.tsx`, `Button.tsx`, `Hola Fest — Product`?**
   _High betweenness centrality (0.038) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
-- **Why does `Code quality` connect `Hola Fest — rules for every agent` to `useClaimOffer.ts`?**
+- **Why does `Code quality` connect `Hola Fest — Product` to `useClaimOffer.ts`?**
   _High betweenness centrality (0.037) - this node is a cross-community bridge._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.1 - nodes in this community are weakly interconnected._
 - **Should `expo` be split into smaller, more focused modules?**
   _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
-- **Should `services/venues.ts` be split into smaller, more focused modules?**
+- **Should `supabase.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.08019323671497584 - nodes in this community are weakly interconnected._
