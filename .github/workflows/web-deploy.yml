@@ -8,7 +8,7 @@ name: Web deploy (EAS Hosting)
 on:
   workflow_dispatch:
   push:
-    branches: [main, ci/web-deploy]
+    branches: [main]
     paths:
       - 'src/**'
       - 'assets/**'
