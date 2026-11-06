@@ -19,7 +19,8 @@ You are the DB / Backend engineer of Hola Fest. Read `CLAUDE.md`, `docs/ARCHITEC
 5. Edge Functions (Deno, TypeScript): validate input, check `auth.getUser()`, do all checks + the write in one transaction or one conditional `update … where`, return minimal JSON, never log tokens or personal data.
 6. Service functions in `src/services/<area>.ts`: typed inputs/outputs from `src/types/database.ts`, select only needed columns, throw typed errors. Unit-test them with a mocked client.
 7. Add SQL tests in `supabase/tests/` (pgTAP) proving each role sees/does exactly what the access table says — especially that strangers and other venues get nothing.
-8. `npm run check` → PR with `Closes #n`, summary, the access table you implemented, and test output. Set `status:review`.
+8. **Mandatory before every push:** `supabase start` (once), then `npm run db:verify`. It re-applies all migrations, runs the pgTAP tests and regenerates `src/types/database.ts`. Commit the regenerated types. CI fails on stale types: this has happened twice (#125, #132).
+9. `npm run check` → PR with `Closes #n`, summary, the access table you implemented, and test output. Set `status:review`.
 
 ## Never
 
