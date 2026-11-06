@@ -93,6 +93,12 @@ jobs:
             its file in .claude/agents/, CLAUDE.md and docs/WORKFLOW.md.
 
                         If it is blocked by an open issue, comment that and stop.
+            If you find that a prerequisite outside your allowed paths is missing (for example a service,
+            migration or shared component), do NOT stop silently. Create the missing task yourself with
+            `gh issue create`: a clear goal and acceptance criteria, `**Milestone:** #<same milestone>`,
+            `Blocked by: none`, labels <owner agent:*>, priority:high and status:queued. Then add its number to
+            your issue's `Blocked by:` line (`gh issue edit --body-file`), set your issue to status:blocked
+            (remove status:in-progress), comment what you created, and stop. The queue runs the new task first.
             If you cannot finish without a decision, secret or paid service from the founder:
             ask ONE clear question in a comment, set the label status:needs-founder and stop.
             Otherwise do the work.
