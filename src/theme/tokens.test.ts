@@ -1,5 +1,5 @@
 import { contrastRatio } from './contrast';
-import { brand, palettes, ticket, type ColorScheme } from './tokens';
+import { brand, palettes, scanResult, ticket, type ColorScheme } from './tokens';
 
 const AA_TEXT = 4.5;
 
@@ -38,6 +38,15 @@ describe.each<ColorScheme>(['dark', 'light'])('%s palette', (scheme) => {
     ['muted text on raised surface', p.textMuted, p.surfaceRaised],
     ['danger on background', p.danger, p.background],
     ['danger on raised surface', p.danger, p.surfaceRaised],
+  ])('%s meets WCAG AA', (_label, fg, bg) => {
+    expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(AA_TEXT);
+  });
+});
+
+describe('scan result colors', () => {
+  it.each([
+    ['ink on success', scanResult.ink, scanResult.success],
+    ['ink on failure', scanResult.ink, scanResult.failure],
   ])('%s meets WCAG AA', (_label, fg, bg) => {
     expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(AA_TEXT);
   });

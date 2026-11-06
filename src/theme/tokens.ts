@@ -18,6 +18,13 @@ export const ticket = {
   inkMuted: '#52525B',
 } as const;
 
+/** Full-screen scan verdict for hosts: bright, unmistakable, same in both themes. Text on it is `ink` (black). */
+export const scanResult = {
+  success: '#22C55E',
+  failure: '#EF4444',
+  ink: '#000000',
+} as const;
+
 export type ColorScheme = 'dark' | 'light';
 
 export interface Palette {
