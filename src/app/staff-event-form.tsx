@@ -10,5 +10,16 @@ export default function StaffEventFormScreen() {
   const { session, isAnonymous } = useSession();
 
   if (!session || isAnonymous) return <Redirect href="/staff-login" />;
-  return <EventFormArea eventId={id} onSaved={() => router.back()} />;
+  return (
+    <EventFormArea
+      eventId={id}
+      onSaved={() => router.back()}
+      onCreateOffer={(eventId) =>
+        router.push({ pathname: '/staff-offer-form', params: { eventId } })
+      }
+      onOpenOffer={(eventId, offerId) =>
+        router.push({ pathname: '/staff-offer-form', params: { eventId, id: offerId } })
+      }
+    />
+  );
 }

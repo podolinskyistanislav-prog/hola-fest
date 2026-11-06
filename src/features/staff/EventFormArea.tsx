@@ -6,13 +6,50 @@ import { t } from '@/lib/i18n';
 import { space, useTheme } from '@/theme';
 
 import { EventForm } from './EventForm';
+import { EventOffersSection } from './EventOffersSection';
+import { useEventOffers } from './useEventOffers';
 import { emptyEventForm, eventToFormValues } from './eventFormValidation';
 import { useEventEditor } from './useEventEditor';
 
-type EventFormAreaProps = { eventId?: string; onSaved?: () => void };
+type EventFormAreaProps = {
+  eventId?: string;
+  onSaved?: () => void;
+  onCreateOffer?: (eventId: string) => void;
+  onOpenOffer?: (eventId: string, offerId: string) => void;
+};
 
-/** Admin screen content: create a new event or edit an existing one of my venue. */
-export function EventFormArea({ eventId, onSaved }: EventFormAreaProps) {
+function EventOffers({
+  eventId,
+  onCreateOffer,
+  onOpenOffer,
+}: {
+  eventId: string;
+  onCreateOffer?: (eventId: string) => void;
+  onOpenOffer?: (eventId: string, offerId: string) => void;
+}) {
+  const { offers, isLoading, isError, isToggleError, retry, toggleActive } =
+    useEventOffers(eventId);
+  return (
+    <EventOffersSection
+      offers={offers}
+      isLoading={isLoading}
+      isError={isError}
+      isToggleError={isToggleError}
+      onRetry={retry}
+      onCreate={onCreateOffer ? () => onCreateOffer(eventId) : undefined}
+      onOpenOffer={onOpenOffer ? (offerId) => onOpenOffer(eventId, offerId) : undefined}
+      onToggleActive={toggleActive}
+    />
+  );
+}
+
+/** Admin screen content: create a new event or edit an existing one of my venue, with its offers. */
+export function EventFormArea({
+  eventId,
+  onSaved,
+  onCreateOffer,
+  onOpenOffer,
+}: EventFormAreaProps) {
   const { colors } = useTheme();
   const editor = useEventEditor(eventId);
 
@@ -45,6 +82,11 @@ export function EventFormArea({ eventId, onSaved }: EventFormAreaProps) {
       isNew={eventId === undefined}
       isSaving={editor.isSaving}
       isSaveError={editor.isSaveError}
+      footer={
+        eventId === undefined ? undefined : (
+          <EventOffers eventId={eventId} onCreateOffer={onCreateOffer} onOpenOffer={onOpenOffer} />
+        )
+      }
       onSubmit={(submission) => {
         void editor.save(submission).then((ok) => {
           if (ok) onSaved?.();

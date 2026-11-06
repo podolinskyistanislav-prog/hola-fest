@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -27,6 +27,8 @@ export type EventFormProps = {
   isSaving: boolean;
   isSaveError: boolean;
   onSubmit: (submission: EventSubmission) => void;
+  /** Content below the save button, e.g. the offers of an existing event. */
+  footer?: ReactNode;
 };
 
 /** Create/edit event form. Errors appear per field after the first save attempt. */
@@ -36,6 +38,7 @@ export function EventForm({
   isSaving,
   isSaveError,
   onSubmit,
+  footer,
 }: EventFormProps) {
   const { colors } = useTheme();
   const [values, setValues] = useState(initialValues);
@@ -116,6 +119,7 @@ export function EventForm({
           disabled={isSaving}
           onPress={submit}
         />
+        {footer}
       </ScrollView>
     </SafeAreaView>
   );
