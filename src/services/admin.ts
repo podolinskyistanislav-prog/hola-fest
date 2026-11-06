@@ -259,6 +259,20 @@ export async function getVenueEvent(eventId: string): Promise<AdminEvent> {
   return toAdminEvent(data);
 }
 
+/** Every offer of an event, inactive and expired included, newest first. RLS limits this to venue admins. */
+export async function listEventOffers(eventId: string): Promise<AdminOffer[]> {
+  const { data, error } = await supabase
+    .from('offers')
+    .select(OFFER_COLUMNS)
+    .eq('event_id', eventId)
+    .order('created_at', { ascending: false })
+    .returns<OfferRow[]>();
+
+  // A malformed id (22P02) is as good as an unknown one.
+  if (error) throw error.code === '22P02' ? new AdminError('not_found') : toAdminError(error);
+  return (data ?? []).map(toAdminOffer);
+}
+
 /** Activates an offer or hides it from guests without deleting its claims. */
 export async function setOfferActive(offerId: string, isActive: boolean): Promise<AdminOffer> {
   const { data, error } = await supabase
