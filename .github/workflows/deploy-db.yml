@@ -12,6 +12,7 @@ on:
     paths:
       - 'supabase/migrations/**'
       - 'supabase/seed.sql'
+      - 'supabase/functions/**'
   workflow_dispatch:
     inputs:
       include_seed:
@@ -55,3 +56,12 @@ jobs:
           else
             supabase db push --remote --yes
           fi
+      - name: Deploy Edge Functions
+        run: |
+          for dir in supabase/functions/*/; do
+            name=$(basename "$dir")
+            case "$name" in _*) continue ;; esac
+            [ -f "$dir/index.ts" ] || continue
+            echo "Deploying $name"
+            supabase functions deploy "$name" --project-ref "$SUPABASE_PROJECT_ID"
+          done
