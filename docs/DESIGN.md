@@ -68,6 +68,10 @@ Black or white ground, Hola yellow and pink as the only accents, big soft corner
 
 `QRTicket` shows a claim as a big QR with offer title, venue and valid-until (already formatted). The card is always white paper with black ink (`ticket` tokens), in both themes, with a 4-module quiet zone, so scanners read it. It is drawn with plain views (library `toqr` encodes the matrix), so it works offline. Only the `active` state shows the code; `redeemed` and `expired` replace it with a status message so a stale ticket cannot be scanned. The token is never shown as text. Fetching and storing the token belongs to the screen.
 
+## Scan result
+
+`ScanResult` is the full-width verdict a host sees after scanning a ticket: a green ✅ (`success`) or a red ❌ (`failure` with a reason: already used, wrong venue, expired, unknown). Colors come from `scanResult` tokens, identical in both themes, with black text (contrast asserted in `tokens.test.ts`). The headline is large so it reads in a dark club. It is announced to screen readers as an alert, and `onNext` ("Далі") returns to scanning. Pure: the camera and the server call live in the screen.
+
 ## Event covers (until real photos exist)
 
 A yellow or pink block with the 4-point Hola star in the other accent color, as in the mockups.
