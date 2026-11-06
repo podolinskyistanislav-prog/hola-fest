@@ -2,6 +2,7 @@ import type { DayStripDay } from '@/components/ui';
 import { t, type TranslationKey } from '@/lib/i18n';
 import {
   addKyivDays,
+  endsBeforeCurfew,
   dayKeyParts,
   formatKyivTime,
   kyivDayKey,
@@ -28,6 +29,30 @@ export function formatEventDay(date: Date): string {
 export function formatPriceFrom(priceFromUah: number | null): string | undefined {
   if (priceFromUah === null) return undefined;
   return t('events.priceFrom').replace('{price}', String(priceFromUah));
+}
+
+/** "Сьогодні, 20:00 – 23:30" (or "5 листопада, 20:00" without an end), all in Kyiv time. */
+export function formatEventWhen(startsAt: Date, endsAt: Date | null, now: Date): string {
+  const day =
+    kyivDayKey(startsAt) === kyivDayKey(now) ? t('event.today') : formatEventDay(startsAt);
+  const start = formatEventTime(startsAt);
+  const range = endsAt ? `${start} – ${formatEventTime(endsAt)}` : start;
+  return `${day}, ${range}`;
+}
+
+export type CurfewInfo = { label: string; ok: boolean };
+
+/** The curfew chip: a check when the event ends in time, a placeholder otherwise (or when the end is unknown). */
+export function curfewInfo(startsAt: Date, endsAt: Date | null): CurfewInfo {
+  if (endsAt !== null && endsBeforeCurfew(startsAt, endsAt)) {
+    return { label: t('event.curfewOk'), ok: true };
+  }
+  return { label: t('event.curfewUnknown'), ok: false };
+}
+
+/** "Покажи QR на вході до 22:00" from the offer end time. */
+export function offerCondition(validUntil: Date): string {
+  return t('event.offerCondition').replace('{time}', formatEventTime(validUntil));
 }
 
 /** The seven days (Monday to Sunday) of the Kyiv week containing `date`, ready for DayStrip. */

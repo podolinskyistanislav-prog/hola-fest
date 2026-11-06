@@ -95,6 +95,16 @@ export function kyivWeekStartKey(key: string): string {
   return addKyivDays(key, -((kyivWeekday(key) + 6) % DAYS_IN_WEEK));
 }
 
+/** Curfew in Kyiv starts at 00:00. The only place this value lives. */
+export const CURFEW_KYIV_HOUR = 0;
+
+/** True when `endsAt` is no later than the curfew that follows the Kyiv evening of `startsAt`. */
+export function endsBeforeCurfew(startsAt: Date, endsAt: Date): boolean {
+  const nextDay = addKyivDays(kyivDayKey(startsAt), 1);
+  const curfew = kyivDayStart(nextDay).getTime() + CURFEW_KYIV_HOUR * 3_600_000;
+  return endsAt.getTime() <= curfew;
+}
+
 function samePartsAs(a: KyivParts, b: KyivParts): boolean {
   return (
     a.year === b.year &&
