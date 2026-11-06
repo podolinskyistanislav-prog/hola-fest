@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import { TaxiBar } from '@/components/TaxiBar';
 import { AppText, Button, Chip, GlassSurface, OfferRow } from '@/components/ui';
 import { ClaimOfferButton } from '@/features/offers';
 import { t } from '@/lib/i18n';
@@ -88,6 +89,15 @@ export function EventDetails({
             onPress={() => onOpenVenue(event.venue.id)}
           />
         </View>
+
+        <TaxiBar
+          destination={{
+            name: event.venue.name,
+            address: event.venue.address,
+            lat: event.venue.lat,
+            lng: event.venue.lng,
+          }}
+        />
 
         {event.description ? <AppText>{event.description}</AppText> : null}
 

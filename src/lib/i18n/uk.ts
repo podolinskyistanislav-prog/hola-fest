@@ -100,6 +100,8 @@ export const uk = {
   'venue.noAddress': 'Адресу буде додано згодом',
   'venue.upcoming': 'Найближчі події',
   'venue.upcomingEmpty': 'Найближчих подій поки немає.',
+  'taxi.title': 'Дістатися таксі',
+  'taxi.openFailed': 'Не вдалося відкрити таксі-застосунок. Спробуй інший або відкрий його вручну.',
   'scanner.loading': 'Готуємо камеру',
   'scanner.permissionTitle': 'Потрібен доступ до камери',
   'scanner.permissionBody': 'Камера потрібна, щоб сканувати QR-коди гостей.',
