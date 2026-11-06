@@ -14,19 +14,17 @@ on:
       api_level:
         description: 'Android API level'
         default: '34'
-  push:
-    branches: [ci/android-smoke]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
-      APK_URL: ${{ inputs.apk_url || 'https://expo.dev/artifacts/eas/CYsley-KxBXlsPl752y6bTjguFbJKtwLH6_Gkiq3N6w.apk' }}
-      API_LEVEL: ${{ inputs.api_level || '34' }}
+      APK_URL: ${{ inputs.apk_url }}
+      API_LEVEL: ${{ inputs.api_level }}
     steps:
       - name: Enable KVM
         run: |
@@ -61,12 +59,3 @@ jobs:
             logcat.txt
             screen.png
           if-no-files-found: ignore
-      - name: Publish screenshot to ci-screenshots branch
-        if: always()
-        run: |
-          [ -f screen.png ] || exit 0
-          git config --global user.name github-actions
-          git config --global user.email github-actions@users.noreply.github.com
-          git clone --depth 1 --branch ci-screenshots "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" shots
-          mkdir -p shots/android && cp screen.png shots/android/smoke.png
-          cd shots && git add android/smoke.png && git commit -m "android smoke screenshot ${{ github.run_id }}" && git push
