@@ -18,6 +18,7 @@ export function TextField({
   label,
   error,
   secure = false,
+  multiline = false,
   editable = true,
   onFocus,
   onBlur,
@@ -48,6 +49,8 @@ export function TextField({
           placeholderTextColor={colors.textMuted}
           selectionColor={colors.accent}
           autoCapitalize="none"
+          multiline={multiline}
+          textAlignVertical={multiline ? 'top' : 'center'}
           {...rest}
           onFocus={(event) => {
             setFocused(true);
@@ -57,7 +60,12 @@ export function TextField({
             setFocused(false);
             onBlur?.(event);
           }}
-          style={[styles.input, typography.body, { color: colors.text }]}
+          style={[
+            styles.input,
+            multiline && styles.multiline,
+            typography.body,
+            { color: colors.text },
+          ]}
         />
         {secure ? (
           <Pressable
@@ -87,6 +95,8 @@ export function TextField({
   );
 }
 
+const MULTILINE_MIN_HEIGHT = 96;
+
 const styles = StyleSheet.create({
   container: { gap: space.xs },
   field: {
@@ -98,6 +108,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
   },
   input: { flex: 1, minHeight: touchTarget, paddingVertical: space.sm },
+  multiline: { minHeight: MULTILINE_MIN_HEIGHT },
   toggle: { minHeight: touchTarget, justifyContent: 'center', paddingLeft: space.md },
   disabled: { opacity: 0.5 },
 });
