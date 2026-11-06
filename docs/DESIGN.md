@@ -28,6 +28,12 @@ Black or white ground, Hola yellow and pink as the only accents, big soft corner
 - Use `TextField` (label above, raised-surface input, `radius.control`, height ≥ 44). Never a bare `TextInput`.
 - Error: `colors.danger` border and message under the field, announced to screen readers. Validation logic lives outside the component.
 - `secure` hides the text and adds a show/hide toggle with an accessibility label.
+- `multiline` gives a taller top-aligned input (description fields).
+
+## Admin form fields
+
+- Built on `TextField`: same label, error state and 44pt targets, both themes. `DateTimeField` (typed `ДД.ММ.РРРР ГГ:ХХ`, local time, reports `Date | null`), `SwitchField` (published/active, role `switch`), `StringListField` (lineup rows with add/remove).
+- They hold no form logic: range checks and dropping empty rows belong to the form.
 
 ## Typography
 
