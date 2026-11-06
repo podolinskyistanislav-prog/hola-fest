@@ -1,4 +1,4 @@
-import { EventsError, getEventById, getEventsForDay, getEventsForRange } from './events';
+import { EventsError, getEventById, getEventsForRange } from './events';
 import { supabase } from './supabase';
 
 jest.mock('./supabase', () => ({ supabase: { from: jest.fn() } }));
@@ -111,15 +111,6 @@ describe('getEventsForRange', () => {
       code: 'invalid_range',
     });
     expect(from).not.toHaveBeenCalled();
-  });
-});
-
-describe('getEventsForDay', () => {
-  it('queries from local midnight to the next local midnight', async () => {
-    const q = mockQuery({ data: [], error: null });
-    await getEventsForDay(new Date(2026, 10, 5, 15, 30));
-    expect(q.gte).toHaveBeenCalledWith('starts_at', new Date(2026, 10, 5).toISOString());
-    expect(q.lt).toHaveBeenCalledWith('starts_at', new Date(2026, 10, 6).toISOString());
   });
 });
 

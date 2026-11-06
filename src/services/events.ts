@@ -117,13 +117,6 @@ export async function getEventsForRange(from: Date, to: Date): Promise<EventSumm
   return (data ?? []).map(toSummary);
 }
 
-/** Events starting on the given local calendar day. */
-export async function getEventsForDay(date: Date): Promise<EventSummary[]> {
-  const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const end = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-  return getEventsForRange(start, end);
-}
-
 /** One published event with its venue and active offers, or null if not visible. */
 export async function getEventById(id: string): Promise<EventDetails | null> {
   const { data, error } = await supabase
