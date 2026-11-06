@@ -14,6 +14,7 @@ jest.mock('expo-glass-effect', () => {
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }),
 }));
+jest.mock('@/services/claims', () => ({ claimOffer: jest.fn() }));
 jest.mock('@/services/events', () => ({
   getEventsForDay: jest.fn(),
   getEventsForRange: jest.fn(),
@@ -49,7 +50,12 @@ async function renderScreen() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   await render(
     <QueryClientProvider client={client}>
-      <EventScreenContent eventId="e1" onBack={onBack} onOpenVenue={onOpenVenue} />
+      <EventScreenContent
+        eventId="e1"
+        onBack={onBack}
+        onOpenVenue={onOpenVenue}
+        onClaimed={jest.fn()}
+      />
     </QueryClientProvider>,
   );
 }

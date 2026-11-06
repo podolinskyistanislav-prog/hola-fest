@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { AppText, Button, Chip, GlassSurface, OfferRow } from '@/components/ui';
+import { ClaimOfferButton } from '@/features/offers';
 import { t } from '@/lib/i18n';
 import { brand, radius, space } from '@/theme';
 import type { EventDetails as EventDetailsData, EventOffer } from '@/types/events';
@@ -14,6 +15,8 @@ export interface EventDetailsProps {
   safeAreaBottom: number;
   onBack: () => void;
   onOpenVenue: (venueId: string) => void;
+  /** Called after an offer was claimed, to open its ticket. */
+  onClaimed: (offerId: string) => void;
   /** Injectable clock for the "expired" offer status. */
   now?: Date;
 }
@@ -39,12 +42,13 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-/** Event page: cover, when/where/price, lineup and the list of offers. Claiming is not wired yet. */
+/** Event page: cover, when/where/price, lineup and the list of offers. */
 export function EventDetails({
   event,
   safeAreaBottom,
   onBack,
   onOpenVenue,
+  onClaimed,
   now = new Date(),
 }: EventDetailsProps) {
   const price = formatPriceFrom(event.priceFromUah);
@@ -108,6 +112,7 @@ export function EventDetails({
                   title={offer.title}
                   terms={offer.terms ?? ''}
                   status={offerStatus(offer, now)}
+                  action={<ClaimOfferButton offerId={offer.id} onClaimed={onClaimed} />}
                 />
               ))}
             </View>

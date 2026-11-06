@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, type Href } from 'expo-router';
 import { View } from 'react-native';
 
 import { EventScreenContent } from '@/features/events';
@@ -15,6 +15,7 @@ export default function EventScreen() {
         eventId={id}
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         onOpenVenue={(venueId) => router.push({ pathname: '/venue/[id]', params: { id: venueId } })}
+        onClaimed={(offerId) => router.push(`/ticket/${offerId}` as Href)}
       />
     </View>
   );

@@ -12,13 +12,19 @@ export interface EventScreenContentProps {
   eventId: string | undefined;
   onBack: () => void;
   onOpenVenue: (venueId: string) => void;
+  onClaimed: (offerId: string) => void;
 }
 
 const SKELETON_HEIGHT = 220;
 const SCREEN_TOP = 96;
 
 /** Loads one event and shows it, or a designed loading / error / not-found state. */
-export function EventScreenContent({ eventId, onBack, onOpenVenue }: EventScreenContentProps) {
+export function EventScreenContent({
+  eventId,
+  onBack,
+  onOpenVenue,
+  onClaimed,
+}: EventScreenContentProps) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const event = useEvent(eventId);
@@ -66,6 +72,7 @@ export function EventScreenContent({ eventId, onBack, onOpenVenue }: EventScreen
       safeAreaBottom={insets.bottom}
       onBack={onBack}
       onOpenVenue={onOpenVenue}
+      onClaimed={onClaimed}
     />
   );
 }

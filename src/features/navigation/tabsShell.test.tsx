@@ -27,6 +27,7 @@ jest.mock('react-native-maps', () => ({
   default: () => null,
   Marker: () => null,
 }));
+jest.mock('@/services/claims', () => ({ claimOffer: jest.fn() }));
 jest.mock('@/services/venues', () => ({
   getPublishedVenues: jest.fn().mockResolvedValue([]),
 }));
