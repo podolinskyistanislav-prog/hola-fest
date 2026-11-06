@@ -60,7 +60,9 @@
     "test": "jest",
     "format": "prettier --write .",
     "check": "npm run lint && npm run typecheck && npm run test",
-    "screenshots": "tsx scripts/screenshots/run.ts"
+    "screenshots": "tsx scripts/screenshots/run.ts",
+    "db:types": "supabase gen types typescript --local > src/types/database.ts && prettier --write src/types/database.ts",
+    "db:verify": "supabase db reset && supabase test db && npm run db:types"
   },
   "private": true,
   "jest": {

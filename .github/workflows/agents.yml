@@ -103,8 +103,8 @@ jobs:
 
             Database work: a real local Supabase is available. Run `supabase start`, then
             `supabase db reset` (applies all migrations) and `supabase test db` (pgTAP tests).
-            Generate types with `supabase gen types typescript --local > src/types/database.ts`
-            and run `npx prettier --write src/types/database.ts`. Never hand-write generated types.
+            After ANY change under supabase/, run `npm run db:verify` before pushing (reset + tests +
+            regenerated src/types/database.ts) and commit the types. Never hand-write generated types.
             Do not say "done" unless migrations apply and all DB tests pass.
 
             Finish: commit, push, and OPEN THE PULL REQUEST YOURSELF with
