@@ -13,7 +13,7 @@ jest.mock('expo-glass-effect', () => {
 
 describe('formatDateTime / parseDateTime', () => {
   it('round-trips a local date and time', () => {
-    const date = new Date(2026, 5, 13, 21, 5);
+    const date = new Date('2026-06-13T18:05:00Z');
     expect(formatDateTime(date)).toBe('13.06.2026 21:05');
     expect(parseDateTime('13.06.2026 21:05')?.getTime()).toBe(date.getTime());
   });
@@ -23,13 +23,24 @@ describe('formatDateTime / parseDateTime', () => {
     expect(parseDateTime('31.02.2026 10:00')).toBeNull();
     expect(parseDateTime('13.06.2026 25:00')).toBeNull();
     expect(parseDateTime('')).toBeNull();
+    expect(parseDateTime('29.03.2026 03:30')).toBeNull();
+  });
+
+  it('uses winter time (UTC+2) in winter', () => {
+    const date = new Date('2026-01-15T10:00:00Z');
+    expect(formatDateTime(date)).toBe('15.01.2026 12:00');
+    expect(parseDateTime('15.01.2026 12:00')?.toISOString()).toBe(date.toISOString());
   });
 });
 
 describe('DateTimeField', () => {
   it('shows the formatted value', async () => {
     await render(
-      <DateTimeField label="Початок" value={new Date(2026, 5, 13, 21, 5)} onChange={jest.fn()} />,
+      <DateTimeField
+        label="Початок"
+        value={new Date('2026-06-13T18:05:00Z')}
+        onChange={jest.fn()}
+      />,
     );
     expect(screen.getByLabelText('Початок')).toHaveProp('value', '13.06.2026 21:05');
   });
@@ -38,7 +49,7 @@ describe('DateTimeField', () => {
     const onChange = jest.fn();
     await render(<DateTimeField label="Початок" value={null} onChange={onChange} />);
     await fireEvent.changeText(screen.getByLabelText('Початок'), '13.06.2026 21:05');
-    expect(onChange).toHaveBeenLastCalledWith(new Date(2026, 5, 13, 21, 5));
+    expect(onChange).toHaveBeenLastCalledWith(new Date('2026-06-13T18:05:00Z'));
     await fireEvent.changeText(screen.getByLabelText('Початок'), '13.06');
     expect(onChange).toHaveBeenLastCalledWith(null);
   });

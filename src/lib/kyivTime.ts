@@ -94,3 +94,28 @@ export function kyivDayStart(key: string): Date {
 export function kyivWeekStartKey(key: string): string {
   return addKyivDays(key, -((kyivWeekday(key) + 6) % DAYS_IN_WEEK));
 }
+
+function samePartsAs(a: KyivParts, b: KyivParts): boolean {
+  return (
+    a.year === b.year &&
+    a.month === b.month &&
+    a.day === b.day &&
+    a.hour === b.hour &&
+    a.minute === b.minute
+  );
+}
+
+/**
+ * The instant when Kyiv's clock shows `wall` (month 0-based, like `kyivParts`).
+ * Returns null for impossible dates and for times skipped by the spring DST jump;
+ * for the repeated autumn hour the earlier instant is returned.
+ */
+export function fromKyivParts(wall: KyivParts): Date | null {
+  const asUtc = Date.UTC(wall.year, wall.month, wall.day, wall.hour, wall.minute);
+  // Kyiv is UTC+3 in summer and UTC+2 in winter: try the earlier instant first.
+  for (const offsetHours of [3, 2]) {
+    const candidate = new Date(asUtc - offsetHours * 3_600_000);
+    if (samePartsAs(kyivParts(candidate), wall)) return candidate;
+  }
+  return null;
+}

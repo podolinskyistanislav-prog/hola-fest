@@ -2,6 +2,7 @@ import {
   addKyivDays,
   dayKeyParts,
   formatKyivTime,
+  fromKyivParts,
   kyivDayKey,
   kyivDayStart,
   kyivWeekday,
@@ -39,5 +40,25 @@ describe('kyivTime', () => {
     expect(kyivWeekStartKey('2026-11-04')).toBe('2026-11-02');
     expect(kyivWeekStartKey('2026-11-08')).toBe('2026-11-02');
     expect(kyivWeekStartKey('2026-11-02')).toBe('2026-11-02');
+  });
+
+  it('converts a Kyiv wall clock back to the instant', () => {
+    expect(
+      fromKyivParts({ year: 2026, month: 5, day: 13, hour: 21, minute: 5 })?.toISOString(),
+    ).toBe('2026-06-13T18:05:00.000Z');
+    expect(
+      fromKyivParts({ year: 2026, month: 10, day: 4, hour: 20, minute: 0 })?.toISOString(),
+    ).toBe(WINTER_EVENING.toISOString());
+  });
+
+  it('rejects impossible and DST-skipped wall clocks', () => {
+    expect(fromKyivParts({ year: 2026, month: 1, day: 31, hour: 10, minute: 0 })).toBeNull();
+    expect(fromKyivParts({ year: 2026, month: 2, day: 29, hour: 3, minute: 30 })).toBeNull();
+  });
+
+  it('picks the earlier instant in the repeated autumn hour', () => {
+    expect(
+      fromKyivParts({ year: 2026, month: 9, day: 25, hour: 3, minute: 30 })?.toISOString(),
+    ).toBe('2026-10-25T00:30:00.000Z');
   });
 });

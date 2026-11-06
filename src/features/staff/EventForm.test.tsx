@@ -29,7 +29,7 @@ describe('EventForm', () => {
     await fireEvent.changeText(screen.getByLabelText('Початок'), '07.11.2026 20:00');
     await fireEvent.press(screen.getByLabelText('Зберегти'));
     expect(onSubmit).toHaveBeenCalledWith({
-      input: expect.objectContaining({ title: 'Ніч', startsAt: new Date(2026, 10, 7, 20, 0) }),
+      input: expect.objectContaining({ title: 'Ніч', startsAt: new Date('2026-11-07T18:00:00Z') }),
       status: 'draft',
     });
   });

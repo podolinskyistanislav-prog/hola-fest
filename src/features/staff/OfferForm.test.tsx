@@ -39,7 +39,7 @@ describe('OfferForm', () => {
         terms: null,
         maxClaims: 30,
         perUserLimit: 1,
-        validUntil: new Date(2026, 10, 8, 23, 0),
+        validUntil: new Date('2026-11-08T21:00:00Z'),
       },
       isActive: true,
     });
