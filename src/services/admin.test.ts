@@ -3,6 +3,7 @@ import {
   createEvent,
   createOffer,
   getMyVenues,
+  getVenueEvent,
   listVenueEvents,
   setEventStatus,
   setOfferActive,
@@ -287,5 +288,37 @@ describe('cross-venue safety', () => {
     const offerQuery = mockQuery({ data: offerRow, error: null });
     await setOfferActive('o1', false);
     expect(offerQuery.update).toHaveBeenCalledWith({ is_active: false });
+  });
+});
+
+describe('getVenueEvent', () => {
+  it('returns a draft event with all editable fields', async () => {
+    const q = mockQuery({ data: eventRow, error: null });
+
+    const event = await getVenueEvent('e1');
+
+    expect(from).toHaveBeenCalledWith('events');
+    expect(q.eq).toHaveBeenCalledWith('id', 'e1');
+    expect(event).toEqual({
+      id: 'e1',
+      venueId: 'v1',
+      title: 'Night',
+      description: null,
+      lineup: [],
+      startsAt: new Date('2026-12-01T20:00:00.000Z'),
+      endsAt: null,
+      priceFromUah: 200,
+      status: 'draft',
+    });
+  });
+
+  it.each(['PGRST116', '22P02'])('maps %s to not_found', async (code) => {
+    mockQuery({ data: null, error: { code } });
+    expect(await codeOf(getVenueEvent('x'))).toBe('not_found');
+  });
+
+  it('maps a network failure', async () => {
+    mockQuery({ data: null, error: { message: 'Failed to fetch' } });
+    expect(await codeOf(getVenueEvent('e1'))).toBe('network');
   });
 });
