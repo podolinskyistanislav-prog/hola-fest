@@ -100,4 +100,17 @@ export const uk = {
   'venue.noAddress': 'Адресу буде додано згодом',
   'venue.upcoming': 'Найближчі події',
   'venue.upcomingEmpty': 'Найближчих подій поки немає.',
+  'scanner.loading': 'Готуємо камеру',
+  'scanner.permissionTitle': 'Потрібен доступ до камери',
+  'scanner.permissionBody': 'Камера потрібна, щоб сканувати QR-коди гостей.',
+  'scanner.permissionDeniedBody':
+    'Доступ до камери вимкнено. Увімкни його в налаштуваннях телефону.',
+  'scanner.permissionAllow': 'Дозволити камеру',
+  'scanner.cameraLabel': 'Камера для сканування QR-коду',
+  'scanner.hint': 'Наведи камеру на QR-код гостя',
+  'scanner.checking': 'Перевіряємо…',
+  'scanner.errorTitle': 'Не вдалося перевірити квиток',
+  'scanner.errorBody': 'Перевір з’єднання й спробуй ще раз.',
+  'scanner.retry': 'Сканувати знову',
+  'scanner.back': 'Назад',
 } as const;
