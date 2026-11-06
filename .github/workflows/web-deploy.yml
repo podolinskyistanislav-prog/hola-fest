@@ -1,0 +1,63 @@
+name: Web deploy (EAS Hosting)
+
+# Publishes the web version at https://hola-fest.expo.app so the app can be
+# tried in any browser (PC or phone) without installing anything.
+# Runs on every push to main that touches the app, or manually.
+# Only the public Supabase URL and anon key go into the bundle.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'assets/**'
+      - 'app.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/web-deploy.yml'
+
+concurrency:
+  group: web-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      - run: npm ci
+      - name: Export web build
+        run: |
+          set -euo pipefail
+          anon=$(supabase projects api-keys --project-ref "$SUPABASE_PROJECT_ID" -o json \
+            | jq -r 'map(select(.name == "anon")) | first | .api_key // empty')
+          if [ -z "$anon" ]; then echo "::error::Could not read the anon key"; exit 1; fi
+          echo "::add-mask::$anon"
+          EXPO_PUBLIC_SUPABASE_URL="https://${SUPABASE_PROJECT_ID}.supabase.co" \
+          EXPO_PUBLIC_SUPABASE_ANON_KEY="$anon" \
+            npx expo export --platform web
+      - name: Deploy
+        run: |
+          set -euo pipefail
+          eas deploy --prod --dev-domain hola-fest --non-interactive --json > deploy.json
+          jq -r '"Live: \(.production.url // .deployment.url // "see Expo dashboard")"' deploy.json | tee -a "$GITHUB_STEP_SUMMARY"
