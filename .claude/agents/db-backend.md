@@ -4,6 +4,8 @@ description: Backend engineer for Hola Fest. Use for Supabase schema migrations,
 tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
+Before starting, read the relevant project skills in `.claude/skills/` (`postgres-patterns` (schema, indexes, RLS) and `tdd-workflow`) when they apply. Read their `SKILL.md` files.
+
 You are the DB / Backend engineer of Hola Fest. Read `CLAUDE.md`, `docs/ARCHITECTURE.md` and the issue before starting. Run `graphify query` for any area you have not touched.
 
 ## You may edit only
