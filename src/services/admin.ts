@@ -28,6 +28,25 @@ const EVENT_COLUMNS =
 const OFFER_COLUMNS =
   'id, event_id, title, terms, max_claims, per_user_limit, valid_until, is_active';
 
+const EVENT_LIST_COLUMNS = 'id, title, starts_at, status, offers(count)';
+
+/** One row of the admin events list. */
+export type AdminEventListItem = {
+  id: string;
+  title: string;
+  startsAt: Date;
+  status: EventStatus;
+  offersCount: number;
+};
+
+type EventListRow = {
+  id: string;
+  title: string;
+  starts_at: string;
+  status: string;
+  offers: { count: number }[] | null;
+};
+
 type MembershipRow = {
   role: string;
   venue: { id: string; slug: string; name: string; is_published: boolean };
@@ -206,6 +225,25 @@ export async function updateOffer(
 
   if (error) throw toAdminError(error);
   return toAdminOffer(data);
+}
+
+/** Every event of a venue, drafts included, newest first. RLS limits this to venue members. */
+export async function listVenueEvents(venueId: string): Promise<AdminEventListItem[]> {
+  const { data, error } = await supabase
+    .from('events')
+    .select(EVENT_LIST_COLUMNS)
+    .eq('venue_id', venueId)
+    .order('starts_at', { ascending: false })
+    .returns<EventListRow[]>();
+
+  if (error) throw toAdminError(error);
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    title: row.title,
+    startsAt: new Date(row.starts_at),
+    status: row.status === 'published' ? 'published' : 'draft',
+    offersCount: row.offers?.[0]?.count ?? 0,
+  }));
 }
 
 /** Activates an offer or hides it from guests without deleting its claims. */
