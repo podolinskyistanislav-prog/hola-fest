@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
-      APK_URL: ${{ inputs.apk_url || 'https://expo.dev/artifacts/eas/ZNBrVaYgPqEXhgJl28mvR4nJCj_hO7NLRpM4JTM5w0g.apk' }}
+      APK_URL: ${{ inputs.apk_url || 'https://expo.dev/artifacts/eas/CYsley-KxBXlsPl752y6bTjguFbJKtwLH6_Gkiq3N6w.apk' }}
       API_LEVEL: ${{ inputs.api_level || '34' }}
     steps:
       - name: Enable KVM
@@ -52,9 +52,12 @@ jobs:
             grep -E "FATAL EXCEPTION|AndroidRuntime|ReactNativeJS|ReactNative|Hermes|Error|Exception" logcat.txt | grep -v -E "chatty|GnssHAL" | head -120 || true
             echo "===== process ====="
             adb shell pidof com.holafest.app || echo "app is NOT running"
+            adb exec-out screencap -p > screen.png || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: logcat
-          path: logcat.txt
+          path: |
+            logcat.txt
+            screen.png
           if-no-files-found: ignore
