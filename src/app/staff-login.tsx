@@ -15,7 +15,7 @@ export default function StaffLogin() {
       <AppText variant="title" accessibilityRole="header">
         {t('auth.staffLoginTitle')}
       </AppText>
-      <StaffLoginForm onSignedIn={() => router.back()} />
+      <StaffLoginForm onSignedIn={() => router.replace('/staff')} />
     </SafeAreaView>
   );
 }
