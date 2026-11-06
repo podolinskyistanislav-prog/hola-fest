@@ -90,6 +90,7 @@ export type Database = {
           price_from_uah: number | null;
           starts_at: string;
           status: string;
+          tags: string[];
           title: string;
           venue_id: string;
         };
@@ -104,6 +105,7 @@ export type Database = {
           price_from_uah?: number | null;
           starts_at: string;
           status?: string;
+          tags?: string[];
           title: string;
           venue_id: string;
         };
@@ -117,6 +119,7 @@ export type Database = {
           price_from_uah?: number | null;
           starts_at?: string;
           status?: string;
+          tags?: string[];
           title?: string;
           venue_id?: string;
         };

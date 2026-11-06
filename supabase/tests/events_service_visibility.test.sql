@@ -2,7 +2,7 @@
 -- (getEventsForRange / getEventById): published events of published venues,
 -- active offers only, correct half-open range and ordering.
 begin;
-select plan(9);
+select plan(13);
 
 delete from public.venues;
 
@@ -10,14 +10,14 @@ insert into public.venues (id, slug, name, is_published) values
   ('00000000-0000-0000-0000-0000000000b1', 'shown', 'Shown', true),
   ('00000000-0000-0000-0000-0000000000b3', 'hidden', 'Hidden', false);
 
-insert into public.events (id, venue_id, title, starts_at, status) values
-  ('00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-0000000000b1', 'late',        '2030-01-02 22:00+00', 'published'),
-  ('00000000-0000-0000-0000-0000000000c2', '00000000-0000-0000-0000-0000000000b1', 'early',       '2030-01-02 10:00+00', 'published'),
-  ('00000000-0000-0000-0000-0000000000c3', '00000000-0000-0000-0000-0000000000b1', 'draft',       '2030-01-02 12:00+00', 'draft'),
-  ('00000000-0000-0000-0000-0000000000c4', '00000000-0000-0000-0000-0000000000b3', 'hidden venue', '2030-01-02 12:00+00', 'published'),
-  ('00000000-0000-0000-0000-0000000000c5', '00000000-0000-0000-0000-0000000000b1', 'range end',   '2030-01-03 00:00+00', 'published'),
-  ('00000000-0000-0000-0000-0000000000c6', '00000000-0000-0000-0000-0000000000b1', 'range start', '2030-01-02 00:00+00', 'published'),
-  ('00000000-0000-0000-0000-0000000000c7', '00000000-0000-0000-0000-0000000000b1', 'before',      '2030-01-01 23:59+00', 'published');
+insert into public.events (id, venue_id, title, starts_at, status, tags) values
+  ('00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-0000000000b1', 'late',        '2030-01-02 22:00+00', 'published', '{techno,rooftop}'),
+  ('00000000-0000-0000-0000-0000000000c2', '00000000-0000-0000-0000-0000000000b1', 'early',       '2030-01-02 10:00+00', 'published', '{house}'),
+  ('00000000-0000-0000-0000-0000000000c3', '00000000-0000-0000-0000-0000000000b1', 'draft',       '2030-01-02 12:00+00', 'draft', '{techno}'),
+  ('00000000-0000-0000-0000-0000000000c4', '00000000-0000-0000-0000-0000000000b3', 'hidden venue', '2030-01-02 12:00+00', 'published', '{techno}'),
+  ('00000000-0000-0000-0000-0000000000c5', '00000000-0000-0000-0000-0000000000b1', 'range end',   '2030-01-03 00:00+00', 'published', default),
+  ('00000000-0000-0000-0000-0000000000c6', '00000000-0000-0000-0000-0000000000b1', 'range start', '2030-01-02 00:00+00', 'published', default),
+  ('00000000-0000-0000-0000-0000000000c7', '00000000-0000-0000-0000-0000000000b1', 'before',      '2030-01-01 23:59+00', 'published', default);
 
 insert into public.offers (id, event_id, title, is_active) values
   ('00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000c1', 'active',   true),
@@ -46,6 +46,25 @@ select is((select count(*)::int from public.offers where event_id = '00000000-00
 select is((select count(*)::int from public.offers where event_id = '00000000-0000-0000-0000-0000000000c4'), 0, 'anon cannot read offers of hidden-venue events');
 select is((select count(*)::int from public.events where id = '00000000-0000-0000-0000-0000000000c3'), 0, 'draft event by id is not found');
 select is((select count(*)::int from public.events where id = '00000000-0000-0000-0000-0000000000c4'), 0, 'hidden-venue event by id is not found');
+
+select results_eq(
+  $$select title from public.events where status = 'published' and tags @> array['techno'] order by title$$,
+  array['late'],
+  'tag filter returns published techno events only, never drafts or hidden venues'
+);
+select results_eq(
+  $$select title from public.events where tags @> array['rooftop', 'techno']$$,
+  array['late'],
+  'tag filter matches events carrying all requested tags'
+);
+select is((select count(*)::int from public.events where tags is null), 0, 'tags is never null');
+select results_eq(
+  $$select e.title from public.events e
+    where e.status = 'published'
+      and exists (select 1 from public.offers o where o.event_id = e.id and o.is_active)$$,
+  array['late'],
+  'has-active-offer filter ignores inactive offers and offers of hidden events'
+);
 
 select * from finish();
 rollback;
