@@ -207,3 +207,30 @@ describe('offers', () => {
     expect(await codeOf(setOfferActive('o1', true))).toBe('not_found');
   });
 });
+
+describe('cross-venue safety', () => {
+  it('updateEvent never sends venue_id, so an event cannot be moved to another venue', async () => {
+    const query = mockQuery({ data: eventRow, error: null });
+    await updateEvent('e1', { title: 'New', venueId: 'other' } as never);
+    expect(query.update).toHaveBeenCalledWith(
+      expect.not.objectContaining({ venue_id: expect.anything() }),
+    );
+  });
+
+  it('updateOffer never sends event_id, so an offer cannot be moved to another event', async () => {
+    const query = mockQuery({ data: offerRow, error: null });
+    await updateOffer('o1', { title: 'New', eventId: 'other' } as never);
+    expect(query.update).toHaveBeenCalledWith(
+      expect.not.objectContaining({ event_id: expect.anything() }),
+    );
+  });
+
+  it('setEventStatus and setOfferActive only touch their own column', async () => {
+    const eventQuery = mockQuery({ data: eventRow, error: null });
+    await setEventStatus('e1', 'published');
+    expect(eventQuery.update).toHaveBeenCalledWith({ status: 'published' });
+    const offerQuery = mockQuery({ data: offerRow, error: null });
+    await setOfferActive('o1', false);
+    expect(offerQuery.update).toHaveBeenCalledWith({ is_active: false });
+  });
+});
