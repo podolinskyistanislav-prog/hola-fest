@@ -16,7 +16,7 @@ export class EventsError extends Error {
 }
 
 const VENUE_COLUMNS = 'id, slug, name, address, lat, lng, has_shelter, instagram_url';
-const SUMMARY_COLUMNS = `id, title, starts_at, ends_at, price_from_uah, cover_path, venue:venues!inner(${VENUE_COLUMNS})`;
+const SUMMARY_COLUMNS = `id, title, starts_at, ends_at, price_from_uah, cover_path, tags, venue:venues!inner(${VENUE_COLUMNS})`;
 const DETAILS_COLUMNS = `${SUMMARY_COLUMNS}, description, lineup, offers(id, title, terms, valid_until)`;
 
 type VenueRow = {
@@ -39,6 +39,7 @@ type EventSummaryRow = {
   ends_at: string | null;
   price_from_uah: number | null;
   cover_path: string | null;
+  tags: string[] | null;
   venue: VenueRow;
 };
 
@@ -86,6 +87,7 @@ function toSummary(row: EventSummaryRow): EventSummary {
     endsAt: row.ends_at ? new Date(row.ends_at) : null,
     priceFromUah: row.price_from_uah,
     coverPath: row.cover_path,
+    tags: row.tags ?? [],
     venue: toVenue(row.venue),
   };
 }
@@ -99,15 +101,33 @@ function toDetails(row: EventDetailsRow): EventDetails {
   };
 }
 
-/** Published events of published venues starting in [from, to), earliest first. */
-export async function getEventsForRange(from: Date, to: Date): Promise<EventSummary[]> {
+export type EventsFilter = {
+  /** Only events carrying this genre tag, e.g. `techno`. */
+  tag?: string;
+  /** Only events with at least one active offer. */
+  hasActiveOffer?: boolean;
+};
+
+/**
+ * Published events of published venues starting in [from, to), earliest first,
+ * optionally narrowed by genre tag and/or "has an active offer".
+ */
+export async function getEventsForRange(
+  from: Date,
+  to: Date,
+  filter: EventsFilter = {},
+): Promise<EventSummary[]> {
   if (!(from < to)) throw new EventsError('invalid_range');
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('events')
-    .select(SUMMARY_COLUMNS)
+    .select(filter.hasActiveOffer ? `${SUMMARY_COLUMNS}, offers!inner(id)` : SUMMARY_COLUMNS)
     .eq('status', 'published')
-    .eq('venues.is_published', true)
+    .eq('venues.is_published', true);
+  if (filter.hasActiveOffer) query = query.eq('offers.is_active', true);
+  if (filter.tag) query = query.contains('tags', [filter.tag]);
+
+  const { data, error } = await query
     .gte('starts_at', from.toISOString())
     .lt('starts_at', to.toISOString())
     .order('starts_at', { ascending: true })
