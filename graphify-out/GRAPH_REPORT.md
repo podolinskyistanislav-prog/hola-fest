@@ -1,7 +1,7 @@
 # Graph Report - hola-fest  (2026-11-06)
 
 ## Corpus Check
-- 212 files · ~62,122 words
+- 212 files · ~62,207 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 12 file(s) not represented in the graph (top: (none) 10, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9f1f94a7`
+- Built from commit: `66731867`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -28,7 +28,7 @@
 - with
 - AGENTS.md
 - steps
-- services/claims.ts
+- Button.tsx
 - .prettierrc.json
 - db-backend.md
 - mobile.md
@@ -48,12 +48,12 @@
 - expo-linking@~58.0.16
 - fonts.ts
 - ui-ux.md
-- @testing-library/react-native
+- expo-symbols@~58.0.4
 - expo-system-ui@~58.0.7
 - @expo/ui@~58.0.27
 - expo-device@~58.0.5
-- ui/index.ts
-- MyTicketsContent.tsx
+- expo-linking@~58.0.16
+- react-dom@19.3.0
 - steps
 - react-native-reanimated@4.7.1
 - jobs
@@ -175,7 +175,7 @@ Nodes (5): Building with EAS, Commands, Expo has changed — do not trust your t
 Cohesion: 0.12
 Nodes (16): jobs, refresh, name, on, push, permissions, contents, branches (+8 more)
 
-### Community 12 - "services/claims.ts"
+### Community 12 - "Button.tsx"
 Cohesion: 0.11
 Nodes (20): requestPermission, Deps, FAILURE_REASON, ScanState, useScanRedeem(), onCodeScanned(), ClaimRow, ClaimsErrorCode (+12 more)
 
@@ -243,7 +243,7 @@ Nodes (50): @tanstack/react-query, EventDetailsProps, dayFromId(), eventCardProp
 Cohesion: 0.50
 Nodes (3): How you work, Review mode (on a PR touching src/app, src/features, src/components or src/theme), You may edit only (work mode, on an agent:ui issue)
 
-### Community 32 - "@testing-library/react-native"
+### Community 32 - "expo-symbols@~58.0.4"
 Cohesion: 0.06
 Nodes (43): @testing-library/react-native, RootLayout(), SessionGate(), ScannerScreen(), StaffScreen(), createSessionStore(), Deps, Session (+35 more)
 
@@ -255,11 +255,11 @@ Nodes (8): name, runs-on, concurrency, cancel-in-progress, group, jobs, check, n
 Cohesion: 0.06
 Nodes (30): concurrency, cancel-in-progress, group, env, name, runs-on, steps, SUPABASE_ACCESS_TOKEN (+22 more)
 
-### Community 36 - "ui/index.ts"
+### Community 36 - "expo-linking@~58.0.16"
 Cohesion: 0.09
 Nodes (34): AppTextProps, Tone, ButtonProps, ButtonVariant, styles, ChipProps, styles, DateTimeFieldProps (+26 more)
 
-### Community 37 - "MyTicketsContent.tsx"
+### Community 37 - "react-dom@19.3.0"
 Cohesion: 0.21
 Nodes (11): TicketsScreen(), Message(), MyTicketsContent(), MyTicketsContentProps, styles, TicketRow(), formatValidUntil(), pad() (+3 more)
 
@@ -395,17 +395,17 @@ Nodes (6): Tab bar, FloatingTabBar(), ITEMS, TabsLayout(), TabBar(), TabBarItem
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react-native` connect `useTheme` to `package.json`, `AppText`, `@testing-library/react-native`, `TicketScreenContent.tsx`, `ui/index.ts`, `MyTicketsContent.tsx`, `OfferRow.tsx`, `space`, `QRTicket.tsx`, `fonts.ts`, `package.json`, `react`, `i18n/index.ts`, `TaxiBar.tsx`?**
+- **Why does `react-native` connect `useTheme` to `package.json`, `AppText`, `expo-symbols@~58.0.4`, `TicketScreenContent.tsx`, `expo-linking@~58.0.16`, `react-dom@19.3.0`, `OfferRow.tsx`, `space`, `QRTicket.tsx`, `fonts.ts`, `package.json`, `react`, `i18n/index.ts`, `TaxiBar.tsx`?**
   _High betweenness centrality (0.041) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.08333333333333333 - nodes in this community are weakly interconnected._
-- **Why does `@testing-library/react-native` connect `@testing-library/react-native` to `devDependencies`, `useTheme`, `TicketScreenContent.tsx`, `ui/index.ts`, `supabase.ts`, `services/claims.ts`, `QRTicket.tsx`, `fonts.ts`, `package.json`, `react`, `useClaimOffer.ts`, `i18n/index.ts`, `TaxiBar.tsx`?**
+- **Why does `@testing-library/react-native` connect `expo-symbols@~58.0.4` to `devDependencies`, `useTheme`, `TicketScreenContent.tsx`, `expo-linking@~58.0.16`, `supabase.ts`, `Button.tsx`, `QRTicket.tsx`, `fonts.ts`, `package.json`, `react`, `useClaimOffer.ts`, `i18n/index.ts`, `TaxiBar.tsx`?**
   _High betweenness centrality (0.035) - this node is a cross-community bridge._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.1 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `react` to `package.json`, `@testing-library/react-native`, `AppText`, `TicketScreenContent.tsx`, `ui/index.ts`, `OfferRow.tsx`, `MyTicketsContent.tsx`, `supabase.ts`, `space`, `services/claims.ts`, `QRTicket.tsx`, `fonts.ts`, `package.json`, `useClaimOffer.ts`, `i18n/index.ts`, `TaxiBar.tsx`?**
+- **Why does `react` connect `react` to `package.json`, `expo-symbols@~58.0.4`, `AppText`, `TicketScreenContent.tsx`, `expo-linking@~58.0.16`, `OfferRow.tsx`, `react-dom@19.3.0`, `supabase.ts`, `space`, `Button.tsx`, `QRTicket.tsx`, `fonts.ts`, `package.json`, `useClaimOffer.ts`, `i18n/index.ts`, `TaxiBar.tsx`?**
   _High betweenness centrality (0.034) - this node is a cross-community bridge._
 - **Should `expo` be split into smaller, more focused modules?**
   _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
