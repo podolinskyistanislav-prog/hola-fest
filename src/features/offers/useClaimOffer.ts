@@ -1,9 +1,10 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { claimOffer } from '@/services/claims';
 import type { ClaimFailureReason, ClaimOfferResult } from '@/types/claims';
 
 import { rememberClaimToken } from './claimedTokens';
+import { claimKeys } from './claimKeys';
 
 export type ClaimButtonState =
   'ready' | 'loading' | 'claimed' | 'soldOut' | 'limitReached' | 'error';
@@ -23,11 +24,13 @@ const FAILURE_STATE: Record<ClaimFailureReason, ClaimButtonState> = {
  * result; the hook only maps it to a button state.
  */
 export function useClaimOffer(offerId: string, onClaimed: (offerId: string) => void) {
+  const queryClient = useQueryClient();
   const mutation = useMutation<ClaimOfferResult, Error, void>({
     mutationFn: () => claimOffer(offerId),
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       if (result.ok) {
-        rememberClaimToken(offerId, result.token);
+        await rememberClaimToken(offerId, result.token);
+        await queryClient.invalidateQueries({ queryKey: claimKeys.mine });
         onClaimed(offerId);
       }
     },

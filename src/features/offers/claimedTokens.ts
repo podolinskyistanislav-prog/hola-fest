@@ -1,10 +1,18 @@
-const tokens = new Map<string, string>();
+import { readSecret, saveSecret } from '@/lib/secureStorage';
 
-/** Keeps the just-issued token in memory so the ticket screen can show it. Never persisted or put in a URL. */
-export function rememberClaimToken(offerId: string, token: string): void {
-  tokens.set(offerId, token);
+// SecureStore keys may only contain letters, digits, ".", "-" and "_".
+function tokenKey(offerId: string): string {
+  return `claim-token.${offerId.replace(/[^A-Za-z0-9._-]/g, '_')}`;
 }
 
-export function getClaimToken(offerId: string): string | undefined {
-  return tokens.get(offerId);
+/**
+ * Keeps the just-issued token in the device's secure storage so the ticket can be
+ * shown without signal. Never put in a URL, a log or a request.
+ */
+export async function rememberClaimToken(offerId: string, token: string): Promise<boolean> {
+  return saveSecret(tokenKey(offerId), token);
+}
+
+export async function getClaimToken(offerId: string): Promise<string | null> {
+  return readSecret(tokenKey(offerId));
 }

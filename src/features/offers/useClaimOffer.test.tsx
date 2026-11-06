@@ -4,10 +4,11 @@ import type { ReactNode } from 'react';
 
 import { claimOffer } from '@/services/claims';
 
-import { getClaimToken } from './claimedTokens';
+import { rememberClaimToken } from './claimedTokens';
 import { useClaimOffer } from './useClaimOffer';
 
 jest.mock('@/services/claims', () => ({ claimOffer: jest.fn() }));
+jest.mock('./claimedTokens', () => ({ rememberClaimToken: jest.fn() }));
 
 const mockClaim = claimOffer as jest.Mock;
 
@@ -41,7 +42,7 @@ describe('useClaimOffer', () => {
     const { result, onClaimed } = await setup();
     await act(async () => result.current.claim());
     await waitFor(() => expect(result.current.state).toBe('claimed'));
-    expect(getClaimToken('o1')).toBe('secret-token');
+    expect(rememberClaimToken).toHaveBeenCalledWith('o1', 'secret-token');
     expect(onClaimed).toHaveBeenCalledWith('o1');
     expect(mockClaim).toHaveBeenCalledWith('o1');
   });
