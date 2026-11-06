@@ -1,4 +1,10 @@
-import type { ClaimFailureReason, ClaimOfferResult, MyClaim } from '@/types/claims';
+import type {
+  ClaimFailureReason,
+  ClaimOfferResult,
+  MyClaim,
+  RedeemClaimResult,
+  RedeemFailureReason,
+} from '@/types/claims';
 
 import { supabase } from './supabase';
 
@@ -86,6 +92,51 @@ export async function claimOffer(offerId: string): Promise<ClaimOfferResult> {
   if (error) return { ok: false, reason: await readFailureReason(error) };
   if (typeof data?.token !== 'string') return { ok: false, reason: 'unknown' };
   return { ok: true, token: data.token };
+}
+
+const REDEEM_SERVER_REASONS: Record<string, RedeemFailureReason> = {
+  invalid_request: 'invalid_token',
+  unknown_token: 'unknown_token',
+  wrong_venue: 'wrong_venue',
+  already_redeemed: 'already_redeemed',
+  expired: 'expired',
+  unauthorized: 'unauthenticated',
+};
+
+const REDEEM_STATUS_REASONS: Record<number, RedeemFailureReason> = {
+  400: 'invalid_token',
+  401: 'unauthenticated',
+  404: 'unknown_token',
+};
+
+async function readRedeemFailureReason(error: unknown): Promise<RedeemFailureReason> {
+  const failure = error as { context?: unknown; message?: string } | null;
+  if (failure?.context instanceof Response) {
+    try {
+      const body = (await failure.context.json()) as { error?: unknown };
+      if (typeof body.error === 'string' && body.error in REDEEM_SERVER_REASONS) {
+        return REDEEM_SERVER_REASONS[body.error] ?? 'unknown';
+      }
+    } catch {
+      // unreadable body: fall back to the status code
+    }
+    return REDEEM_STATUS_REASONS[failure.context.status] ?? 'unknown';
+  }
+  return isNetworkMessage(failure?.message) ? 'network' : 'unknown';
+}
+
+/**
+ * Redeems a scanned guest QR token through the redeem-claim Edge Function.
+ * The token is sent once and never logged or stored.
+ */
+export async function redeemClaim(token: string): Promise<RedeemClaimResult> {
+  const { data, error } = await supabase.functions.invoke<{ result?: unknown }>('redeem-claim', {
+    body: { token },
+  });
+
+  if (error) return { ok: false, reason: await readRedeemFailureReason(error) };
+  if (data?.result !== 'ok') return { ok: false, reason: 'unknown' };
+  return { ok: true };
 }
 
 function toMyClaim(row: ClaimRow): MyClaim {
