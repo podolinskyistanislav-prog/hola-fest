@@ -3,6 +3,7 @@ import {
   createEvent,
   createOffer,
   getMyVenues,
+  listVenueEvents,
   setEventStatus,
   setOfferActive,
   updateEvent,
@@ -21,7 +22,7 @@ type Result = { data: unknown; error: { code?: string; message?: string } | null
 
 function mockQuery(result: Result) {
   const query: Record<string, jest.Mock> = {};
-  for (const m of ['select', 'eq', 'insert', 'update']) query[m] = jest.fn(() => query);
+  for (const m of ['select', 'eq', 'order', 'insert', 'update']) query[m] = jest.fn(() => query);
   query.returns = jest.fn(() => Promise.resolve(result));
   query.single = jest.fn(() => Promise.resolve(result));
   from.mockReturnValue(query);
@@ -91,6 +92,60 @@ describe('getMyVenues', () => {
   it('maps network errors', async () => {
     mockQuery({ data: null, error: { message: 'Network request failed' } });
     expect(await codeOf(getMyVenues())).toBe('network');
+  });
+});
+
+describe('listVenueEvents', () => {
+  it('lists all events of the venue newest first with offers count', async () => {
+    const q = mockQuery({
+      data: [
+        {
+          id: 'e2',
+          title: 'Late',
+          starts_at: '2026-12-05T20:00:00.000Z',
+          status: 'draft',
+          offers: [{ count: 3 }],
+        },
+        {
+          id: 'e1',
+          title: 'Early',
+          starts_at: '2026-12-01T20:00:00.000Z',
+          status: 'published',
+          offers: [],
+        },
+      ],
+      error: null,
+    });
+
+    expect(await listVenueEvents('v1')).toEqual([
+      {
+        id: 'e2',
+        title: 'Late',
+        startsAt: new Date('2026-12-05T20:00:00.000Z'),
+        status: 'draft',
+        offersCount: 3,
+      },
+      {
+        id: 'e1',
+        title: 'Early',
+        startsAt: new Date('2026-12-01T20:00:00.000Z'),
+        status: 'published',
+        offersCount: 0,
+      },
+    ]);
+    expect(from).toHaveBeenCalledWith('events');
+    expect(q.eq).toHaveBeenCalledWith('venue_id', 'v1');
+    expect(q.order).toHaveBeenCalledWith('starts_at', { ascending: false });
+  });
+
+  it('returns an empty list when there is no data', async () => {
+    mockQuery({ data: null, error: null });
+    expect(await listVenueEvents('v1')).toEqual([]);
+  });
+
+  it('maps errors', async () => {
+    mockQuery({ data: null, error: { message: 'Network request failed' } });
+    expect(await codeOf(listVenueEvents('v1'))).toBe('network');
   });
 });
 
