@@ -2,8 +2,8 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText, Button, Chip, EventCard } from '@/components/ui';
-import { formatEventTime } from '@/features/events/eventFormat';
-import { t, type TranslationKey } from '@/lib/i18n';
+import { formatEventDay, formatEventTime } from '@/features/events/eventFormat';
+import { t } from '@/lib/i18n';
 import type { AdminEventListItem } from '@/services/admin';
 import { radius, space, useTheme } from '@/theme';
 
@@ -19,10 +19,6 @@ export type VenueEventsListProps = {
 
 const SKELETON_COUNT = 3;
 const SKELETON_HEIGHT = 240;
-
-function formatDate(date: Date): string {
-  return `${date.getDate()} ${t(`events.month.${date.getMonth()}` as TranslationKey)}`;
-}
 
 function Skeleton() {
   const { colors } = useTheme();
@@ -47,7 +43,7 @@ type EventRowProps = {
 
 function EventRow({ event, index, onOpen }: EventRowProps) {
   const isDraft = event.status === 'draft';
-  const date = formatDate(event.startsAt);
+  const date = formatEventDay(event.startsAt);
   const time = formatEventTime(event.startsAt);
   const label = [isDraft ? t('staff.draft') : null, event.title, date, time]
     .filter(Boolean)

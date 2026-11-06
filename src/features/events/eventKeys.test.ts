@@ -1,24 +1,41 @@
-import { endOfWeek, eventKeys, localDayKey, startOfWeek } from './eventKeys';
+import { dayRange, endOfWeek, eventKeys, startOfWeek } from './eventKeys';
 
 describe('eventKeys', () => {
-  it('formats a local day key with zero padding', () => {
-    expect(localDayKey(new Date(2026, 0, 5, 23, 30))).toBe('2026-01-05');
+  it('starts the week on Monday Kyiv time, including for a Sunday', () => {
+    expect(startOfWeek(new Date('2026-11-04T10:00:00Z')).toISOString()).toBe(
+      '2026-11-01T22:00:00.000Z',
+    );
+    expect(startOfWeek(new Date('2026-11-08T10:00:00Z')).toISOString()).toBe(
+      '2026-11-01T22:00:00.000Z',
+    );
   });
 
-  it('starts the week on Monday, including for a Sunday', () => {
-    expect(localDayKey(startOfWeek(new Date(2026, 10, 4)))).toBe('2026-11-02');
-    expect(localDayKey(startOfWeek(new Date(2026, 10, 8)))).toBe('2026-11-02');
+  it('uses the Kyiv day at the week boundary, not the device day', () => {
+    // 23:30 UTC on Sunday is already Monday 01:30 in Kyiv.
+    expect(startOfWeek(new Date('2026-11-08T23:30:00Z')).toISOString()).toBe(
+      '2026-11-08T22:00:00.000Z',
+    );
   });
 
   it('ends the week at the next Monday', () => {
-    expect(localDayKey(endOfWeek(new Date(2026, 10, 4)))).toBe('2026-11-09');
+    expect(endOfWeek(new Date('2026-11-04T10:00:00Z')).toISOString()).toBe(
+      '2026-11-08T22:00:00.000Z',
+    );
   });
 
-  it('gives the same key for any time on a day and any day in a week', () => {
-    expect(eventKeys.day(new Date(2026, 10, 4, 1))).toEqual(
-      eventKeys.day(new Date(2026, 10, 4, 22)),
+  it('spans a Kyiv day from midnight to the next midnight', () => {
+    const { from, to } = dayRange('2026-11-05');
+    expect(from.toISOString()).toBe('2026-11-04T22:00:00.000Z');
+    expect(to.toISOString()).toBe('2026-11-05T22:00:00.000Z');
+  });
+
+  it('gives the same key for any time on a Kyiv day and any day in a week', () => {
+    expect(eventKeys.day(new Date('2026-11-04T00:30:00Z'))).toEqual(
+      eventKeys.day(new Date('2026-11-04T20:00:00Z')),
     );
-    expect(eventKeys.week(new Date(2026, 10, 3))).toEqual(eventKeys.week(new Date(2026, 10, 8)));
+    expect(eventKeys.week(new Date('2026-11-03T10:00:00Z'))).toEqual(
+      eventKeys.week(new Date('2026-11-08T10:00:00Z')),
+    );
     expect(eventKeys.detail('a')).not.toEqual(eventKeys.detail('b'));
   });
 });

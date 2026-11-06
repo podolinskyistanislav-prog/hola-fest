@@ -3,6 +3,7 @@ import type { EventSummary } from '@/types/events';
 import {
   dayFromId,
   eventCardProps,
+  formatEventDay,
   formatEventTime,
   formatPriceFrom,
   weekDays,
@@ -11,7 +12,7 @@ import {
 const event: EventSummary = {
   id: 'e1',
   title: 'Hola Night',
-  startsAt: new Date(2026, 10, 4, 20, 5),
+  startsAt: new Date('2026-11-04T18:05:00Z'),
   endsAt: null,
   priceFromUah: 350,
   coverPath: null,
@@ -29,7 +30,13 @@ const event: EventSummary = {
 
 describe('formatEventTime', () => {
   it('pads hours and minutes', () => {
-    expect(formatEventTime(new Date(2026, 10, 4, 9, 5))).toBe('09:05');
+    expect(formatEventTime(new Date('2026-11-04T07:05:00Z'))).toBe('09:05');
+  });
+});
+
+describe('formatEventDay', () => {
+  it('uses the Kyiv calendar day, not the device day', () => {
+    expect(formatEventDay(new Date('2026-11-04T22:30:00Z'))).toBe('5 листопада');
   });
 });
 
@@ -44,7 +51,7 @@ describe('formatPriceFrom', () => {
 
 describe('weekDays', () => {
   it('returns Monday to Sunday of the week containing the date', () => {
-    const days = weekDays(new Date(2026, 10, 4));
+    const days = weekDays(new Date('2026-11-04T10:00:00Z'));
     expect(days.map((day) => day.id)).toEqual([
       '2026-11-02',
       '2026-11-03',
@@ -63,15 +70,15 @@ describe('weekDays', () => {
   });
 
   it('crosses a month boundary', () => {
-    const days = weekDays(new Date(2026, 10, 30));
+    const days = weekDays(new Date('2026-11-30T10:00:00Z'));
     expect(days[0]?.id).toBe('2026-11-30');
     expect(days[1]?.id).toBe('2026-12-01');
   });
 });
 
 describe('dayFromId', () => {
-  it('round-trips a day id to local midnight', () => {
-    expect(dayFromId('2026-11-04')).toEqual(new Date(2026, 10, 4));
+  it('turns a day id into the instant that Kyiv day starts', () => {
+    expect(dayFromId('2026-11-04')).toEqual(new Date('2026-11-03T22:00:00Z'));
   });
 });
 

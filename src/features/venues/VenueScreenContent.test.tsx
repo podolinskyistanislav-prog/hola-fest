@@ -31,7 +31,7 @@ const venue: VenueDetails = {
     {
       id: 'e1',
       title: 'Hola Night',
-      startsAt: new Date(2026, 10, 5, 20, 0),
+      startsAt: new Date('2026-11-05T18:00:00Z'),
       endsAt: null,
       priceFromUah: 350,
       coverPath: null,

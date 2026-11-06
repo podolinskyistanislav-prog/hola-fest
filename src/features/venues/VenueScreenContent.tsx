@@ -4,11 +4,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TaxiBar } from '@/components/TaxiBar';
 import { AppText, Button, Chip, EventCard, GlassSurface } from '@/components/ui';
-import { t, type TranslationKey } from '@/lib/i18n';
+import { t } from '@/lib/i18n';
 import { brand, radius, space, useTheme } from '@/theme';
 import type { VenueDetails, VenueEvent } from '@/types/venues';
 
-import { formatEventTime, formatPriceFrom } from '../events/eventFormat';
+import { formatEventDay, formatEventTime, formatPriceFrom } from '../events/eventFormat';
 import { useVenue } from './useVenues';
 
 export interface VenueScreenContentProps {
@@ -23,10 +23,9 @@ const BACK_TOP = 56;
 const SKELETON_HEIGHT = 220;
 const SCREEN_TOP = 96;
 
-/** "5 листопада, 20:00" in the device's local time. */
+/** "5 листопада, 20:00" in Kyiv time. */
 function formatEventWhen(date: Date): string {
-  const month = t(`events.month.${date.getMonth()}` as TranslationKey);
-  return `${date.getDate()} ${month}, ${formatEventTime(date)}`;
+  return `${formatEventDay(date)}, ${formatEventTime(date)}`;
 }
 
 function Message({ title, body, children }: { title: string; body: string; children?: ReactNode }) {
