@@ -16,7 +16,6 @@ jest.mock('react-native-safe-area-context', () => ({
 }));
 jest.mock('@/services/claims', () => ({ claimOffer: jest.fn() }));
 jest.mock('@/services/events', () => ({
-  getEventsForDay: jest.fn(),
   getEventsForRange: jest.fn(),
   getEventById: jest.fn(),
 }));
@@ -24,7 +23,7 @@ jest.mock('@/services/events', () => ({
 const event: EventDetails = {
   id: 'e1',
   title: 'Hola Night',
-  startsAt: new Date(2026, 10, 4, 20, 0),
+  startsAt: new Date('2026-11-04T18:00:00Z'),
   endsAt: null,
   priceFromUah: 350,
   coverPath: null,

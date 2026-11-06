@@ -2,12 +2,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
 
-import { getEventById, getEventsForDay, getEventsForRange } from '@/services/events';
+import { getEventById, getEventsForRange } from '@/services/events';
 
 import { useEvent, useEventsForDay, useEventsForWeek } from './useEvents';
 
 jest.mock('@/services/events', () => ({
-  getEventsForDay: jest.fn(),
   getEventsForRange: jest.fn(),
   getEventById: jest.fn(),
 }));
@@ -19,29 +18,29 @@ function wrapper({ children }: { children: ReactNode }) {
 
 beforeEach(() => jest.resetAllMocks());
 
+const WEDNESDAY = new Date('2026-11-04T10:00:00Z');
+
 describe('useEventsForDay', () => {
   it('is loading while the service is pending', async () => {
-    jest.mocked(getEventsForDay).mockReturnValue(new Promise(() => undefined));
-    const { result } = await renderHook(() => useEventsForDay(new Date(2026, 10, 4)), {
-      wrapper,
-    });
+    jest.mocked(getEventsForRange).mockReturnValue(new Promise(() => undefined));
+    const { result } = await renderHook(() => useEventsForDay(WEDNESDAY), { wrapper });
     expect(result.current.isLoading).toBe(true);
   });
 
-  it('returns events from the service', async () => {
+  it('asks for the Kyiv day from midnight to midnight', async () => {
     const events = [{ id: 'e1' }];
-    jest.mocked(getEventsForDay).mockResolvedValue(events as never);
-    const day = new Date(2026, 10, 4);
-    const { result } = await renderHook(() => useEventsForDay(day), { wrapper });
+    jest.mocked(getEventsForRange).mockResolvedValue(events as never);
+    const { result } = await renderHook(() => useEventsForDay(WEDNESDAY), { wrapper });
     await waitFor(() => expect(result.current.data).toEqual(events));
-    expect(getEventsForDay).toHaveBeenCalledWith(day);
+    expect(getEventsForRange).toHaveBeenCalledWith(
+      new Date('2026-11-03T22:00:00Z'),
+      new Date('2026-11-04T22:00:00Z'),
+    );
   });
 
   it('exposes an error when the service fails', async () => {
-    jest.mocked(getEventsForDay).mockRejectedValue(new Error('events_network'));
-    const { result } = await renderHook(() => useEventsForDay(new Date(2026, 10, 4)), {
-      wrapper,
-    });
+    jest.mocked(getEventsForRange).mockRejectedValue(new Error('events_network'));
+    const { result } = await renderHook(() => useEventsForDay(WEDNESDAY), { wrapper });
     await waitFor(() => expect(result.current.isError).toBe(true));
   });
 });
@@ -49,18 +48,17 @@ describe('useEventsForDay', () => {
 describe('useEventsForWeek', () => {
   it('asks the service for Monday to next Monday', async () => {
     jest.mocked(getEventsForRange).mockResolvedValue([]);
-    const { result } = await renderHook(() => useEventsForWeek(new Date(2026, 10, 4)), {
-      wrapper,
-    });
+    const { result } = await renderHook(() => useEventsForWeek(WEDNESDAY), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(getEventsForRange).toHaveBeenCalledWith(new Date(2026, 10, 2), new Date(2026, 10, 9));
+    expect(getEventsForRange).toHaveBeenCalledWith(
+      new Date('2026-11-01T22:00:00Z'),
+      new Date('2026-11-08T22:00:00Z'),
+    );
   });
 
   it('exposes an error when the service fails', async () => {
     jest.mocked(getEventsForRange).mockRejectedValue(new Error('events_unknown'));
-    const { result } = await renderHook(() => useEventsForWeek(new Date(2026, 10, 4)), {
-      wrapper,
-    });
+    const { result } = await renderHook(() => useEventsForWeek(WEDNESDAY), { wrapper });
     await waitFor(() => expect(result.current.isError).toBe(true));
   });
 });

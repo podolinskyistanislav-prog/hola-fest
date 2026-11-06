@@ -12,14 +12,14 @@ const base: VenueEventsListProps = {
 const draft = {
   id: 'e1',
   title: 'Нова ніч',
-  startsAt: new Date(2026, 10, 7, 20, 0),
+  startsAt: new Date('2026-11-07T18:00:00Z'),
   status: 'draft' as const,
   offersCount: 0,
 };
 const published = {
   id: 'e2',
   title: 'Вечірка',
-  startsAt: new Date(2026, 10, 8, 21, 30),
+  startsAt: new Date('2026-11-08T19:30:00Z'),
   status: 'published' as const,
   offersCount: 2,
 };

@@ -1,24 +1,24 @@
-export function localDayKey(date: Date): string {
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${date.getFullYear()}-${month}-${day}`;
-}
+import { addKyivDays, kyivDayKey, kyivDayStart, kyivWeekStartKey } from '@/lib/kyivTime';
 
-/** Monday 00:00 local time of the week containing `date`. */
+/** Monday 00:00 Kyiv time of the Kyiv week containing `date`. */
 export function startOfWeek(date: Date): Date {
-  const daysSinceMonday = (date.getDay() + 6) % 7;
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() - daysSinceMonday);
+  return kyivDayStart(kyivWeekStartKey(kyivDayKey(date)));
 }
 
+/** The following Monday 00:00 Kyiv time. */
 export function endOfWeek(date: Date): Date {
-  const start = startOfWeek(date);
-  return new Date(start.getFullYear(), start.getMonth(), start.getDate() + 7);
+  return kyivDayStart(addKyivDays(kyivWeekStartKey(kyivDayKey(date)), 7));
+}
+
+/** Start and end (exclusive) of the Kyiv calendar day with the given "YYYY-MM-DD" key. */
+export function dayRange(key: string): { from: Date; to: Date } {
+  return { from: kyivDayStart(key), to: kyivDayStart(addKyivDays(key, 1)) };
 }
 
 export const eventKeys = {
   all: ['events'] as const,
-  day: (date: Date) => [...eventKeys.all, 'day', localDayKey(date)] as const,
-  week: (date: Date) => [...eventKeys.all, 'week', localDayKey(startOfWeek(date))] as const,
+  day: (date: Date) => [...eventKeys.all, 'day', kyivDayKey(date)] as const,
+  week: (date: Date) => [...eventKeys.all, 'week', kyivWeekStartKey(kyivDayKey(date))] as const,
   detail: (id: string) => [...eventKeys.all, 'detail', id] as const,
 };
 

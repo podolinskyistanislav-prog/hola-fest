@@ -4,10 +4,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, DayStrip } from '@/components/ui';
 import { t } from '@/lib/i18n';
+import { kyivDayKey } from '@/lib/kyivTime';
 import { space } from '@/theme';
 
 import { dayFromId, weekDays } from './eventFormat';
-import { localDayKey } from './eventKeys';
 import { EventsList } from './EventsList';
 import { useEventsForDay } from './useEvents';
 
@@ -21,7 +21,7 @@ export interface EventsScreenContentProps {
 export function EventsScreenContent({ onOpenEvent, onTitleLongPress }: EventsScreenContentProps) {
   const insets = useSafeAreaInsets();
   const [today] = useState(() => new Date());
-  const [selectedId, setSelectedId] = useState(() => localDayKey(today));
+  const [selectedId, setSelectedId] = useState(() => kyivDayKey(today));
   const events = useEventsForDay(dayFromId(selectedId));
 
   return (

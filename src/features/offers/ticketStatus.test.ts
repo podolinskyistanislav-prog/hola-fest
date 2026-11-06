@@ -46,7 +46,7 @@ describe('ticketStatus', () => {
 
 describe('formatValidUntil', () => {
   it('formats the end time', () => {
-    expect(formatValidUntil(new Date(2026, 10, 4, 23, 5))).toBe('Діє до 23:05');
+    expect(formatValidUntil(new Date('2026-11-04T21:05:00Z'))).toBe('Діє до 23:05');
   });
 
   it('handles offers without an end', () => {

@@ -1,18 +1,27 @@
 import type { DayStripDay } from '@/components/ui';
 import { t, type TranslationKey } from '@/lib/i18n';
+import {
+  addKyivDays,
+  dayKeyParts,
+  formatKyivTime,
+  kyivDayKey,
+  kyivDayStart,
+  kyivWeekday,
+  kyivWeekStartKey,
+} from '@/lib/kyivTime';
 import type { EventSummary } from '@/types/events';
-
-import { localDayKey, startOfWeek } from './eventKeys';
 
 const DAYS_IN_WEEK = 7;
 
-function pad(value: number): string {
-  return String(value).padStart(2, '0');
+/** "20:00" in Kyiv time, whatever the device time zone. */
+export function formatEventTime(date: Date): string {
+  return formatKyivTime(date);
 }
 
-/** "20:00" in the device's local time. */
-export function formatEventTime(date: Date): string {
-  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+/** "5 листопада" for the Kyiv calendar day the instant falls on. */
+export function formatEventDay(date: Date): string {
+  const { day, month } = dayKeyParts(kyivDayKey(date));
+  return `${day} ${t(`events.month.${month}` as TranslationKey)}`;
 }
 
 /** "від 350 ₴", or undefined when the price is unknown. */
@@ -21,27 +30,26 @@ export function formatPriceFrom(priceFromUah: number | null): string | undefined
   return t('events.priceFrom').replace('{price}', String(priceFromUah));
 }
 
-/** The seven days (Monday to Sunday) of the week containing `date`, ready for DayStrip. */
+/** The seven days (Monday to Sunday) of the Kyiv week containing `date`, ready for DayStrip. */
 export function weekDays(date: Date): DayStripDay[] {
-  const monday = startOfWeek(date);
+  const monday = kyivWeekStartKey(kyivDayKey(date));
   return Array.from({ length: DAYS_IN_WEEK }, (_, offset) => {
-    const day = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + offset);
-    const weekday = day.getDay();
+    const id = addKyivDays(monday, offset);
+    const weekday = kyivWeekday(id);
+    const { day, month } = dayKeyParts(id);
     const long = t(`events.weekdayLong.${weekday}` as TranslationKey);
-    const month = t(`events.month.${day.getMonth()}` as TranslationKey);
     return {
-      id: localDayKey(day),
+      id,
       weekday: t(`events.weekday.${weekday}` as TranslationKey),
-      date: String(day.getDate()),
-      accessibilityLabel: `${long}, ${day.getDate()} ${month}`,
+      date: String(day),
+      accessibilityLabel: `${long}, ${day} ${t(`events.month.${month}` as TranslationKey)}`,
     };
   });
 }
 
-/** Parses a DayStrip id (local "YYYY-MM-DD") back into a local-midnight Date. */
+/** Parses a DayStrip id (Kyiv "YYYY-MM-DD") back into the instant that day starts. */
 export function dayFromId(id: string): Date {
-  const [year, month, day] = id.split('-').map(Number);
-  return new Date(year ?? 0, (month ?? 1) - 1, day ?? 1);
+  return kyivDayStart(id);
 }
 
 /** Props for EventCard from an event; covers alternate yellow/pink down the list. */
