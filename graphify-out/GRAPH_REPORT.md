@@ -1,17 +1,17 @@
 # Graph Report - hola-fest  (2026-11-06)
 
 ## Corpus Check
-- 150 files · ~40,887 words
+- 157 files · ~41,925 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 11 file(s) not represented in the graph (top: (none) 9, .example 1, .toml 1)
 
 ## Summary
-- 921 nodes · 1784 edges · 60 communities (48 shown, 12 thin omitted)
+- 941 nodes · 1849 edges · 62 communities (48 shown, 14 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 35 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `705895f5`
+- Built from commit: `16162011`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -28,11 +28,11 @@
 - with
 - AGENTS.md
 - steps
-- services/claims.ts
+- Button.tsx
 - .prettierrc.json
 - db-backend.md
 - mobile.md
-- app/_layout.tsx
+- expo-splash-screen
 - orchestrator.md
 - reviewer.md
 - security-qa.md
@@ -45,15 +45,15 @@
 - expo-constants@~58.0.15
 - expo-glass-effect@~58.0.5
 - expo-image@~58.0.18
-- secrets-scan
+- expo-linking@~58.0.16
 - fonts.ts
 - ui-ux.md
 - expo-symbols@~58.0.4
-- jobs
+- expo-system-ui@~58.0.7
 - @expo/ui@~58.0.27
 - expo-device@~58.0.5
-- ui/index.ts
-- react-dom@19.3.0
+- expo-linking@~58.0.16
+- auth.ts
 - steps
 - react-native-reanimated@4.7.1
 - jobs
@@ -71,23 +71,25 @@
 - tokens.ts
 - edge-functions
 - on
-- expo-glass-effect
-- expo-web-browser@~58.0.7
+- package.json
+- expo-status-bar
 - expo@~58.0.23
-- react-native-maps
-- toqr
+- expo-symbols@~58.0.4
+- @react-native-async-storage/async-storage
+- react-native-gesture-handler@~3.3.0
+- react-native-web@~0.21.4
 
 ## God Nodes (most connected - your core abstractions)
 1. `useTheme()` - 47 edges
-2. `AppText()` - 44 edges
-3. `t()` - 42 edges
+2. `t()` - 45 edges
+3. `AppText()` - 44 edges
 4. `react-native` - 31 edges
-5. `Button()` - 21 edges
+5. `Button()` - 23 edges
 6. `space` - 19 edges
-7. `GlassSurface()` - 18 edges
-8. `react` - 17 edges
-9. `with` - 15 edges
-10. `@testing-library/react-native` - 15 edges
+7. `react` - 18 edges
+8. `GlassSurface()` - 18 edges
+9. `@testing-library/react-native` - 17 edges
+10. `@tanstack/react-query` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Одноразове налаштування` --references--> `main()`  [INFERRED]
@@ -104,15 +106,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (60 total, 12 thin omitted)
+## Communities (62 total, 14 thin omitted)
 
 ### Community 0 - "dependencies"
-Cohesion: 0.06
-Nodes (32): dependencies, expo-device@~58.0.5, expo-font@~58.0.11, expo-image@~58.0.18, expo-linking@~58.0.16, expo-router@~58.0.30, expo-symbols@~58.0.4, @expo/ui@~58.0.27 (+24 more)
+Cohesion: 0.08
+Nodes (24): dependencies, expo-device@~58.0.5, expo-glass-effect@~58.0.5, expo-linking@~58.0.16, expo-system-ui@~58.0.7, @expo/ui@~58.0.27, expo-web-browser@~58.0.7, react@19.3.0 (+16 more)
 
 ### Community 1 - "devDependencies"
-Cohesion: 0.11
-Nodes (24): devDependencies, eslint-config-prettier@^10.1.8, jest@^30.5.2, jest-expo@^58.0.14, playwright@^1.64.1, prettier@^3.9.10, @testing-library/react-native@^14.1.0, tsx@^4.23.15 (+16 more)
+Cohesion: 0.10
+Nodes (20): devDependencies, eslint-config-prettier@^10.1.8, jest@^30.5.2, jest-expo@^58.0.14, playwright@^1.64.1, prettier@^3.9.10, @testing-library/react-native@^14.1.0, tsx@^4.23.15 (+12 more)
 
 ### Community 2 - "expo"
 Cohesion: 0.07
@@ -128,7 +130,7 @@ Nodes (11): expo/tsconfig.base, compilerOptions, noFallthroughCasesInSwitch, noU
 
 ### Community 5 - "supabase.ts"
 Cohesion: 0.08
-Nodes (32): useVenue(), useVenues(), venueKeys, VENUES_STALE_TIME_MS, KYIV_REGION, mappableVenues(), base, onBack (+24 more)
+Nodes (34): VenueScreen(), useVenue(), useVenues(), venueKeys, VENUES_STALE_TIME_MS, KYIV_REGION, mappableVenues(), base (+26 more)
 
 ### Community 6 - "scripts"
 Cohesion: 0.18
@@ -136,7 +138,7 @@ Nodes (11): scripts, android, check, format, ios, lint, screenshots, start (+3 m
 
 ### Community 7 - "Hola Fest — Product"
 Cohesion: 0.05
-Nodes (36): Database, Decisions, Golden rules, Hola Fest — rules for every agent, Security (non-negotiable), Access rules (RLS), Allowed dependencies (enforced by ESLint where possible), Auth (+28 more)
+Nodes (37): Code quality, Database, Decisions, Golden rules, Hola Fest — rules for every agent, Security (non-negotiable), Access rules (RLS), Allowed dependencies (enforced by ESLint where possible) (+29 more)
 
 ### Community 8 - "with"
 Cohesion: 0.14
@@ -154,9 +156,9 @@ Nodes (5): Building with EAS, Commands, Expo has changed — do not trust your t
 Cohesion: 0.12
 Nodes (16): jobs, refresh, name, on, push, permissions, contents, branches (+8 more)
 
-### Community 12 - "services/claims.ts"
-Cohesion: 0.12
-Nodes (18): Code quality, claimOffer(), ClaimRow, ClaimsError, ClaimsErrorCode, getMyClaims(), isNetworkMessage(), readFailureReason() (+10 more)
+### Community 12 - "Button.tsx"
+Cohesion: 0.08
+Nodes (31): getClaimToken(), rememberClaimToken(), tokens, ClaimOfferButton(), ClaimOfferButtonProps, LABEL, mockClaim, renderButton() (+23 more)
 
 ### Community 13 - ".prettierrc.json"
 Cohesion: 0.40
@@ -170,10 +172,6 @@ Nodes (21): How you work, Never, You may edit only, Check, in this order, Output
 Cohesion: 0.50
 Nodes (3): How you work, Never, You may edit only
 
-### Community 16 - "app/_layout.tsx"
-Cohesion: 0.22
-Nodes (10): expo-splash-screen@~58.0.13, expo-status-bar@~58.0.4, @tanstack/react-query@^5.105.3, expo-splash-screen, expo-status-bar, @tanstack/react-query, RootLayout(), SessionGate() (+2 more)
-
 ### Community 18 - "reviewer.md"
 Cohesion: 0.33
 Nodes (5): 0004 — Screenshot tool: Playwright on the Expo web build, Consequences, Context, Decision, Detecting changed screens (next task)
@@ -183,8 +181,8 @@ Cohesion: 0.50
 Nodes (4): jest, moduleNameMapper, preset, testPathIgnorePatterns
 
 ### Community 22 - "Hola Fest — design rules"
-Cohesion: 0.09
-Nodes (23): Colors, Day strip, Event card, Event covers (until real photos exist), Every screen, Hola Fest — design rules, Liquid glass, Look in one sentence (+15 more)
+Cohesion: 0.10
+Nodes (21): Colors, Day strip, Event card, Event covers (until real photos exist), Every screen, Hola Fest — design rules, Liquid glass, Look in one sentence (+13 more)
 
 ### Community 23 - "_layout.tsx"
 Cohesion: 0.06
@@ -210,13 +208,13 @@ Nodes (13): with, allowed_bots, cache, claude_args, claude_code_oauth_token, den
 Cohesion: 0.40
 Nodes (5): BODY, BRANCH, GH_TOKEN, TITLE, env
 
-### Community 29 - "secrets-scan"
+### Community 29 - "expo-linking@~58.0.16"
 Cohesion: 0.20
 Nodes (10): GITHUB_TOKEN, secrets-scan, permissions, contents, pull-requests, name, permissions, runs-on (+2 more)
 
 ### Community 30 - "fonts.ts"
-Cohesion: 0.07
-Nodes (51): DayStripDay, EventDetailsProps, dayFromId(), eventCardProps(), formatEventTime(), pad(), event, weekDays() (+43 more)
+Cohesion: 0.06
+Nodes (55): @tanstack/react-query, EventsScreen(), EventDetailsProps, dayFromId(), eventCardProps(), formatEventTime(), formatPriceFrom(), pad() (+47 more)
 
 ### Community 31 - "ui-ux.md"
 Cohesion: 0.50
@@ -224,9 +222,9 @@ Nodes (3): How you work, Review mode (on a PR touching src/app, src/features, sr
 
 ### Community 32 - "expo-symbols@~58.0.4"
 Cohesion: 0.08
-Nodes (31): @supabase/supabase-js, createSessionStore(), Deps, Session, SessionState, SessionStore, sessionStore, StaffLoginForm() (+23 more)
+Nodes (32): expo-router@~58.0.30, expo-router, @testing-library/react-native, RootLayout(), SessionGate(), StaffLogin(), styles, FloatingTabBar() (+24 more)
 
-### Community 33 - "jobs"
+### Community 33 - "expo-system-ui@~58.0.7"
 Cohesion: 0.22
 Nodes (8): name, runs-on, concurrency, cancel-in-progress, group, jobs, check, name
 
@@ -234,9 +232,13 @@ Nodes (8): name, runs-on, concurrency, cancel-in-progress, group, jobs, check, n
 Cohesion: 0.06
 Nodes (30): concurrency, cancel-in-progress, group, env, name, runs-on, steps, SUPABASE_ACCESS_TOKEN (+22 more)
 
-### Community 36 - "ui/index.ts"
-Cohesion: 0.05
-Nodes (104): Map pin and venue preview card, expo-router, react, react-native, react-native-safe-area-context, EventScreen(), StaffLogin(), styles (+96 more)
+### Community 36 - "expo-linking@~58.0.16"
+Cohesion: 0.06
+Nodes (90): Map pin and venue preview card, Tab bar, react, react-native, react-native-safe-area-context, EventScreen(), MapScreen(), AppText() (+82 more)
+
+### Community 37 - "auth.ts"
+Cohesion: 0.19
+Nodes (14): @supabase/supabase-js, env, AuthError, AuthErrorCode, ClientError, ensureGuestSession(), getSession(), onAuthChange() (+6 more)
 
 ### Community 38 - "steps"
 Cohesion: 0.31
@@ -294,29 +296,29 @@ Nodes (5): if, name, needs, runs-on, edge-functions
 Cohesion: 0.50
 Nodes (4): on, pull_request, push, branches
 
-### Community 55 - "expo-glass-effect"
-Cohesion: 0.33
-Nodes (4): expo-constants@~58.0.15, expo-glass-effect@~58.0.5, expo-constants, expo-glass-effect
+### Community 55 - "package.json"
+Cohesion: 0.12
+Nodes (16): expo-constants@~58.0.15, expo-font@~58.0.11, expo-image@~58.0.18, @expo/vector-icons@^15.0.2, react-dom@19.3.0, toqr@^0.1.1, main, name (+8 more)
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `expo/tsconfig.base`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 402 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 408 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `playwright` connect `devDependencies` to `db-backend.md`?**
-  _High betweenness centrality (0.069) - this node is a cross-community bridge._
+- **Why does `playwright` connect `devDependencies` to `db-backend.md`, `package.json`?**
+  _High betweenness centrality (0.052) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `dependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
-- **Why does `react-native` connect `ui/index.ts` to `dependencies`, `devDependencies`, `expo-symbols@~58.0.4`, `tokens.ts`, `Hola Fest — design rules`, `fonts.ts`?**
-  _High betweenness centrality (0.050) - this node is a cross-community bridge._
+  _Cohesion score 0.08333333333333333 - nodes in this community are weakly interconnected._
+- **Why does `react-native` connect `expo-linking@~58.0.16` to `dependencies`, `expo-symbols@~58.0.4`, `supabase.ts`, `tokens.ts`, `Hola Fest — design rules`, `package.json`, `fonts.ts`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **Should `devDependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.11 - nodes in this community are weakly interconnected._
-- **Why does `main()` connect `db-backend.md` to `Hola Fest — Product`?**
-  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
+- **Why does `claimOffer()` connect `Button.tsx` to `Hola Fest — Product`?**
+  _High betweenness centrality (0.039) - this node is a cross-community bridge._
 - **Should `expo` be split into smaller, more focused modules?**
   _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
