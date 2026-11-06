@@ -15,6 +15,7 @@ export type StaffHomeProps = {
   signOutError: string | null;
   onRetry: () => void;
   onOpenScanner: () => void;
+  onOpenVenueEvents: () => void;
   onSignOut: () => void;
 };
 
@@ -26,6 +27,7 @@ export function StaffHome({
   signOutError,
   onRetry,
   onOpenScanner,
+  onOpenVenueEvents,
   onSignOut,
 }: StaffHomeProps) {
   const { colors } = useTheme();
@@ -52,12 +54,7 @@ export function StaffHome({
 
       {access?.canScan ? <Button label={t('staff.scanner')} onPress={onOpenScanner} /> : null}
       {access?.canManageEvents ? (
-        <Button
-          variant="glass"
-          label={t('staff.venueEvents')}
-          disabled
-          accessibilityHint={t('staff.soon')}
-        />
+        <Button variant="glass" label={t('staff.venueEvents')} onPress={onOpenVenueEvents} />
       ) : null}
 
       {signOutError ? (

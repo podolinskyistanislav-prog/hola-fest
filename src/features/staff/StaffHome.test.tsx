@@ -10,6 +10,7 @@ const base: StaffHomeProps = {
   signOutError: null,
   onRetry: jest.fn(),
   onOpenScanner: jest.fn(),
+  onOpenVenueEvents: jest.fn(),
   onSignOut: jest.fn(),
 };
 
@@ -48,14 +49,17 @@ describe('StaffHome', () => {
 
   it('shows both items to an admin and signs out', async () => {
     const onSignOut = jest.fn();
+    const onOpenVenueEvents = jest.fn();
     await render(
       <StaffHome
         {...base}
         access={{ canScan: true, canManageEvents: true }}
         onSignOut={onSignOut}
+        onOpenVenueEvents={onOpenVenueEvents}
       />,
     );
-    expect(screen.getByLabelText('Події закладу')).toBeTruthy();
+    await fireEvent.press(screen.getByLabelText('Події закладу'));
+    expect(onOpenVenueEvents).toHaveBeenCalled();
     await fireEvent.press(screen.getByLabelText('Вийти'));
     expect(onSignOut).toHaveBeenCalled();
   });
