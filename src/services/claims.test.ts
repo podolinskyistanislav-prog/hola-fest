@@ -1,4 +1,4 @@
-import { claimOffer, ClaimsError, getMyClaims } from './claims';
+import { claimOffer, ClaimsError, getMyClaims, redeemClaim } from './claims';
 import { supabase } from './supabase';
 
 jest.mock('./supabase', () => ({
@@ -155,5 +155,60 @@ describe('getMyClaims', () => {
     signedIn();
     mockClaims({ data: null, error: { message: 'Network request failed' } });
     await expect(getMyClaims()).rejects.toMatchObject({ code: 'network' });
+  });
+});
+
+describe('redeemClaim', () => {
+  const token = 'a'.repeat(64);
+
+  it('returns ok on success', async () => {
+    invoke.mockResolvedValue({ data: { result: 'ok' }, error: null });
+    expect(await redeemClaim(token)).toEqual({ ok: true });
+    expect(invoke).toHaveBeenCalledWith('redeem-claim', { body: { token } });
+  });
+
+  it.each([
+    [400, 'invalid_request', 'invalid_token'],
+    [404, 'unknown_token', 'unknown_token'],
+    [403, 'wrong_venue', 'wrong_venue'],
+    [409, 'already_redeemed', 'already_redeemed'],
+    [409, 'expired', 'expired'],
+    [401, 'unauthorized', 'unauthenticated'],
+  ])('maps %i %s to %s', async (status, error, reason) => {
+    invoke.mockResolvedValue(httpError(status, { error }));
+    expect(await redeemClaim(token)).toEqual({ ok: false, reason });
+  });
+
+  it('falls back to the status code when the body is unreadable', async () => {
+    invoke.mockResolvedValue({
+      data: null,
+      error: { context: new Response('x', { status: 404 }) },
+    });
+    expect(await redeemClaim(token)).toEqual({ ok: false, reason: 'unknown_token' });
+  });
+
+  it('reports server errors as unknown', async () => {
+    invoke.mockResolvedValue(httpError(500, { error: 'server_error' }));
+    expect(await redeemClaim(token)).toEqual({ ok: false, reason: 'unknown' });
+  });
+
+  it('reports network failures', async () => {
+    invoke.mockResolvedValue({ data: null, error: { message: 'Failed to fetch' } });
+    expect(await redeemClaim(token)).toEqual({ ok: false, reason: 'network' });
+  });
+
+  it('treats an unexpected success body as unknown', async () => {
+    invoke.mockResolvedValue({ data: {}, error: null });
+    expect(await redeemClaim(token)).toEqual({ ok: false, reason: 'unknown' });
+  });
+
+  it('never logs the token', async () => {
+    const spies = (['log', 'warn', 'error', 'info'] as const).map((m) =>
+      jest.spyOn(console, m).mockImplementation(() => undefined),
+    );
+    invoke.mockResolvedValue(httpError(409, { error: 'already_redeemed' }));
+    await redeemClaim(token);
+    spies.forEach((spy) => expect(spy).not.toHaveBeenCalled());
+    spies.forEach((spy) => spy.mockRestore());
   });
 });
