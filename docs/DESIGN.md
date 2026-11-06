@@ -1,6 +1,6 @@
 # Hola Fest — design rules
 
-> Approved mockups (the visual source of truth): https://claude.ai/artifact/AvyZwZkTfX2RScQiXkfCvH
+> Approved mockups (the visual source of truth): [`docs/design/mockups/`](design/mockups/README.md). Every screen must match them. Original canvas: https://claude.ai/artifact/AvyZwZkTfX2RScQiXkfCvH
 > Tokens in code: `src/theme/tokens.ts`. Shared components: `src/components/ui/`.
 > Owner: the `ui-ux` agent. Changes to the look require the founder's approval.
 

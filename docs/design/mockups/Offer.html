@@ -1,0 +1,277 @@
+<!doctype html>
+<!-- Approved mockup: QR at the entrance (claimed offer). Canvas 390x844. Open in a browser to view.
+     The QR pattern is a stand-in: the app renders the real claim token. -->
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <title>QR на вході</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Unbounded:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      style="
+        width: 390px;
+        height: 844px;
+        position: relative;
+        overflow: hidden;
+        background: #000000;
+        color: #ffffff;
+        font-family: Inter, system-ui, sans-serif;
+      "
+    >
+      <!-- Two blurred-through accent blobs behind the glass card. -->
+      <div
+        style="
+          position: absolute;
+          left: -60px;
+          top: 190px;
+          width: 300px;
+          height: 300px;
+          border-radius: 150px;
+          background: #fdd303;
+          opacity: 0.9;
+        "
+      ></div>
+      <div
+        style="
+          position: absolute;
+          right: -80px;
+          top: 340px;
+          width: 320px;
+          height: 320px;
+          border-radius: 160px;
+          background: #f1277d;
+          opacity: 0.9;
+        "
+      ></div>
+
+      <div
+        style="
+          position: absolute;
+          left: 20px;
+          right: 20px;
+          top: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
+      >
+        <a
+          href="Event.html"
+          aria-label="Закрити"
+          style="
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+          "
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+          >
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </a>
+        <span
+          style="
+            font-size: 13px;
+            color: #a1a1aa;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+          "
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <path d="M2 8.8a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16.1a5 5 0 0 1 6 0"></path>
+            <path d="M3 3l18 18"></path>
+          </svg>
+          Працює без інтернету
+        </span>
+      </div>
+
+      <div
+        style="
+          position: absolute;
+          left: 20px;
+          right: 20px;
+          top: 128px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        "
+      >
+        <h1
+          style="
+            margin: 0;
+            font-family: Unbounded, sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: -0.5px;
+          "
+        >
+          Твій QR
+        </h1>
+        <p style="margin: 0; font-size: 15px; color: #d4d4d8">Покажи його на вході в Bavovna</p>
+      </div>
+
+      <!-- Glass card: white QR tile, offer title, "Event · до HH:MM", one-time code + countdown pill. -->
+      <div
+        style="
+          position: absolute;
+          left: 20px;
+          right: 20px;
+          top: 214px;
+          border-radius: 36px;
+          padding: 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(40px) saturate(180%);
+          border: 1px solid rgba(255, 255, 255, 0.28);
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.4),
+            0 20px 50px rgba(0, 0, 0, 0.45);
+        "
+      >
+        <div
+          style="
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 22px;
+            display: flex;
+            justify-content: center;
+          "
+        >
+          <svg
+            width="268"
+            height="268"
+            viewBox="0 0 25 25"
+            shape-rendering="crispEdges"
+            role="img"
+            aria-label="QR-код офера"
+          >
+            <path
+              d="M0 0h7v7h-7zM1 1v5h5v-5zM2 2h3v3h-3zM18 0h7v7h-7zM19 1v5h5v-5zM20 2h3v3h-3zM0 18h7v7h-7zM1 19v5h5v-5zM2 20h3v3h-3zM8 0h1v1h-1zM10 2h2v1h-2zM12 4h3v1h-3zM9 8h3v1h-3zM14 9h2v2h-2zM8 12h1v3h-1zM11 13h3v1h-3zM16 12h4v1h-4zM20 15h2v2h-2zM10 17h1v3h-1zM13 19h3v1h-3zM17 21h3v1h-3zM22 22h2v2h-2zM8 23h4v1h-4zM15 23h1v1h-1z"
+              fill="#000000"
+            ></path>
+          </svg>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px; padding: 0 6px">
+          <span style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 20px"
+            >−20% на вхід</span
+          >
+          <span style="font-size: 14px; color: #f4f4f5">Techno Night · сьогодні до 22:00</span>
+        </div>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px 4px;
+          "
+        >
+          <span style="font-size: 13px; color: #e4e4e7">Одноразовий код</span>
+          <span
+            style="
+              height: 30px;
+              padding: 0 12px;
+              border-radius: 15px;
+              display: inline-flex;
+              align-items: center;
+              background: #fdd303;
+              color: #000000;
+              font-size: 13px;
+              font-weight: 600;
+            "
+            >Діє ще 2 год 14 хв</span
+          >
+        </div>
+      </div>
+
+      <!-- Bottom: taxi to the venue + max-brightness toggle. -->
+      <div
+        style="position: absolute; left: 20px; right: 20px; bottom: 30px; display: flex; gap: 10px"
+      >
+        <button
+          style="
+            flex: 1;
+            height: 56px;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: rgba(28, 28, 30, 0.55);
+            backdrop-filter: blur(28px) saturate(200%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 15px;
+          "
+        >
+          Поїхати в Bavovna
+        </button>
+        <button
+          aria-label="Яскравість на максимум"
+          style="
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: rgba(28, 28, 30, 0.55);
+            backdrop-filter: blur(28px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+            color: #fdd303;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+          "
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <circle cx="12" cy="12" r="4"></circle>
+            <path
+              d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

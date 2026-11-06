@@ -1,0 +1,413 @@
+<!doctype html>
+<!-- Approved mockup: Event page with offer and taxi bar. Canvas 390x844. Open in a browser to view.
+     Values in [brackets] are placeholders: show them as-is when the data is missing. -->
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <title>Подія і офер</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Unbounded:wght@500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        background: #000;
+      }
+      a {
+        color: #fdd303;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      style="
+        width: 390px;
+        height: 844px;
+        position: relative;
+        overflow: hidden;
+        background: #000000;
+        color: #ffffff;
+        font-family: Inter, system-ui, sans-serif;
+      "
+    >
+      <!-- Cover 310px: yellow with pink Hola stars (or event cover image when present). -->
+      <div
+        style="
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 390px;
+          height: 310px;
+          background: #fdd303;
+          overflow: hidden;
+        "
+      >
+        <svg
+          width="260"
+          height="260"
+          viewBox="0 0 100 100"
+          style="position: absolute; right: -40px; top: 30px"
+        >
+          <path
+            d="M50 0C55 35 65 45 100 50C65 55 55 65 50 100C45 65 35 55 0 50C35 45 45 35 50 0Z"
+            fill="#F1277D"
+          ></path>
+        </svg>
+        <svg
+          width="110"
+          height="110"
+          viewBox="0 0 100 100"
+          style="position: absolute; left: 40px; top: 150px"
+        >
+          <path
+            d="M50 0C55 35 65 45 100 50C65 55 55 65 50 100C45 65 35 55 0 50C35 45 45 35 50 0Z"
+            fill="#F1277D"
+          ></path>
+        </svg>
+      </div>
+      <!-- Glass round buttons over the cover: back (left), share (right). -->
+      <div
+        style="
+          position: absolute;
+          left: 20px;
+          right: 20px;
+          top: 60px;
+          display: flex;
+          justify-content: space-between;
+        "
+      >
+        <a
+          href="Main.html"
+          aria-label="Назад"
+          style="
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.32);
+            backdrop-filter: blur(18px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+          "
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M15 5l-7 7 7 7"></path>
+          </svg>
+        </a>
+        <button
+          aria-label="Поділитися"
+          style="
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.32);
+            backdrop-filter: blur(18px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+          "
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Sheet overlaps the cover from y=270, radius 32 top corners. -->
+      <div
+        style="
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 270px;
+          bottom: 0;
+          background: #000000;
+          border-radius: 32px 32px 0 0;
+          padding: 24px 20px 0;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+        "
+      >
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <h1
+            style="
+              margin: 0;
+              font-family: Unbounded, sans-serif;
+              font-weight: 700;
+              font-size: 26px;
+              letter-spacing: -0.4px;
+            "
+          >
+            Techno Night
+          </h1>
+          <span style="font-size: 15px; color: #a1a1aa">Bavovna · вул. Васильківська, 72</span>
+        </div>
+        <!-- Info chips: when, price, curfew check, shelter. -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <span
+            style="
+              height: 32px;
+              padding: 0 12px;
+              border-radius: 16px;
+              display: inline-flex;
+              align-items: center;
+              background: #18181b;
+              border: 1px solid #27272a;
+              font-size: 13px;
+              font-weight: 500;
+            "
+            >Сьогодні, 20:00 – 23:30</span
+          >
+          <span
+            style="
+              height: 32px;
+              padding: 0 12px;
+              border-radius: 16px;
+              display: inline-flex;
+              align-items: center;
+              background: #18181b;
+              border: 1px solid #27272a;
+              font-size: 13px;
+              font-weight: 500;
+            "
+            >від 300 ₴</span
+          >
+          <span
+            style="
+              height: 32px;
+              padding: 0 12px;
+              border-radius: 16px;
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              background: #18181b;
+              border: 1px solid #27272a;
+              font-size: 13px;
+              font-weight: 500;
+              color: #e4e4e7;
+            "
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#FDD303"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12l5 5 9-10"></path>
+            </svg>
+            До комендантської
+          </span>
+          <span
+            style="
+              height: 32px;
+              padding: 0 12px;
+              border-radius: 16px;
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              background: #18181b;
+              border: 1px solid #27272a;
+              font-size: 13px;
+              font-weight: 500;
+              color: #e4e4e7;
+            "
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7z"></path>
+            </svg>
+            Укриття: [уточнити]
+          </span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 13px; font-weight: 600; color: #a1a1aa">Лайн-ап</span>
+          <div style="display: flex; gap: 8px">
+            <span
+              style="
+                height: 32px;
+                padding: 0 14px;
+                border-radius: 16px;
+                display: inline-flex;
+                align-items: center;
+                border: 1px solid #3f3f46;
+                font-size: 14px;
+              "
+              >[Артист 1]</span
+            >
+            <span
+              style="
+                height: 32px;
+                padding: 0 14px;
+                border-radius: 16px;
+                display: inline-flex;
+                align-items: center;
+                border: 1px solid #3f3f46;
+                font-size: 14px;
+              "
+              >[Артист 2]</span
+            >
+          </div>
+        </div>
+        <!-- Offer card: pink, yellow star top-right, black CTA. -->
+        <div
+          style="
+            border-radius: 28px;
+            background: #f1277d;
+            color: #000000;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+            overflow: hidden;
+          "
+        >
+          <svg
+            width="90"
+            height="90"
+            viewBox="0 0 100 100"
+            style="position: absolute; right: -14px; top: -14px"
+          >
+            <path
+              d="M50 0C55 35 65 45 100 50C65 55 55 65 50 100C45 65 35 55 0 50C35 45 45 35 50 0Z"
+              fill="#FDD303"
+            ></path>
+          </svg>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.4px"
+              >ТІЛЬКИ В HOLA</span
+            >
+            <span style="font-family: Unbounded, sans-serif; font-weight: 700; font-size: 22px"
+              >−20% на вхід</span
+            >
+            <span style="font-size: 14px">Покажи QR на вході до 22:00</span>
+          </div>
+          <a
+            href="Offer.html"
+            style="
+              height: 50px;
+              border-radius: 25px;
+              background: #000000;
+              color: #ffffff;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              text-decoration: none;
+              font-weight: 600;
+              font-size: 16px;
+            "
+            >Взяти офер</a
+          >
+        </div>
+      </div>
+
+      <!-- Floating glass taxi bar: "Поїхати" + Uklon / Bolt / Uber. -->
+      <div
+        style="
+          position: absolute;
+          left: 20px;
+          right: 20px;
+          bottom: 30px;
+          height: 72px;
+          border-radius: 36px;
+          padding: 0 10px 0 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          background: rgba(28, 28, 30, 0.55);
+          backdrop-filter: blur(28px) saturate(200%);
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.22),
+            0 10px 30px rgba(0, 0, 0, 0.45);
+        "
+      >
+        <span style="font-size: 14px; font-weight: 600">Поїхати</span>
+        <div style="display: flex; gap: 6px">
+          <button
+            style="
+              height: 48px;
+              padding: 0 14px;
+              border-radius: 24px;
+              border: 1px solid rgba(255, 255, 255, 0.18);
+              background: rgba(255, 255, 255, 0.1);
+              color: #ffffff;
+              font-size: 14px;
+              font-weight: 600;
+            "
+          >
+            Uklon
+          </button>
+          <button
+            style="
+              height: 48px;
+              padding: 0 14px;
+              border-radius: 24px;
+              border: 1px solid rgba(255, 255, 255, 0.18);
+              background: rgba(255, 255, 255, 0.1);
+              color: #ffffff;
+              font-size: 14px;
+              font-weight: 600;
+            "
+          >
+            Bolt
+          </button>
+          <button
+            style="
+              height: 48px;
+              padding: 0 14px;
+              border-radius: 24px;
+              border: 1px solid rgba(255, 255, 255, 0.18);
+              background: rgba(255, 255, 255, 0.1);
+              color: #ffffff;
+              font-size: 14px;
+              font-weight: 600;
+            "
+          >
+            Uber
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
