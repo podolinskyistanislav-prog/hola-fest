@@ -8,6 +8,10 @@ on:
   issues:
     types: [closed, labeled]
   workflow_dispatch:
+  # Safety net: GitHub drops queued runs when several events arrive at once,
+  # so the queue also checks itself every 20 minutes. Plain script, costs nothing.
+  schedule:
+    - cron: '*/20 * * * *'
 
 concurrency:
   group: queue
