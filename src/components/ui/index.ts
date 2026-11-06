@@ -11,7 +11,16 @@ export {
 export { StringListField, type StringListFieldProps } from './StringListField';
 export { SwitchField, type SwitchFieldProps } from './SwitchField';
 export { EventCard, type EventCardProps, type EventCoverColor } from './EventCard';
+export { AccentBlobs } from './AccentBlobs';
+export { GlassIconButton, type GlassIconButtonProps, type GlassIconName } from './GlassIconButton';
+export { GlassSearchField, type GlassSearchFieldProps } from './GlassSearchField';
 export { GlassSurface, type GlassSurfaceProps } from './GlassSurface';
+export { InfoChip, type InfoChipProps } from './InfoChip';
+export { LineupChip, type LineupChipProps } from './LineupChip';
+export { MapVenueCard, type MapVenueCardProps } from './MapVenueCard';
+export { OfferCard, type OfferCardProps } from './OfferCard';
+export { QRCard, type QRCardProps } from './QRCard';
+export { TaxiBar, type TaxiBarProps, type TaxiProvider } from './TaxiBar';
 export { MapPin, type MapPinColor, type MapPinProps } from './MapPin';
 export { OfferRow, type OfferRowProps, type OfferRowStatus } from './OfferRow';
 export { QRTicket, qrDarkRuns, type QRTicketProps, type QRTicketStatus } from './QRTicket';

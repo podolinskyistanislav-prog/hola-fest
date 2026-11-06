@@ -78,6 +78,15 @@ Black or white ground, Hola yellow and pink as the only accents, big soft corner
 
 `ScanResult` is the full-width verdict a host sees after scanning a ticket: a green ✅ (`success`) or a red ❌ (`failure` with a reason: already used, wrong venue, expired, unknown). Colors come from `scanResult` tokens, identical in both themes, with black text (contrast asserted in `tokens.test.ts`). The headline is large so it reads in a dark club. It is announced to screen readers as an alert, and `onNext` ("Далі") returns to scanning. Pure: the camera and the server call live in the screen.
 
+## Event, QR and map kit
+
+Built 1:1 from `Event.html`, `Offer.html` and `Map.html`. All copy arrives translated; a missing value shows a placeholder, never a hidden element.
+
+- `GlassIconButton` (back, share, close, brightness): round glass, 44 (56 for the bottom toggle). `InfoChip` (32, optional yellow check or shield icon) and `LineupChip` (32, outlined) are read-only facts.
+- `OfferCard`: pink, radius 28, yellow star top-right, kicker, Unbounded 700 22 title, condition, black 50 CTA with white text. `TaxiBar`: floating glass 72 with a glass button per provider.
+- `QRCard`: glass radius 36 around a white QR tile (drawn with plain views, works offline), title, details and a yellow countdown pill. `AccentBlobs` sit behind it so the glass has something to refract.
+- `MapPin`: name pill above a 16 dot with a 25% halo in the venue accent. `MapVenueCard`: glass radius 30 with a star thumb, address, tonight's event, yellow "Подія" and glass "Поїхати" (46). `GlassSearchField`: glass 52 with a search icon.
+
 ## Event covers (until real photos exist)
 
 A yellow or pink block with the 4-point Hola star in the other accent color, as in the mockups.
