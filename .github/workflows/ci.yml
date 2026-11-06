@@ -13,6 +13,26 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      db: ${{ steps.f.outputs.db }}
+      functions: ${{ steps.f.outputs.functions }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: f
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            files=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+          else
+            files=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "supabase/")
+          fi
+          echo "$files" | grep -qE '^(supabase/|src/types/database.ts)' && echo "db=true" >> "$GITHUB_OUTPUT" || echo "db=false" >> "$GITHUB_OUTPUT"
+          echo "$files" | grep -qE '^supabase/functions/' && echo "functions=true" >> "$GITHUB_OUTPUT" || echo "functions=false" >> "$GITHUB_OUTPUT"
+
   check:
     name: Lint, typecheck, test
     runs-on: ubuntu-latest
@@ -29,6 +49,8 @@ jobs:
 
   database:
     name: Database (migrations + RLS tests)
+    needs: changes
+    if: needs.changes.outputs.db == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -65,6 +87,8 @@ jobs:
 
   edge-functions:
     name: Edge Functions (Deno tests)
+    needs: changes
+    if: needs.changes.outputs.functions == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -92,22 +116,3 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  graph:
-    name: Code graph (Graphify)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install graphifyy
-      - run: graphify update .
-      - name: God nodes (architecture hubs)
-        run: graphify god-nodes | tee -a "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: graphify-report
-          path: |
-            graphify-out/GRAPH_REPORT.md
-            graphify-out/graph.json
