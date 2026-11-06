@@ -2,6 +2,7 @@
   "expo": {
     "name": "Hola Fest",
     "slug": "hola-fest",
+    "owner": "errer09s-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -41,6 +42,11 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d684a8f9-f4ba-4fa4-8422-019000f058f1"
+      }
     }
   }
 }
