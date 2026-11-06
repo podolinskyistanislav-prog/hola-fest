@@ -1,22 +1,19 @@
 -- Local development seed. Fictional test data only: no secrets, no users.
 -- Events and offers are marked [TEST]. Dates are relative to the reset time.
 
--- PLACEHOLDER COORDINATES: lat/lng of Bavovna and Panorama Bar below are FAKE.
--- Both use the Kyiv city-centre point 50.4501, 30.5234. The founder must replace
--- them with the real venue pins. Do not treat them as real locations.
 -- TODO: confirm with venue (has_shelter is false for both until confirmed).
 insert into public.venues
   (id, slug, name, address, lat, lng, instagram_url, has_shelter, is_published)
 values
   ('00000000-0000-4000-8000-000000000001', 'bavovna', 'Bavovna',
    'вул. Васильківська, 72, Київ, 02000',
-   50.4501, 30.5234, -- PLACEHOLDER lat/lng: replace with real venue pin
+   50.432550, 30.515416,
    'https://www.instagram.com/bavovna.event/',
    false, -- TODO: confirm with venue
    true),
   ('00000000-0000-4000-8000-000000000002', 'panorama-bar', 'Panorama Bar',
    'вул. Хрещатик, 1/2, Київ, 01001',
-   50.4501, 30.5234, -- PLACEHOLDER lat/lng: replace with real venue pin
+   50.451369, 30.527492,
    'https://www.instagram.com/panorama_bar17/',
    false, -- TODO: confirm with venue
    true);
