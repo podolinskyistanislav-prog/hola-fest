@@ -1,18 +1,23 @@
 import { StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-import { MapPin, VenuePreviewCard } from '@/components/ui';
-import { t } from '@/lib/i18n';
+import { MapPin } from '@/components/ui';
 import { space, useTheme } from '@/theme';
 
-import { KYIV_REGION, type MappableVenue } from './venueMap';
+import { darkMapStyle } from './mapStyle';
+import { VenueMapCard } from './VenueMapCard';
+import { KYIV_REGION, venueAccent, type MappableVenue } from './venueMap';
+import type { EventSummary } from '@/types/events';
 
 export interface VenueMapProps {
   venues: readonly MappableVenue[];
   selectedId: string | null;
+  /** Each venue's event tonight, by venue id. */
+  todayEvents: ReadonlyMap<string, EventSummary>;
   onSelectVenue: (id: string | null) => void;
   onOpenVenue: (id: string) => void;
-  /** Space the floating tab bar takes at the bottom, so the preview card sits above it. */
+  onOpenEvent: (id: string) => void;
+  /** Space the floating tab bar takes at the bottom, so the card sits above it. */
   bottomInset: number;
 }
 
@@ -23,11 +28,13 @@ export interface VenueMapProps {
 export function VenueMap({
   venues,
   selectedId,
+  todayEvents,
   onSelectVenue,
   onOpenVenue,
+  onOpenEvent,
   bottomInset,
 }: VenueMapProps) {
-  const { scheme } = useTheme();
+  const { scheme, colors } = useTheme();
   const selected = venues.find((venue) => venue.id === selectedId);
 
   return (
@@ -36,6 +43,7 @@ export function VenueMap({
         style={styles.fill}
         initialRegion={KYIV_REGION}
         userInterfaceStyle={scheme}
+        customMapStyle={scheme === 'dark' ? darkMapStyle(colors) : undefined}
         onPress={() => onSelectVenue(null)}
       >
         {venues.map((venue) => (
@@ -47,16 +55,21 @@ export function VenueMap({
               onSelectVenue(venue.id);
             }}
           >
-            <MapPin label={venue.name} selected={venue.id === selectedId} />
+            <MapPin
+              label={venue.name}
+              color={venueAccent(venue.slug)}
+              selected={venue.id === selectedId}
+            />
           </Marker>
         ))}
       </MapView>
       {selected ? (
         <View style={[styles.card, { bottom: bottomInset }]}>
-          <VenuePreviewCard
-            name={selected.name}
-            shelterBadge={selected.hasShelter ? t('venues.shelter') : undefined}
-            onPress={() => onOpenVenue(selected.id)}
+          <VenueMapCard
+            venue={selected}
+            todayEvent={todayEvents.get(selected.id)}
+            onOpenVenue={onOpenVenue}
+            onOpenEvent={onOpenEvent}
           />
         </View>
       ) : null}

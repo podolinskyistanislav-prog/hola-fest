@@ -12,6 +12,7 @@ export default function MapScreen() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <VenuesMapScreenContent
         onOpenVenue={(id) => router.push({ pathname: '/venue/[id]', params: { id } })}
+        onOpenEvent={(id) => router.push({ pathname: '/event/[id]', params: { id } })}
       />
     </View>
   );

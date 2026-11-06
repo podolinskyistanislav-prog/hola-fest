@@ -1,18 +1,27 @@
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppText, Button, tabBarInset } from '@/components/ui';
+import { AppText, Button, GlassSearchField, tabBarInset } from '@/components/ui';
+import { useEventsForDay } from '@/features/events/useEvents';
 import { t } from '@/lib/i18n';
 import { space, useTheme } from '@/theme';
 
 import { useVenues } from './useVenues';
 import { VenueMap } from './VenueMap';
-import { mappableVenues } from './venueMap';
+import {
+  filterVenuesByName,
+  firstEventByVenue,
+  mappableVenues,
+  resolveSelectedVenueId,
+} from './venueMap';
 
 export interface VenuesMapScreenContentProps {
   onOpenVenue: (id: string) => void;
+  onOpenEvent: (id: string) => void;
 }
+
+const SEARCH_TOP = 60;
 
 function Message({ title, body, action }: { title: string; body: string; action?: ReactNode }) {
   return (
@@ -26,12 +35,19 @@ function Message({ title, body, action }: { title: string; body: string; action?
   );
 }
 
-/** The venues on a map (a list on web) with loading, empty and error states. */
-export function VenuesMapScreenContent({ onOpenVenue }: VenuesMapScreenContentProps) {
+/** The venues on a map (cards on web) with search, tonight's events and loading, empty and error states. */
+export function VenuesMapScreenContent({ onOpenVenue, onOpenEvent }: VenuesMapScreenContentProps) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const venues = useVenues();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const today = useEventsForDay(useMemo(() => new Date(), []));
+  const [query, setQuery] = useState('');
+  const [choice, setChoice] = useState<string | null | undefined>(undefined);
+
+  const mappable = useMemo(() => mappableVenues(venues.data ?? []), [venues.data]);
+  const todayEvents = useMemo(() => firstEventByVenue(today.data ?? []), [today.data]);
+  const visible = useMemo(() => filterVenuesByName(mappable, query), [mappable, query]);
+  const selectedId = resolveSelectedVenueId(visible, choice, new Set(todayEvents.keys()));
 
   if (venues.isLoading) {
     return (
@@ -51,24 +67,41 @@ export function VenuesMapScreenContent({ onOpenVenue }: VenuesMapScreenContentPr
       />
     );
   }
-
-  const mappable = mappableVenues(venues.data ?? []);
   if (mappable.length === 0) {
     return <Message title={t('map.emptyTitle')} body={t('map.emptyBody')} />;
   }
 
   return (
-    <VenueMap
-      venues={mappable}
-      selectedId={selectedId}
-      onSelectVenue={setSelectedId}
-      onOpenVenue={onOpenVenue}
-      bottomInset={tabBarInset(insets.bottom)}
-    />
+    <View style={styles.fill}>
+      <VenueMap
+        venues={visible}
+        selectedId={selectedId}
+        todayEvents={todayEvents}
+        onSelectVenue={setChoice}
+        onOpenVenue={onOpenVenue}
+        onOpenEvent={onOpenEvent}
+        bottomInset={tabBarInset(insets.bottom)}
+      />
+      <View style={styles.search} pointerEvents="box-none">
+        <GlassSearchField
+          label={t('map.searchLabel')}
+          placeholder={t('map.searchPlaceholder')}
+          value={query}
+          onChangeText={setQuery}
+        />
+        {visible.length === 0 ? (
+          <AppText tone="muted" style={styles.noMatches}>
+            {t('map.noMatches')}
+          </AppText>
+        ) : null}
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   message: { flex: 1, padding: space.screen, gap: space.md, justifyContent: 'center' },
+  search: { position: 'absolute', top: SEARCH_TOP, left: space.screen, right: space.screen },
+  noMatches: { marginTop: space.md, textAlign: 'center' },
 });
