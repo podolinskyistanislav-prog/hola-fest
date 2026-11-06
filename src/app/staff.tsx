@@ -12,6 +12,7 @@ export default function StaffScreen() {
   return (
     <StaffArea
       onOpenScanner={() => router.push('/scanner')}
+      onOpenVenueEvents={() => router.push('/staff-events')}
       onSignedOut={() => router.replace('/')}
     />
   );
