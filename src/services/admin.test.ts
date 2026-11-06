@@ -4,6 +4,7 @@ import {
   createOffer,
   getMyVenues,
   getVenueEvent,
+  listEventOffers,
   listVenueEvents,
   setEventStatus,
   setOfferActive,
@@ -320,5 +321,55 @@ describe('getVenueEvent', () => {
   it('maps a network failure', async () => {
     mockQuery({ data: null, error: { message: 'Failed to fetch' } });
     expect(await codeOf(getVenueEvent('e1'))).toBe('network');
+  });
+});
+
+describe('listEventOffers', () => {
+  const row = {
+    id: 'o1',
+    event_id: 'e1',
+    title: 'Free shot',
+    terms: null,
+    max_claims: null,
+    per_user_limit: 1,
+    valid_until: null,
+    is_active: false,
+  };
+
+  it('lists offers of the event newest first, inactive included', async () => {
+    const q = mockQuery({ data: [row], error: null });
+
+    const offers = await listEventOffers('e1');
+
+    expect(from).toHaveBeenCalledWith('offers');
+    expect(q.eq).toHaveBeenCalledWith('event_id', 'e1');
+    expect(q.order).toHaveBeenCalledWith('created_at', { ascending: false });
+    expect(offers).toEqual([
+      {
+        id: 'o1',
+        eventId: 'e1',
+        title: 'Free shot',
+        terms: null,
+        maxClaims: null,
+        perUserLimit: 1,
+        validUntil: null,
+        isActive: false,
+      },
+    ]);
+  });
+
+  it('returns an empty list when there are no rows', async () => {
+    mockQuery({ data: null, error: null });
+    expect(await listEventOffers('e1')).toEqual([]);
+  });
+
+  it('maps a malformed id to not_found', async () => {
+    mockQuery({ data: null, error: { code: '22P02' } });
+    expect(await codeOf(listEventOffers('x'))).toBe('not_found');
+  });
+
+  it('maps a network failure', async () => {
+    mockQuery({ data: null, error: { message: 'Failed to fetch' } });
+    expect(await codeOf(listEventOffers('e1'))).toBe('network');
   });
 });

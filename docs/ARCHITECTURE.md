@@ -65,7 +65,8 @@ venue_members venue_id → venues, user_id → profiles, role ('admin' | 'host')
 events        id uuid PK, venue_id → venues, title, description, lineup text[], starts_at timestamptz,
               ends_at timestamptz, price_from_uah int, cover_path, status ('draft' | 'published'), created_at
 offers        id uuid PK, event_id → events, title, terms, max_claims int null,
-              per_user_limit int default 1, valid_until timestamptz, is_active bool
+              per_user_limit int default 1, valid_until timestamptz, is_active bool,
+              created_at timestamptz default now()
 claims        id uuid PK, offer_id → offers, user_id → profiles, token_hash text unique,
               status ('issued' | 'redeemed' | 'void'), issued_at, redeemed_at, redeemed_by → profiles
 ```

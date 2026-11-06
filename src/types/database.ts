@@ -132,6 +132,7 @@ export type Database = {
       };
       offers: {
         Row: {
+          created_at: string;
           event_id: string;
           id: string;
           is_active: boolean;
@@ -143,6 +144,7 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          created_at?: string;
           event_id: string;
           id?: string;
           is_active?: boolean;
@@ -153,6 +155,7 @@ export type Database = {
           valid_until?: string | null;
         };
         Update: {
+          created_at?: string;
           event_id?: string;
           id?: string;
           is_active?: boolean;
