@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { kyivDayKey } from '@/lib/kyivTime';
+import { addKyivDays, kyivDayKey, kyivDayStart } from '@/lib/kyivTime';
 import { getEventById, getEventsForRange } from '@/services/events';
 
 import { dayRange, endOfWeek, EVENTS_STALE_TIME_MS, eventKeys, startOfWeek } from './eventKeys';
@@ -12,6 +12,18 @@ export function useEventsForDay(date: Date) {
     queryFn: () => {
       const { from, to } = dayRange(kyivDayKey(date));
       return getEventsForRange(from, to);
+    },
+    staleTime: EVENTS_STALE_TIME_MS,
+  });
+}
+
+/** Events from today (Kyiv) through the next 7 days: feeds the home strip, carousel and week offers. */
+export function useHomeEvents(today: Date) {
+  return useQuery({
+    queryKey: eventKeys.home(today),
+    queryFn: () => {
+      const first = kyivDayKey(today);
+      return getEventsForRange(kyivDayStart(first), kyivDayStart(addKyivDays(first, 7)));
     },
     staleTime: EVENTS_STALE_TIME_MS,
   });

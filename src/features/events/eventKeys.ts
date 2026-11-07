@@ -18,6 +18,7 @@ export function dayRange(key: string): { from: Date; to: Date } {
 export const eventKeys = {
   all: ['events'] as const,
   day: (date: Date) => [...eventKeys.all, 'day', kyivDayKey(date)] as const,
+  home: (date: Date) => [...eventKeys.all, 'home', kyivDayKey(date)] as const,
   week: (date: Date) => [...eventKeys.all, 'week', kyivWeekStartKey(kyivDayKey(date))] as const,
   detail: (id: string) => [...eventKeys.all, 'detail', id] as const,
 };
