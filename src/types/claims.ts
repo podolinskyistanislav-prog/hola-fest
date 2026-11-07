@@ -38,7 +38,14 @@ export interface MyClaim {
       id: string;
       title: string;
       startsAt: Date;
-      venue: { id: string; name: string; address: string | null };
+      endsAt: Date | null;
+      venue: {
+        id: string;
+        name: string;
+        address: string | null;
+        lat: number | null;
+        lng: number | null;
+      };
     };
   };
 }

@@ -85,7 +85,8 @@ const row = {
       id: 'e1',
       title: 'Night',
       starts_at: '2026-11-05T21:00:00+00:00',
-      venue: { id: 'v1', name: 'Club', address: 'Street 1' },
+      ends_at: '2026-11-06T02:00:00+00:00',
+      venue: { id: 'v1', name: 'Club', address: 'Street 1', lat: 50.45, lng: 30.52 },
     },
   },
 };
@@ -125,11 +126,40 @@ describe('getMyClaims', () => {
             id: 'e1',
             title: 'Night',
             startsAt: new Date('2026-11-05T21:00:00Z'),
-            venue: { id: 'v1', name: 'Club', address: 'Street 1' },
+            endsAt: new Date('2026-11-06T02:00:00Z'),
+            venue: { id: 'v1', name: 'Club', address: 'Street 1', lat: 50.45, lng: 30.52 },
           },
         },
       },
     ]);
+  });
+
+  it('selects event end and venue coordinates and keeps nulls', async () => {
+    signedIn();
+    const q = mockClaims({
+      data: [
+        {
+          ...row,
+          offer: {
+            ...row.offer,
+            event: {
+              ...row.offer.event,
+              ends_at: null,
+              venue: { id: 'v1', name: 'Club', address: null, lat: null, lng: null },
+            },
+          },
+        },
+      ],
+      error: null,
+    });
+
+    const [claim] = await getMyClaims();
+
+    expect(q.select?.mock.calls[0][0]).toContain('ends_at');
+    expect(q.select?.mock.calls[0][0]).toContain('lat, lng');
+    expect(claim?.offer.event.endsAt).toBeNull();
+    expect(claim?.offer.event.venue.lat).toBeNull();
+    expect(claim?.offer.event.venue.lng).toBeNull();
   });
 
   it('returns an empty list when there is no data', async () => {

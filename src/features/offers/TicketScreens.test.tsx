@@ -33,7 +33,8 @@ const claim: MyClaim = {
       id: 'e1',
       title: 'Hola Night',
       startsAt: new Date(2026, 10, 4, 20),
-      venue: { id: 'v1', name: 'Bavovna', address: null },
+      endsAt: null,
+      venue: { id: 'v1', name: 'Bavovna', address: null, lat: null, lng: null },
     },
   },
 };
