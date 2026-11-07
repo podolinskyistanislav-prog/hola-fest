@@ -1,17 +1,22 @@
 import { FlatList, StyleSheet, View } from 'react-native';
 
-import { VenuePreviewCard } from '@/components/ui';
-import { t } from '@/lib/i18n';
 import { space } from '@/theme';
 
 import type { VenueMapProps } from './VenueMap';
+import { VenueMapCard } from './VenueMapCard';
 
 function Separator() {
   return <View style={styles.separator} />;
 }
 
-/** Web has no map: the same venues as a simple list. Tapping a card opens the venue. */
-export function VenueMap({ venues, onOpenVenue, bottomInset }: VenueMapProps) {
+/** Web has no map: the same venue cards as a list. */
+export function VenueMap({
+  venues,
+  todayEvents,
+  onOpenVenue,
+  onOpenEvent,
+  bottomInset,
+}: VenueMapProps) {
   return (
     <FlatList
       data={venues}
@@ -19,10 +24,11 @@ export function VenueMap({ venues, onOpenVenue, bottomInset }: VenueMapProps) {
       contentContainerStyle={[styles.list, { paddingBottom: bottomInset }]}
       ItemSeparatorComponent={Separator}
       renderItem={({ item }) => (
-        <VenuePreviewCard
-          name={item.name}
-          shelterBadge={item.hasShelter ? t('venues.shelter') : undefined}
-          onPress={() => onOpenVenue(item.id)}
+        <VenueMapCard
+          venue={item}
+          todayEvent={todayEvents.get(item.id)}
+          onOpenVenue={onOpenVenue}
+          onOpenEvent={onOpenEvent}
         />
       )}
     />
@@ -30,6 +36,6 @@ export function VenueMap({ venues, onOpenVenue, bottomInset }: VenueMapProps) {
 }
 
 const styles = StyleSheet.create({
-  list: { paddingHorizontal: space.screen, paddingTop: 96 },
+  list: { paddingHorizontal: space.screen, paddingTop: 132 },
   separator: { height: space.md },
 });

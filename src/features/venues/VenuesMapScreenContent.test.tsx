@@ -2,7 +2,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import { t } from '@/lib/i18n';
+import { getEventsForRange } from '@/services/events';
 import { getPublishedVenues } from '@/services/venues';
+import type { EventSummary } from '@/types/events';
 import type { Venue } from '@/types/venues';
 
 import { VenuesMapScreenContent } from './VenuesMapScreenContent';
@@ -11,6 +13,7 @@ jest.mock('expo-glass-effect', () => {
   const { View } = jest.requireActual('react-native');
   return { GlassView: View, isLiquidGlassAvailable: () => false };
 });
+jest.mock('@expo/vector-icons', () => ({ Feather: () => null }));
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }),
 }));
@@ -30,6 +33,10 @@ jest.mock('react-native-maps', () => {
   }) => <View onTouchEnd={() => onPress({ stopPropagation: () => undefined })}>{children}</View>;
   return { __esModule: true, default: MapView, Marker };
 });
+jest.mock('@/services/events', () => ({
+  getEventsForRange: jest.fn(),
+  getEventById: jest.fn(),
+}));
 jest.mock('@/services/venues', () => ({
   getPublishedVenues: jest.fn(),
   getVenueById: jest.fn(),
@@ -45,18 +52,40 @@ const venue: Venue = {
   hasShelter: true,
 };
 
+const panorama: Venue = {
+  ...venue,
+  id: 'v2',
+  slug: 'panorama-bar',
+  name: 'Panorama Bar',
+  address: 'вул. Хрещатик, 1',
+};
+
+const tonight: EventSummary = {
+  id: 'e1',
+  title: 'Rooftop Sunset',
+  startsAt: new Date('2026-11-06T17:00:00Z'),
+  endsAt: null,
+  priceFromUah: null,
+  coverPath: null,
+  venue: { ...panorama, instagramUrl: null },
+};
+
 const onOpenVenue = jest.fn();
+const onOpenEvent = jest.fn();
 
 async function renderScreen() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   await render(
     <QueryClientProvider client={client}>
-      <VenuesMapScreenContent onOpenVenue={onOpenVenue} />
+      <VenuesMapScreenContent onOpenVenue={onOpenVenue} onOpenEvent={onOpenEvent} />
     </QueryClientProvider>,
   );
 }
 
-beforeEach(() => jest.resetAllMocks());
+beforeEach(() => {
+  jest.resetAllMocks();
+  jest.mocked(getEventsForRange).mockResolvedValue([]);
+});
 
 describe('VenuesMapScreenContent', () => {
   it('shows a loading state while venues are pending', async () => {
@@ -80,15 +109,39 @@ describe('VenuesMapScreenContent', () => {
     expect(getPublishedVenues).toHaveBeenCalledTimes(2);
   });
 
-  it('shows the preview card on pin tap and opens the venue from the card', async () => {
+  it('selects the first venue with an event tonight and opens that event', async () => {
+    jest.mocked(getPublishedVenues).mockResolvedValue([venue, panorama]);
+    jest.mocked(getEventsForRange).mockResolvedValue([tonight]);
+    await renderScreen();
+
+    expect(await screen.findByText('Сьогодні: Rooftop Sunset · 19:00')).toBeTruthy();
+    expect(screen.getByText('вул. Хрещатик, 1')).toBeTruthy();
+    await fireEvent.press(screen.getByRole('button', { name: t('map.openEvent') }));
+    expect(onOpenEvent).toHaveBeenCalledWith('e1');
+  });
+
+  it('shows the card of a tapped pin; without an event "Подія" opens the venue', async () => {
     jest.mocked(getPublishedVenues).mockResolvedValue([venue]);
     await renderScreen();
-    expect(screen.queryByText(t('venues.shelter'))).toBeNull();
+    expect(screen.queryByText(t('map.noEventsToday'))).toBeNull();
 
     await fireEvent(await screen.findByLabelText('Bavovna'), 'touchEnd');
-    expect(await screen.findByText(t('venues.shelter'))).toBeTruthy();
-
-    await fireEvent.press(screen.getByLabelText('Bavovna, Є укриття'));
+    expect(await screen.findByText(t('map.noEventsToday'))).toBeTruthy();
+    expect(screen.getByText(t('map.noAddress'))).toBeTruthy();
+    await fireEvent.press(screen.getByRole('button', { name: t('map.openEvent') }));
     expect(onOpenVenue).toHaveBeenCalledWith('v1');
+  });
+
+  it('filters venues by name with the search field', async () => {
+    jest.mocked(getPublishedVenues).mockResolvedValue([venue, panorama]);
+    await renderScreen();
+    await screen.findByLabelText('Panorama Bar');
+
+    await fireEvent.changeText(screen.getByLabelText(t('map.searchLabel')), 'pano');
+    expect(screen.queryByLabelText('Bavovna')).toBeNull();
+    expect(screen.getByLabelText('Panorama Bar')).toBeTruthy();
+
+    await fireEvent.changeText(screen.getByLabelText(t('map.searchLabel')), 'zzz');
+    expect(screen.getByText(t('map.noMatches'))).toBeTruthy();
   });
 });
