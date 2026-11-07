@@ -67,6 +67,7 @@ const tonight: EventSummary = {
   endsAt: null,
   priceFromUah: null,
   coverPath: null,
+  offers: [],
   venue: { ...panorama, instagramUrl: null },
 };
 
