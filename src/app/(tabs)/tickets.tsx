@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { MyTicketsContent } from '@/features/offers';
 import { useTheme } from '@/theme';
 
-/** «Мої квитки». */
+/** «Мої QR» tab: the guest's claimed offers. The URL stays `/tickets` (the group adds no segment). */
 export default function TicketsScreen() {
   const { colors } = useTheme();
   const router = useRouter();
@@ -12,7 +12,7 @@ export default function TicketsScreen() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <MyTicketsContent
         onOpenTicket={(offerId) => router.push(`/ticket/${offerId}` as Href)}
-        onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        onOpenEvents={() => router.navigate('/')}
       />
     </View>
   );

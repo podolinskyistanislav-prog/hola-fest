@@ -62,19 +62,24 @@ beforeEach(() => {
 describe('MyTicketsContent', () => {
   it('shows a loading state first', async () => {
     mockClaims.mockReturnValue(new Promise(() => undefined));
-    await renderWithClient(<MyTicketsContent onOpenTicket={jest.fn()} onBack={jest.fn()} />);
+    await renderWithClient(<MyTicketsContent onOpenTicket={jest.fn()} onOpenEvents={jest.fn()} />);
     expect(screen.getByLabelText(t('tickets.loading'))).toBeTruthy();
   });
 
-  it('shows an empty state', async () => {
+  it('shows an empty state with a way to the events', async () => {
     mockClaims.mockResolvedValue([]);
-    await renderWithClient(<MyTicketsContent onOpenTicket={jest.fn()} onBack={jest.fn()} />);
-    expect(await screen.findByText(t('tickets.emptyTitle'))).toBeTruthy();
+    const onOpenEvents = jest.fn();
+    await renderWithClient(
+      <MyTicketsContent onOpenTicket={jest.fn()} onOpenEvents={onOpenEvents} />,
+    );
+    expect(await screen.findByText('Тут з’являться твої QR')).toBeTruthy();
+    await fireEvent.press(screen.getByRole('button', { name: 'До подій' }));
+    expect(onOpenEvents).toHaveBeenCalled();
   });
 
   it('shows an error state with retry', async () => {
     mockClaims.mockRejectedValue(new Error('x'));
-    await renderWithClient(<MyTicketsContent onOpenTicket={jest.fn()} onBack={jest.fn()} />);
+    await renderWithClient(<MyTicketsContent onOpenTicket={jest.fn()} onOpenEvents={jest.fn()} />);
     expect(await screen.findByText(t('tickets.errorTitle'))).toBeTruthy();
     expect(screen.getByRole('button', { name: t('events.retry') })).toBeTruthy();
   });
@@ -85,10 +90,14 @@ describe('MyTicketsContent', () => {
       { ...claim, id: 'c2', status: 'redeemed', offer: { ...claim.offer, id: 'o2', title: 'Шот' } },
     ]);
     const onOpenTicket = jest.fn();
-    await renderWithClient(<MyTicketsContent onOpenTicket={onOpenTicket} onBack={jest.fn()} />);
+    await renderWithClient(
+      <MyTicketsContent onOpenTicket={onOpenTicket} onOpenEvents={jest.fn()} />,
+    );
     expect(await screen.findByText(t('tickets.statusActive'))).toBeTruthy();
+    expect(screen.getAllByText('Hola Night')).toHaveLength(2);
+    expect(screen.getAllByText('4 листопада · Bavovna')).toHaveLength(2);
     expect(screen.getByText(t('tickets.statusRedeemed'))).toBeTruthy();
-    await fireEvent.press(screen.getByText('−20% на напої'));
+    await fireEvent.press(screen.getByRole('button', { name: /−20% на напої/ }));
     expect(onOpenTicket).toHaveBeenCalledWith('o1');
   });
 });
