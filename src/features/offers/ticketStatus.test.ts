@@ -1,6 +1,6 @@
 import type { MyClaim } from '@/types/claims';
 
-import { formatValidUntil, ticketStatus } from './ticketStatus';
+import { formatCountdown, formatValidUntil, ticketDeadline, ticketStatus } from './ticketStatus';
 
 function claim(status: string, validUntil: Date | null): MyClaim {
   return {
@@ -42,6 +42,40 @@ describe('ticketStatus', () => {
 
   it('is expired for a voided claim', () => {
     expect(ticketStatus(claim('void', null), now)).toBe('expired');
+  });
+});
+
+describe('ticketDeadline', () => {
+  it('prefers the offer end, else the event end', () => {
+    const offerEnd = new Date(2026, 10, 4, 23);
+    const eventEnd = new Date(2026, 10, 5, 2);
+    const withEventEnd = claim('issued', null);
+    withEventEnd.offer.event.endsAt = eventEnd;
+    expect(ticketDeadline(withEventEnd)).toBe(eventEnd);
+    expect(
+      ticketDeadline({ ...withEventEnd, offer: { ...withEventEnd.offer, validUntil: offerEnd } }),
+    ).toBe(offerEnd);
+    expect(ticketDeadline(claim('issued', null))).toBeNull();
+  });
+});
+
+describe('formatCountdown', () => {
+  const at = (minutes: number) => new Date(now.getTime() + minutes * 60_000);
+
+  it('formats hours and minutes', () => {
+    expect(formatCountdown(at(134), now)).toBe('Діє ще 2 год 14 хв');
+    expect(formatCountdown(at(120), now)).toBe('Діє ще 2 год');
+    expect(formatCountdown(at(14), now)).toBe('Діє ще 14 хв');
+  });
+
+  it('rounds a partial minute up', () => {
+    expect(formatCountdown(new Date(now.getTime() + 1000), now)).toBe('Діє ще 1 хв');
+  });
+
+  it('is null without a deadline or after it', () => {
+    expect(formatCountdown(null, now)).toBeNull();
+    expect(formatCountdown(at(0), now)).toBeNull();
+    expect(formatCountdown(at(-5), now)).toBeNull();
   });
 });
 
