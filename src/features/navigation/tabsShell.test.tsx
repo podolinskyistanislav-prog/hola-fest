@@ -38,6 +38,7 @@ jest.mock('expo-router/js-tabs', () => {
         routes: [
           { name: 'index', key: 'index-key' },
           { name: 'map', key: 'map-key' },
+          { name: 'tickets', key: 'tickets-key' },
         ],
       },
       insets: { top: 0, bottom: 0, left: 0, right: 0 },
@@ -62,6 +63,12 @@ describe('tab navigation shell', () => {
     await render(<TabsLayout />);
     await fireEvent.press(screen.getByRole('tab', { name: t('tabs.events') }));
     expect(mockNavigate).toHaveBeenCalledWith('index-key');
+  });
+
+  it('shows the third tab «Мої QR» and navigates to it', async () => {
+    await render(<TabsLayout />);
+    await fireEvent.press(screen.getByRole('tab', { name: 'Мої QR' }));
+    expect(mockNavigate).toHaveBeenCalledWith('tickets-key');
   });
 
   it('shows an empty state on the map tab when there are no venues', async () => {

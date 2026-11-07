@@ -14,6 +14,11 @@ const ITEMS: readonly TabBarItem[] = [
     label: t('tabs.map'),
     renderIcon: (props) => <TabIcon name="map-pin" {...props} />,
   },
+  {
+    id: 'tickets',
+    label: t('tabs.tickets'),
+    renderIcon: (props) => <TabIcon name="qr" {...props} />,
+  },
 ];
 
 function FloatingTabBar({ state, navigateToTab, insets }: BottomTabBarProps) {
@@ -36,6 +41,7 @@ export default function TabsLayout() {
     <Tabs tabBar={(props) => <FloatingTabBar {...props} />} screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="map" />
+      <Tabs.Screen name="tickets" />
     </Tabs>
   );
 }
