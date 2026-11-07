@@ -1,11 +1,14 @@
 import type { EventSummary } from '@/types/events';
 
 import {
+  curfewInfo,
   dayFromId,
   eventCardProps,
   formatEventDay,
   formatEventTime,
+  formatEventWhen,
   formatPriceFrom,
+  offerCondition,
   weekDays,
 } from './eventFormat';
 
@@ -73,6 +76,38 @@ describe('weekDays', () => {
     const days = weekDays(new Date('2026-11-30T10:00:00Z'));
     expect(days[0]?.id).toBe('2026-11-30');
     expect(days[1]?.id).toBe('2026-12-01');
+  });
+});
+
+describe('formatEventWhen', () => {
+  const now = new Date('2026-11-04T10:00:00Z');
+  it('says "Сьогодні" for the same Kyiv day, with the end time', () => {
+    expect(
+      formatEventWhen(new Date('2026-11-04T18:00:00Z'), new Date('2026-11-04T21:30:00Z'), now),
+    ).toBe('Сьогодні, 20:00 – 23:30');
+  });
+  it('uses the date for other days and omits an unknown end', () => {
+    expect(formatEventWhen(new Date('2026-11-05T18:00:00Z'), null, now)).toBe('5 листопада, 20:00');
+  });
+});
+
+describe('curfewInfo', () => {
+  const start = new Date('2026-11-04T18:00:00Z');
+  it('is ok when the event ends before 00:00 Kyiv', () => {
+    expect(curfewInfo(start, new Date('2026-11-04T21:30:00Z'))).toEqual({
+      label: 'До комендантської',
+      ok: true,
+    });
+  });
+  it('shows a placeholder when the end is after midnight or unknown', () => {
+    expect(curfewInfo(start, new Date('2026-11-04T23:00:00Z')).ok).toBe(false);
+    expect(curfewInfo(start, null)).toEqual({ label: 'Комендантська: [уточнити]', ok: false });
+  });
+});
+
+describe('offerCondition', () => {
+  it('shows the QR deadline in Kyiv time', () => {
+    expect(offerCondition(new Date('2026-11-04T20:00:00Z'))).toBe('Покажи QR на вході до 22:00');
   });
 });
 

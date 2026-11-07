@@ -69,6 +69,7 @@ export function EventScreenContent({
   return (
     <EventDetails
       event={event.data}
+      safeAreaTop={insets.top}
       safeAreaBottom={insets.bottom}
       onBack={onBack}
       onOpenVenue={onOpenVenue}

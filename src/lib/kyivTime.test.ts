@@ -1,6 +1,7 @@
 import {
   addKyivDays,
   dayKeyParts,
+  endsBeforeCurfew,
   formatKyivTime,
   fromKyivParts,
   kyivDayKey,
@@ -8,6 +9,15 @@ import {
   kyivWeekday,
   kyivWeekStartKey,
 } from './kyivTime';
+
+describe('endsBeforeCurfew', () => {
+  const start = new Date('2026-11-04T18:00:00Z');
+  it('is true until 00:00 Kyiv and false after', () => {
+    expect(endsBeforeCurfew(start, new Date('2026-11-04T21:59:00Z'))).toBe(true);
+    expect(endsBeforeCurfew(start, new Date('2026-11-04T22:00:00Z'))).toBe(true);
+    expect(endsBeforeCurfew(start, new Date('2026-11-04T22:01:00Z'))).toBe(false);
+  });
+});
 
 // Run this file under several device zones: `TZ=America/New_York npx jest src/lib/kyivTime`.
 const WINTER_EVENING = new Date('2026-11-04T18:00:00Z'); // 20:00 Kyiv, UTC+2

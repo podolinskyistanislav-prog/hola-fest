@@ -1,96 +1,149 @@
-import type { ReactNode } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Image } from 'expo-image';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { TaxiBar } from '@/components/TaxiBar';
-import { AppText, Button, Chip, GlassSurface, OfferRow } from '@/components/ui';
-import { ClaimOfferButton } from '@/features/offers';
+import { AppText, GlassIconButton, InfoChip, LineupChip } from '@/components/ui';
+import { HolaStar } from '@/components/ui/HolaStar';
+import { TAXI_BAR_HEIGHT } from '@/components/ui/TaxiBar';
 import { t } from '@/lib/i18n';
-import { brand, radius, space } from '@/theme';
-import type { EventDetails as EventDetailsData, EventOffer } from '@/types/events';
+import { brand, radius, space, useTheme } from '@/theme';
+import type { EventDetails as EventDetailsData } from '@/types/events';
 
-import { formatEventTime, formatPriceFrom } from './eventFormat';
+import { EventOfferCard } from './EventOfferCard';
+import { EventTaxiBar } from './EventTaxiBar';
+import { curfewInfo, formatEventWhen, formatPriceFrom } from './eventFormat';
+import { shareEvent } from './shareEvent';
 
 export interface EventDetailsProps {
   event: EventDetailsData;
-  /** Bottom safe-area inset so the last row clears the screen edge. */
+  /** Safe-area insets so the buttons clear the status bar and the taxi bar clears the home indicator. */
+  safeAreaTop: number;
   safeAreaBottom: number;
   onBack: () => void;
   onOpenVenue: (venueId: string) => void;
   /** Called after an offer was claimed, to open its ticket. */
   onClaimed: (offerId: string) => void;
-  /** Injectable clock for the "expired" offer status. */
+  /** Injectable clock for "Сьогодні" and the expired offer state. */
   now?: Date;
 }
 
-const COVER_HEIGHT = 220;
-const STAR_SIZE = 96;
-const BACK_TOP = 56;
+const COVER_HEIGHT = 310;
+const SHEET_OVERLAP = 40;
+const BUTTONS_TOP_GAP = 16;
+const BIG_STAR = 260;
+const SMALL_STAR = 110;
+const SHEET_GAP = 18;
 
-function offerStatus(offer: EventOffer, now: Date) {
-  return offer.validUntil !== null && offer.validUntil.getTime() <= now.getTime()
-    ? ('expired' as const)
-    : ('available' as const);
+function coverImageUri(coverPath: string | null): string | undefined {
+  return coverPath !== null && /^https:\/\//.test(coverPath) ? coverPath : undefined;
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <View style={styles.section}>
-      <AppText variant="heading" accessibilityRole="header">
-        {title}
-      </AppText>
-      {children}
-    </View>
-  );
-}
-
-/** Event page: cover, when/where/price, lineup and the list of offers. */
+/** Event page: cover, sheet with facts, lineup and offers, and a floating taxi bar. */
 export function EventDetails({
   event,
+  safeAreaTop,
   safeAreaBottom,
   onBack,
   onOpenVenue,
   onClaimed,
   now = new Date(),
 }: EventDetailsProps) {
-  const price = formatPriceFrom(event.priceFromUah);
+  const { colors } = useTheme();
+  const price = formatPriceFrom(event.priceFromUah) ?? t('event.priceUnknown');
+  const curfew = curfewInfo(event.startsAt, event.endsAt);
+  const coverUri = coverImageUri(event.coverPath);
+  const artists =
+    event.lineup.length > 0
+      ? event.lineup
+      : [t('event.artistPlaceholder1'), t('event.artistPlaceholder2')];
+  const venueLine = [event.venue.name, event.venue.address ?? t('event.venueNoAddress')].join(
+    ' · ',
+  );
+  const scrollEnd = safeAreaBottom + space.md + TAXI_BAR_HEIGHT + space.xxl;
+
   return (
-    <ScrollView
-      contentContainerStyle={{ paddingBottom: safeAreaBottom + space.xxl }}
-      showsVerticalScrollIndicator={false}
-    >
-      <View style={[styles.cover, { backgroundColor: brand.yellow }]}>
-        <AppText
-          accessible={false}
-          importantForAccessibility="no"
-          style={[styles.star, { color: brand.pink }]}
+    <View style={styles.screen}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: scrollEnd }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={[styles.cover, { backgroundColor: brand.yellow }]}>
+          {coverUri ? (
+            <Image
+              source={{ uri: coverUri }}
+              contentFit="cover"
+              accessible={false}
+              style={StyleSheet.absoluteFill}
+            />
+          ) : (
+            <>
+              <View style={styles.bigStar} pointerEvents="none">
+                <HolaStar color={brand.pink} size={BIG_STAR} />
+              </View>
+              <View style={styles.smallStar} pointerEvents="none">
+                <HolaStar color={brand.pink} size={SMALL_STAR} />
+              </View>
+            </>
+          )}
+        </View>
+
+        <View
+          style={[styles.sheet, { backgroundColor: colors.background }]}
+          accessibilityLabel={event.title}
         >
-          ✦
-        </AppText>
-        <GlassSurface kind="cover" style={styles.back}>
-          <Button label={t('event.back')} variant="glass" onPress={onBack} />
-        </GlassSurface>
+          <View style={styles.titleBlock}>
+            <AppText variant="title" accessibilityRole="header">
+              {event.title}
+            </AppText>
+            <Pressable
+              accessibilityRole="link"
+              accessibilityLabel={venueLine}
+              onPress={() => onOpenVenue(event.venue.id)}
+            >
+              <AppText tone="muted">{venueLine}</AppText>
+            </Pressable>
+          </View>
+
+          <View style={styles.chips}>
+            <InfoChip label={formatEventWhen(event.startsAt, event.endsAt, now)} />
+            <InfoChip label={price} />
+            <InfoChip label={curfew.label} icon={curfew.ok ? 'check' : undefined} />
+            <InfoChip
+              label={event.venue.hasShelter ? t('event.shelterYes') : t('event.shelterUnknown')}
+              icon="shield"
+            />
+          </View>
+
+          <View style={styles.lineup}>
+            <AppText variant="label" tone="muted" accessibilityRole="header">
+              {t('event.lineup')}
+            </AppText>
+            <View style={styles.chips}>
+              {artists.map((name) => (
+                <LineupChip key={name} label={name} />
+              ))}
+            </View>
+          </View>
+
+          {event.description ? <AppText>{event.description}</AppText> : null}
+
+          {event.offers.map((offer) => (
+            <EventOfferCard key={offer.id} offer={offer} onClaimed={onClaimed} now={now} />
+          ))}
+        </View>
+      </ScrollView>
+
+      <View style={[styles.topButtons, { top: safeAreaTop + BUTTONS_TOP_GAP }]}>
+        <GlassIconButton icon="back" kind="cover" label={t('event.back')} onPress={onBack} />
+        <GlassIconButton
+          icon="share"
+          kind="cover"
+          label={t('event.share')}
+          onPress={() => void shareEvent(event.id, event.title)}
+        />
       </View>
 
-      <View style={styles.body}>
-        <AppText variant="title" accessibilityRole="header">
-          {event.title}
-        </AppText>
-        <View style={styles.chips}>
-          <Chip label={formatEventTime(event.startsAt)} />
-          {price ? <Chip label={price} /> : null}
-        </View>
-
-        <View style={styles.venue}>
-          <AppText variant="bodyStrong">{event.venue.name}</AppText>
-          <AppText tone="muted">{event.venue.address ?? t('event.venueNoAddress')}</AppText>
-          <Button
-            label={t('event.venueLink')}
-            variant="inverse"
-            onPress={() => onOpenVenue(event.venue.id)}
-          />
-        </View>
-
-        <TaxiBar
+      <View style={[styles.taxi, { bottom: safeAreaBottom + space.md }]}>
+        <EventTaxiBar
           destination={{
             name: event.venue.name,
             address: event.venue.address,
@@ -98,48 +151,33 @@ export function EventDetails({
             lng: event.venue.lng,
           }}
         />
-
-        {event.description ? <AppText>{event.description}</AppText> : null}
-
-        {event.lineup.length > 0 ? (
-          <Section title={t('event.lineup')}>
-            <View style={styles.chips}>
-              {event.lineup.map((name) => (
-                <Chip key={name} label={name} />
-              ))}
-            </View>
-          </Section>
-        ) : null}
-
-        <Section title={t('event.offers')}>
-          {event.offers.length === 0 ? (
-            <AppText tone="muted">{t('event.offersEmpty')}</AppText>
-          ) : (
-            <View style={styles.offers}>
-              {event.offers.map((offer) => (
-                <OfferRow
-                  key={offer.id}
-                  title={offer.title}
-                  terms={offer.terms ?? ''}
-                  status={offerStatus(offer, now)}
-                  action={<ClaimOfferButton offerId={offer.id} onClaimed={onClaimed} />}
-                />
-              ))}
-            </View>
-          )}
-        </Section>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  cover: { height: COVER_HEIGHT, alignItems: 'center', justifyContent: 'center' },
-  star: { fontSize: STAR_SIZE, lineHeight: STAR_SIZE + space.sm },
-  back: { position: 'absolute', left: space.screen, top: BACK_TOP, borderRadius: radius.pill },
-  body: { padding: space.screen, gap: space.lg },
+  screen: { flex: 1 },
+  cover: { height: COVER_HEIGHT, overflow: 'hidden' },
+  bigStar: { position: 'absolute', right: -40, top: 30 },
+  smallStar: { position: 'absolute', left: 40, top: 150 },
+  sheet: {
+    marginTop: -SHEET_OVERLAP,
+    borderTopLeftRadius: radius.sheet,
+    borderTopRightRadius: radius.sheet,
+    paddingHorizontal: space.screen,
+    paddingTop: space.xxl,
+    gap: SHEET_GAP,
+  },
+  titleBlock: { gap: 6 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  venue: { gap: space.xs, alignItems: 'flex-start' },
-  section: { gap: space.md },
-  offers: { gap: space.sm },
+  lineup: { gap: space.sm },
+  topButtons: {
+    position: 'absolute',
+    left: space.screen,
+    right: space.screen,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  taxi: { position: 'absolute', left: space.screen, right: space.screen },
 });
