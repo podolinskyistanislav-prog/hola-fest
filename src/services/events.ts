@@ -16,8 +16,13 @@ export class EventsError extends Error {
 }
 
 const VENUE_COLUMNS = 'id, slug, name, address, lat, lng, has_shelter, instagram_url';
-const SUMMARY_COLUMNS = `id, title, starts_at, ends_at, price_from_uah, cover_path, tags, venue:venues!inner(${VENUE_COLUMNS})`;
-const DETAILS_COLUMNS = `${SUMMARY_COLUMNS}, description, lineup, offers(id, title, terms, valid_until)`;
+const OFFER_COLUMNS = 'id, title, terms, valid_until';
+const EVENT_COLUMNS = `id, title, starts_at, ends_at, price_from_uah, cover_path, tags, venue:venues!inner(${VENUE_COLUMNS})`;
+
+/** `offers!inner` drops events without a matching offer; plain `offers` keeps them with an empty list. */
+function summaryColumns(onlyWithOffers: boolean): string {
+  return `${EVENT_COLUMNS}, ${onlyWithOffers ? 'offers!inner' : 'offers'}(${OFFER_COLUMNS})`;
+}
 
 type VenueRow = {
   id: string;
@@ -41,12 +46,12 @@ type EventSummaryRow = {
   cover_path: string | null;
   tags: string[] | null;
   venue: VenueRow;
+  offers: OfferRow[] | null;
 };
 
 type EventDetailsRow = EventSummaryRow & {
   description: string | null;
   lineup: string[] | null;
-  offers: OfferRow[] | null;
 };
 
 type ClientError = { message?: string };
@@ -89,6 +94,7 @@ function toSummary(row: EventSummaryRow): EventSummary {
     coverPath: row.cover_path,
     tags: row.tags ?? [],
     venue: toVenue(row.venue),
+    offers: (row.offers ?? []).map(toOffer),
   };
 }
 
@@ -97,7 +103,6 @@ function toDetails(row: EventDetailsRow): EventDetails {
     ...toSummary(row),
     description: row.description,
     lineup: row.lineup ?? [],
-    offers: (row.offers ?? []).map(toOffer),
   };
 }
 
@@ -121,10 +126,10 @@ export async function getEventsForRange(
 
   let query = supabase
     .from('events')
-    .select(filter.hasActiveOffer ? `${SUMMARY_COLUMNS}, offers!inner(id)` : SUMMARY_COLUMNS)
+    .select(summaryColumns(filter.hasActiveOffer === true))
     .eq('status', 'published')
-    .eq('venues.is_published', true);
-  if (filter.hasActiveOffer) query = query.eq('offers.is_active', true);
+    .eq('venues.is_published', true)
+    .eq('offers.is_active', true);
   if (filter.tag) query = query.contains('tags', [filter.tag]);
 
   const { data, error } = await query
@@ -141,7 +146,7 @@ export async function getEventsForRange(
 export async function getEventById(id: string): Promise<EventDetails | null> {
   const { data, error } = await supabase
     .from('events')
-    .select(DETAILS_COLUMNS)
+    .select(`${summaryColumns(false)}, description, lineup`)
     .eq('id', id)
     .eq('status', 'published')
     .eq('venues.is_published', true)

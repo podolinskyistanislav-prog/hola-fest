@@ -26,10 +26,11 @@ export type EventSummary = {
   /** Genre tags (`techno`, `house`, `rooftop`). The service always fills it; optional so fixtures outside src/services stay valid. */
   tags?: string[];
   venue: EventVenue;
+  /** The event's active offers, possibly empty. */
+  offers: EventOffer[];
 };
 
 export type EventDetails = EventSummary & {
   description: string | null;
   lineup: string[];
-  offers: EventOffer[];
 };

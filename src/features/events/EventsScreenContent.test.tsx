@@ -26,6 +26,7 @@ const event: EventSummary = {
   endsAt: null,
   priceFromUah: 350,
   coverPath: null,
+  offers: [],
   venue: {
     id: 'v1',
     slug: 'bavovna',
