@@ -4,8 +4,11 @@ import { StyleSheet, View, type ViewProps } from 'react-native';
 import { useTheme } from '@/theme';
 
 export interface GlassSurfaceProps extends ViewProps {
-  /** `cover`: glass placed over a colored event cover. `floating`: tab bar, sheets, top buttons. */
-  kind?: 'floating' | 'cover';
+  /**
+   * `cover`: glass placed over a colored event cover. `floating`: tab bar, sheets.
+   * `control`: small round buttons on the screen background (search).
+   */
+  kind?: 'floating' | 'cover' | 'control';
 }
 
 /**
@@ -15,10 +18,11 @@ export interface GlassSurfaceProps extends ViewProps {
  */
 export function GlassSurface({ kind = 'floating', style, children, ...rest }: GlassSurfaceProps) {
   const { colors, scheme } = useTheme();
-  const fallback =
-    kind === 'cover'
-      ? { backgroundColor: colors.glassOnCover.fill, borderColor: colors.glassOnCover.border }
-      : { backgroundColor: colors.glass.fill, borderColor: colors.glass.border };
+  const fallback = {
+    cover: { backgroundColor: colors.glassOnCover.fill, borderColor: colors.glassOnCover.border },
+    control: { backgroundColor: colors.glassControl.fill, borderColor: colors.glassControl.border },
+    floating: { backgroundColor: colors.glass.fill, borderColor: colors.glass.border },
+  }[kind];
 
   if (isLiquidGlassAvailable()) {
     return (
