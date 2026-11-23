@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet } from 'react-native';
 
-import { radius, useTheme } from '@/theme';
+import { brand, radius, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
 
@@ -10,10 +10,18 @@ export interface GlassPillButtonProps {
   onPress?: () => void;
   /** Share the row width equally with siblings. */
   flex?: boolean;
+  /** Filled Hola yellow with black text, for the main choice. */
+  primary?: boolean;
 }
 
 /** Translucent pill that sits on a glass panel (taxi provider, "Поїхати"). */
-export function GlassPillButton({ label, height, onPress, flex = false }: GlassPillButtonProps) {
+export function GlassPillButton({
+  label,
+  height,
+  onPress,
+  flex = false,
+  primary = false,
+}: GlassPillButtonProps) {
   const { colors } = useTheme();
   return (
     <Pressable
@@ -24,14 +32,16 @@ export function GlassPillButton({ label, height, onPress, flex = false }: GlassP
         styles.base,
         {
           height,
-          backgroundColor: colors.glassButton.fill,
-          borderColor: colors.glassButton.border,
+          backgroundColor: primary ? brand.yellow : colors.glassButton.fill,
+          borderColor: primary ? brand.yellow : colors.glassButton.border,
         },
         flex && styles.flex,
         pressed && styles.pressed,
       ]}
     >
-      <AppText variant="bodyStrong">{label}</AppText>
+      <AppText variant="bodyStrong" tone={primary ? 'onAccent' : 'default'}>
+        {label}
+      </AppText>
     </Pressable>
   );
 }

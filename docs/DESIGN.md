@@ -87,6 +87,10 @@ Built 1:1 from `Event.html`, `Offer.html` and `Map.html`. All copy arrives trans
 - `QRCard`: clear glass (own `glassCard` token, not `GlassSurface`: 10% white fill, 0.28 border, top highlight, deep shadow, blur on web; light theme 35% white fill so blobs still glow through) radius 36 around a white QR tile (drawn with plain views, works offline), title, details and a yellow countdown pill. `AccentBlobs` sit behind it so the glass has something to refract.
 - `MapPin`: name pill above a 16 dot with a 25% halo in the venue accent. `MapVenueCard`: glass radius 30 with a star thumb, address, tonight's event, yellow "Подія" and glass "Поїхати" (46). `GlassSearchField`: glass 52 with a search icon.
 
+## Club kit
+
+`VenueRow` (56 thumb: star in the venue accent or a cover, name, address, event line, chevron), `PhotoGallery` (strip of labelled slots; an empty slot is a camera placeholder "Фото скоро", never hidden), `CollapsibleSection` (title, optional count, chevron; announces `expanded`), `LoyaltyStampCard` (placeholder with a "Скоро" badge, `visits` clamped to `goal`). `TaxiBar` shows Bolt first and filled yellow with black text; Uklon and Uber stay glass. Copy arrives translated; defaults are the Ukrainian strings.
+
 ## Event covers (until real photos exist)
 
 A yellow or pink block with the 4-point Hola star in the other accent color, as in the mockups.
