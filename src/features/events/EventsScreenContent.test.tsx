@@ -3,7 +3,9 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import { t } from '@/lib/i18n';
 import { getEventsForRange } from '@/services/events';
+import { getPublishedVenues } from '@/services/venues';
 import type { EventSummary } from '@/types/events';
+import type { Venue } from '@/types/venues';
 
 import { EventsScreenContent } from './EventsScreenContent';
 
@@ -14,6 +16,7 @@ jest.mock('expo-glass-effect', () => {
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }),
 }));
+jest.mock('@/services/venues', () => ({ getPublishedVenues: jest.fn() }));
 jest.mock('@/services/events', () => ({
   getEventsForRange: jest.fn(),
   getEventById: jest.fn(),
@@ -40,7 +43,18 @@ const event: EventSummary = {
   },
 };
 
+const venue: Venue = {
+  id: 'v1',
+  slug: 'bavovna',
+  name: 'Bavovna',
+  address: 'вул. Хрещатик, 1',
+  lat: null,
+  lng: null,
+  hasShelter: false,
+};
+
 const onOpenEvent = jest.fn();
+const onOpenVenue = jest.fn();
 const onOpenMap = jest.fn();
 const onTitleLongPress = jest.fn();
 
@@ -50,6 +64,7 @@ async function renderScreen() {
     <QueryClientProvider client={client}>
       <EventsScreenContent
         onOpenEvent={onOpenEvent}
+        onOpenVenue={onOpenVenue}
         onOpenMap={onOpenMap}
         onTitleLongPress={onTitleLongPress}
       />
@@ -57,7 +72,10 @@ async function renderScreen() {
   );
 }
 
-beforeEach(() => jest.resetAllMocks());
+beforeEach(() => {
+  jest.resetAllMocks();
+  jest.mocked(getPublishedVenues).mockResolvedValue([venue]);
+});
 
 describe('EventsScreenContent', () => {
   it('shows a loading state while the events are pending', async () => {
@@ -95,7 +113,7 @@ describe('EventsScreenContent', () => {
     await renderScreen();
     expect(await screen.findByText('Сьогодні · 1 подія')).toBeTruthy();
     expect(screen.getAllByText('−20% на вхід').length).toBeGreaterThan(0);
-    expect(screen.getByText(t('home.weekOffers'))).toBeTruthy();
+    expect(await screen.findByText(t('home.clubs'))).toBeTruthy();
   });
 
   it('shows the empty-today state', async () => {
@@ -125,8 +143,23 @@ describe('EventsScreenContent', () => {
   it('opens the map tab from the "На карті" link', async () => {
     jest.mocked(getEventsForRange).mockResolvedValue([]);
     await renderScreen();
-    await fireEvent.press(await screen.findByRole('link', { name: t('home.onMap') }));
+    const [mapLink] = await screen.findAllByRole('link', { name: t('home.onMap') });
+    await fireEvent.press(mapLink as NonNullable<typeof mapLink>);
     expect(onOpenMap).toHaveBeenCalled();
+  });
+
+  it('lists the published clubs and opens one on tap', async () => {
+    jest.mocked(getEventsForRange).mockResolvedValue([event]);
+    await renderScreen();
+    await fireEvent.press(await screen.findByRole('button', { name: /^Bavovna, вул\. Хрещатик/ }));
+    expect(onOpenVenue).toHaveBeenCalledWith('v1');
+  });
+
+  it('shows a message when there are no clubs', async () => {
+    jest.mocked(getEventsForRange).mockResolvedValue([]);
+    jest.mocked(getPublishedVenues).mockResolvedValue([]);
+    await renderScreen();
+    expect(await screen.findByText(t('home.clubsEmpty'))).toBeTruthy();
   });
 
   it('opens the search placeholder sheet', async () => {

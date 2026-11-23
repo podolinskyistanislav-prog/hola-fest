@@ -9,7 +9,6 @@ import {
   formatDayHeading,
   formatEventsCount,
   homeDays,
-  weekOffers,
   formatEventDay,
   formatEventTime,
   formatEventWhen,
@@ -206,19 +205,5 @@ describe('filterEvents and eventsOnDay', () => {
   it('picks the events of one Kyiv day', () => {
     expect(eventsOnDay(list, '2026-11-04')).toHaveLength(2);
     expect(eventsOnDay(list, '2026-11-05')).toHaveLength(0);
-  });
-});
-
-describe('weekOffers', () => {
-  it('makes one row per offer with weekday, date and venue', () => {
-    expect(weekOffers([{ ...event, offers: [offer] }])).toEqual([
-      {
-        key: 'e1:o1',
-        eventId: 'e1',
-        title: 'Hola Night',
-        dateAndVenue: 'Ср, 4 листопада · Bavovna',
-        offerText: '−15%',
-      },
-    ]);
   });
 });

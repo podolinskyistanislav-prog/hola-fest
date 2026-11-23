@@ -10,9 +10,11 @@ import {
   FilterChips,
   HomeHeader,
   SectionHeader,
-  WeekOfferRow,
+  VenueRow,
   tabBarInset,
 } from '@/components/ui';
+import { clubRows } from '@/features/venues/clubList';
+import { useVenues } from '@/features/venues/useVenues';
 import { t, type TranslationKey } from '@/lib/i18n';
 import { kyivDayKey } from '@/lib/kyivTime';
 import { layout, radius, space, useTheme } from '@/theme';
@@ -24,7 +26,6 @@ import {
   formatDayHeading,
   HOME_FILTER_IDS,
   homeDays,
-  weekOffers,
   type HomeFilterId,
 } from './eventFormat';
 import { SearchSoonSheet } from './SearchSoonSheet';
@@ -32,6 +33,7 @@ import { useHomeEvents } from './useEvents';
 
 export interface EventsScreenContentProps {
   onOpenEvent: (id: string) => void;
+  onOpenVenue: (id: string) => void;
   onOpenMap: () => void;
   /** Long-press on the header; used as the hidden staff entry point. */
   onTitleLongPress: () => void;
@@ -71,9 +73,10 @@ function EmptyDay({ title, body }: { title: string; body: string }) {
   );
 }
 
-/** Home: header, 5-day strip, genre/offer chips, event carousel and the week's offers. */
+/** Home: header, 5-day strip, genre/offer chips, event carousel and the clubs list. */
 export function EventsScreenContent({
   onOpenEvent,
+  onOpenVenue,
   onOpenMap,
   onTitleLongPress,
 }: EventsScreenContentProps) {
@@ -90,7 +93,8 @@ export function EventsScreenContent({
     () => filterEvents(eventsOnDay(all, selectedId), filter),
     [all, selectedId, filter],
   );
-  const offers = useMemo(() => weekOffers(all), [all]);
+  const venues = useVenues();
+  const clubs = useMemo(() => clubRows(venues.data ?? [], all, today), [venues.data, all, today]);
 
   const isToday = selectedId === kyivDayKey(today);
   const hasFilter = filter !== 'all';
@@ -163,22 +167,23 @@ export function EventsScreenContent({
         ) : null}
 
         <SectionHeader
-          title={t('home.weekOffers')}
-          actionLabel={t('home.weekOffersAll')}
-          onActionPress={() => setFilter('offer')}
+          title={t('home.clubs')}
+          actionLabel={t('home.onMap')}
+          onActionPress={onOpenMap}
         />
-        <View style={styles.offers}>
-          {offers.length === 0 && events.isSuccess ? (
-            <AppText tone="muted">{t('home.weekOffersEmpty')}</AppText>
+        <View style={styles.clubs}>
+          {venues.isError ? <AppText tone="muted">{t('home.clubsError')}</AppText> : null}
+          {venues.isSuccess && clubs.length === 0 ? (
+            <AppText tone="muted">{t('home.clubsEmpty')}</AppText>
           ) : null}
-          {offers.map((offer, index) => (
-            <WeekOfferRow
-              key={offer.key}
-              title={offer.title}
-              dateAndVenue={offer.dateAndVenue}
-              offerText={offer.offerText}
-              accent={index % 2 === 0 ? 'yellow' : 'pink'}
-              onPress={() => onOpenEvent(offer.eventId)}
+          {clubs.map((club) => (
+            <VenueRow
+              key={club.id}
+              name={club.name}
+              address={club.address}
+              eventLine={club.eventLine}
+              accent={club.accent}
+              onPress={() => onOpenVenue(club.id)}
             />
           ))}
         </View>
@@ -207,5 +212,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   error: { gap: space.sm, paddingHorizontal: space.screen },
-  offers: { gap: space.sm, paddingHorizontal: space.screen },
+  clubs: { gap: space.sm, paddingHorizontal: space.screen },
 });

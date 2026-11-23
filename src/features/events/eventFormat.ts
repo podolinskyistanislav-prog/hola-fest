@@ -148,27 +148,3 @@ export function carouselCardProps(event: EventSummary, index: number) {
     coverColor: index % 2 === 0 ? ('yellow' as const) : ('pink' as const),
   };
 }
-
-export type WeekOffer = {
-  key: string;
-  eventId: string;
-  title: string;
-  dateAndVenue: string;
-  offerText: string;
-};
-
-/** One row per active offer of the given events (already limited to the next 7 days). */
-export function weekOffers(events: readonly EventSummary[]): WeekOffer[] {
-  return events.flatMap((event) => {
-    const weekday = t(
-      `events.weekday.${kyivWeekday(kyivDayKey(event.startsAt))}` as TranslationKey,
-    );
-    return event.offers.map((offer) => ({
-      key: `${event.id}:${offer.id}`,
-      eventId: event.id,
-      title: event.title,
-      dateAndVenue: `${weekday}, ${formatEventDay(event.startsAt)} · ${event.venue.name}`,
-      offerText: offer.title,
-    }));
-  });
-}
