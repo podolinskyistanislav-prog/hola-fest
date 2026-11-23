@@ -3,7 +3,13 @@ import type { EventSummary } from '@/types/events';
 import {
   curfewInfo,
   dayFromId,
-  eventCardProps,
+  carouselCardProps,
+  eventsOnDay,
+  filterEvents,
+  formatDayHeading,
+  formatEventsCount,
+  homeDays,
+  weekOffers,
   formatEventDay,
   formatEventTime,
   formatEventWhen,
@@ -118,17 +124,96 @@ describe('dayFromId', () => {
   });
 });
 
-describe('eventCardProps', () => {
-  it('maps an event to formatted card props', () => {
-    expect(eventCardProps(event, 0)).toEqual({
+const offer = { id: 'o1', title: '−15%', terms: null, validUntil: null };
+
+describe('carouselCardProps', () => {
+  it('maps an event to card props without a badge when there is no offer', () => {
+    expect(carouselCardProps(event, 0)).toEqual({
       title: 'Hola Night',
       venue: 'Bavovna',
-      time: '20:05',
+      timeRange: '20:05',
       priceFrom: 'від 350 ₴',
+      offerBadge: undefined,
       coverColor: 'yellow',
     });
   });
-  it('alternates cover colors', () => {
-    expect(eventCardProps(event, 1).coverColor).toBe('pink');
+  it('alternates cover colors and badges the first offer', () => {
+    const props = carouselCardProps({ ...event, offers: [offer] }, 1);
+    expect(props.coverColor).toBe('pink');
+    expect(props.offerBadge).toBe('−15%');
+  });
+});
+
+describe('formatEventsCount', () => {
+  it.each([
+    [0, '0 подій'],
+    [1, '1 подія'],
+    [2, '2 події'],
+    [4, '4 події'],
+    [5, '5 подій'],
+    [11, '11 подій'],
+    [12, '12 подій'],
+    [21, '21 подія'],
+    [23, '23 події'],
+  ])('%i → %s', (count, label) => {
+    expect(formatEventsCount(count)).toBe(label);
+  });
+});
+
+describe('formatDayHeading', () => {
+  const today = new Date('2026-11-04T10:00:00Z');
+  it('says "Сьогодні" for today', () => {
+    expect(formatDayHeading('2026-11-04', today, 2)).toBe('Сьогодні · 2 події');
+  });
+  it('uses the weekday for another day', () => {
+    expect(formatDayHeading('2026-11-06', today, 1)).toBe('Пʼятниця · 1 подія');
+  });
+});
+
+describe('homeDays', () => {
+  it('lists five days from today and dots the ones with events', () => {
+    const days = homeDays(new Date('2026-11-04T10:00:00Z'), [event]);
+    expect(days.map((day) => day.id)).toEqual([
+      '2026-11-04',
+      '2026-11-05',
+      '2026-11-06',
+      '2026-11-07',
+      '2026-11-08',
+    ]);
+    expect(days.map((day) => day.hasEvents)).toEqual([true, false, false, false, false]);
+  });
+});
+
+describe('filterEvents and eventsOnDay', () => {
+  const techno = { ...event, id: 't', tags: ['techno'] };
+  const house = { ...event, id: 'h', tags: ['house'], offers: [offer] };
+  const list = [techno, house];
+  it('keeps everything for "all"', () => {
+    expect(filterEvents(list, 'all')).toHaveLength(2);
+  });
+  it('keeps events with an active offer', () => {
+    expect(filterEvents(list, 'offer').map((e) => e.id)).toEqual(['h']);
+  });
+  it('keeps events carrying the genre tag', () => {
+    expect(filterEvents(list, 'techno').map((e) => e.id)).toEqual(['t']);
+    expect(filterEvents(list, 'rooftop')).toEqual([]);
+  });
+  it('picks the events of one Kyiv day', () => {
+    expect(eventsOnDay(list, '2026-11-04')).toHaveLength(2);
+    expect(eventsOnDay(list, '2026-11-05')).toHaveLength(0);
+  });
+});
+
+describe('weekOffers', () => {
+  it('makes one row per offer with weekday, date and venue', () => {
+    expect(weekOffers([{ ...event, offers: [offer] }])).toEqual([
+      {
+        key: 'e1:o1',
+        eventId: 'e1',
+        title: 'Hola Night',
+        dateAndVenue: 'Ср, 4 листопада · Bavovna',
+        offerText: '−15%',
+      },
+    ]);
   });
 });
