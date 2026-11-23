@@ -166,6 +166,9 @@ jobs:
             gh issue edit "$n" --repo "${{ github.repository }}" --add-label status:review \
               --remove-label status:in-progress --remove-label status:todo --remove-label status:blocked || true
           done
+          # A task in review frees its queue slot. GITHUB_TOKEN label changes start no workflows,
+          # so start the queue explicitly (workflow_dispatch is allowed from GITHUB_TOKEN).
+          if [ -n "$nums" ]; then gh workflow run queue.yml --repo "${{ github.repository }}" --ref main || true; fi
 
   review-pr:
     if: >
