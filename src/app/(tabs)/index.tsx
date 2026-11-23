@@ -12,6 +12,7 @@ export default function EventsScreen() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <EventsScreenContent
         onOpenEvent={(id) => router.push({ pathname: '/event/[id]', params: { id } })}
+        onOpenVenue={(id) => router.push({ pathname: '/venue/[id]', params: { id } })}
         onOpenMap={() => router.navigate('/map')}
         onTitleLongPress={() => router.push('/staff-login')}
       />
