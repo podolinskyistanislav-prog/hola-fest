@@ -1,17 +1,17 @@
 # Graph Report - hola-fest  (2026-11-23)
 
 ## Corpus Check
-- 279 files · ~88,740 words
+- 280 files · ~89,232 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 12 file(s) not represented in the graph (top: (none) 10, .example 1, .toml 1)
 
 ## Summary
-- 1716 nodes · 3888 edges · 101 communities (88 shown, 13 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 51 edges (avg confidence: 0.86)
+- 1722 nodes · 3900 edges · 108 communities (92 shown, 16 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 53 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9191607b`
+- Built from commit: `e88d4747`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -38,7 +38,7 @@
 - security-qa.md
 - jest
 - 0001-foundation.md
-- sessionStore.ts
+- Hola Fest — design rules
 - _layout.tsx
 - task.md
 - pull_request_template.md
@@ -46,14 +46,14 @@
 - expo-glass-effect@~58.0.5
 - expo-image@~58.0.18
 - expo-linking@~58.0.16
-- fonts.ts
+- DateTimeField.tsx
 - ui-ux.md
 - expo-symbols@~58.0.4
 - expo-system-ui@~58.0.7
 - @expo/ui@~58.0.27
 - expo-device@~58.0.5
 - AppText
-- auth.ts
+- react-dom@19.3.0
 - steps
 - react-native-reanimated@4.7.1
 - jobs
@@ -68,7 +68,7 @@
 - 0002-anonymous-auth-for-mvp.md
 - database
 - Cloud Security Checklist
-- ui/index.ts
+- homeComponents.test.tsx
 - edge-functions
 - on
 - package.json
@@ -77,52 +77,59 @@
 - services/events.ts
 - Quick Reference
 - VenuesMapScreenContent.tsx
-- theme/index.ts
-- EventsScreenContent.tsx
+- ui/index.ts
+- EventCarouselCard.tsx
 - services/admin.ts
-- offerFormValidation.ts
+- OfferForm.tsx
 - expo-router
 - @tanstack/react-query
 - build
 - Hola Fest — design rules
-- useAdminVenueEvents.ts
+- useEventEditor.ts
 - app/_layout.tsx
 - useOfferEditor.ts
-- expo-splash-screen
 - react
+- EventTaxiBar.tsx
 - claimedTokens.ts
-- QRTicket.tsx
-- eventFormValidation.ts
-- EventOfferCard.tsx
+- theme/index.ts
+- EventForm.tsx
+- EventScreenContent.test.tsx
 - VenueMap.tsx
-- useEvents.ts
-- ScannerScreenContent
-- EventDetails.tsx
+- kyivTime.ts
+- react-native
+- kit.test.tsx
 - shareEvent.ts
-- auth/index.ts
+- StaffLoginForm.tsx
 - claims.test.ts
-- GlassSurface
+- AppText.tsx
 - useMyClaims.ts
-- VenueEventsList.test.tsx
-- eventFormat.ts
+- @testing-library/react-native
+- t
 - 0008-eas-cloud-builds.md
-- tabsShell.test.tsx
+- i18n/index.ts
 - TicketScreenContent.tsx
 - staff/index.ts
 - useVenues.ts
-- expo@~58.0.23
-- @testing-library/react-native
-- expo-device@~58.0.5
+- EventsScreenContent.tsx
+- useMaxBrightness.test.tsx
+- QRTicket.tsx
 - db-backend.md
 - reviewer.md
-- expo-camera
-- expo-image
+- MyTicketsContent.tsx
+- 0007 — Taxi deep links
+- expo-constants@~58.0.15
+- expo-glass-effect
+- expo-status-bar
+- @expo/ui@~58.0.27
+- react-dom@19.3.0
+- @react-native-async-storage/async-storage
+- react-native-web@~0.21.4
 
 ## God Nodes (most connected - your core abstractions)
 1. `AppText()` - 100 edges
 2. `useTheme()` - 100 edges
 3. `t()` - 91 edges
-4. `react-native` - 71 edges
+4. `react-native` - 73 edges
 5. `Button()` - 50 edges
 6. `space` - 44 edges
 7. `@testing-library/react-native` - 38 edges
@@ -133,23 +140,23 @@
 ## Surprising Connections (you probably didn't know these)
 - `Rules for agents` --references--> `t()`  [INFERRED]
   docs/design/mockups/README.md → src/lib/i18n/index.ts
+- `Context` --references--> `readSecret()`  [INFERRED]
+  docs/decisions/0009-web-secret-storage-fallback.md → src/lib/secureStorage.ts
+- `Decision` --references--> `openTaxiLink()`  [INFERRED]
+  docs/decisions/0007-taxi-deep-links.md → src/lib/taxi.ts
 - `Code quality` --references--> `claimOffer()`  [INFERRED]
   CLAUDE.md → src/services/claims.ts
 - `How you work` --references--> `useTheme()`  [INFERRED]
   .claude/agents/ui-ux.md → src/theme/useTheme.ts
-- `0005 — Web build is a single-page app` --references--> `resolveStaticPath()`  [INFERRED]
-  docs/decisions/0005-web-single-page-app.md → scripts/screenshots/plan.ts
-- `Decision` --references--> `openTaxiLink()`  [INFERRED]
-  docs/decisions/0007-taxi-deep-links.md → src/lib/taxi.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (101 total, 13 thin omitted)
+## Communities (108 total, 16 thin omitted)
 
 ### Community 0 - "dependencies"
 Cohesion: 0.07
-Nodes (30): dependencies, expo-build-properties@~58.0.12, expo-font@~58.0.11, expo-status-bar@~58.0.4, expo-system-ui@~58.0.7, @expo/ui@~58.0.27, react@19.3.0, react-dom@19.3.0 (+22 more)
+Nodes (27): dependencies, expo@~58.0.23, expo-build-properties@~58.0.12, expo-device@~58.0.5, expo-font@~58.0.11, expo-secure-store@~58.0.2, expo-splash-screen@~58.0.13, expo-symbols@~58.0.4 (+19 more)
 
 ### Community 1 - "devDependencies"
 Cohesion: 0.10
@@ -196,16 +203,16 @@ Cohesion: 0.12
 Nodes (16): jobs, refresh, name, on, push, permissions, contents, branches (+8 more)
 
 ### Community 12 - "Button.tsx"
-Cohesion: 0.16
-Nodes (17): Deps, FAILURE_REASON, ScanState, ClaimRow, ClaimsErrorCode, isNetworkMessage(), readFailureReason(), readRedeemFailureReason() (+9 more)
+Cohesion: 0.15
+Nodes (18): Deps, FAILURE_REASON, ScanState, ClaimRow, ClaimsErrorCode, isNetworkMessage(), readFailureReason(), readRedeemFailureReason() (+10 more)
 
 ### Community 13 - ".prettierrc.json"
 Cohesion: 0.40
 Nodes (4): printWidth, semi, singleQuote, trailingComma
 
 ### Community 14 - "db-backend.md"
-Cohesion: 0.14
-Nodes (16): 0005 — Web build is a single-page app, appEnvFromSupabaseStatus(), buildShotPlan(), resolveStaticPath(), Shot, exportWeb(), main(), MIME (+8 more)
+Cohesion: 0.11
+Nodes (20): 0005 — Web build is a single-page app, 0009 — Web fallback for secret storage, Consequences, Context, Decision, appEnvFromSupabaseStatus(), buildShotPlan(), resolveStaticPath() (+12 more)
 
 ### Community 15 - "mobile.md"
 Cohesion: 0.50
@@ -223,7 +230,7 @@ Nodes (5): 0004 — Screenshot tool: Playwright on the Expo web build, Consequen
 Cohesion: 0.50
 Nodes (4): jest, moduleNameMapper, preset, testPathIgnorePatterns
 
-### Community 22 - "sessionStore.ts"
+### Community 22 - "Hola Fest — design rules"
 Cohesion: 0.21
 Nodes (10): createSessionStore(), Deps, Session, SessionState, SessionStore, sessionStore, guest, setup() (+2 more)
 
@@ -255,9 +262,9 @@ Nodes (47): 1. Tests BEFORE Code, 2. Coverage Requirements, 3. Test Types, 4. Gi
 Cohesion: 0.20
 Nodes (10): GITHUB_TOKEN, secrets-scan, permissions, contents, pull-requests, name, permissions, runs-on (+2 more)
 
-### Community 30 - "fonts.ts"
-Cohesion: 0.18
-Nodes (18): DateTimeFieldProps, formatDateTime(), pad(), formatHomeDate(), CURFEW_KYIV_HOUR, dayKeyParts(), formatKyivTime(), fromKyivParts() (+10 more)
+### Community 30 - "DateTimeField.tsx"
+Cohesion: 0.24
+Nodes (12): DateTimeField(), DateTimeFieldProps, formatDateTime(), pad(), parseDateTime(), Harness(), TextFieldProps, fromKyivParts() (+4 more)
 
 ### Community 31 - "ui-ux.md"
 Cohesion: 0.50
@@ -276,10 +283,10 @@ Cohesion: 0.06
 Nodes (30): concurrency, cancel-in-progress, group, env, name, runs-on, steps, SUPABASE_ACCESS_TOKEN (+22 more)
 
 ### Community 36 - "AppText"
-Cohesion: 0.07
-Nodes (66): react-native-safe-area-context, EventScreen(), StaffLogin(), styles, TicketsScreen(), VenueScreen(), AppText(), Button() (+58 more)
+Cohesion: 0.11
+Nodes (38): StaffLogin(), TicketScreen(), VenueScreen(), AppText(), Button(), DayStrip(), EventCard(), GlassIconButton() (+30 more)
 
-### Community 37 - "auth.ts"
+### Community 37 - "react-dom@19.3.0"
 Cohesion: 0.19
 Nodes (14): @supabase/supabase-js, env, AuthError, AuthErrorCode, ClientError, ensureGuestSession(), getSession(), onAuthChange() (+6 more)
 
@@ -331,9 +338,9 @@ Nodes (5): if, name, needs, runs-on, database
 Cohesion: 0.06
 Nodes (33): 1. IAM & Access Control, 2. Secrets Management, 3. Network Security, 4. Logging & Monitoring, 5. CI/CD Pipeline Security, 6. Cloudflare & CDN Security, 7. Backup & Disaster Recovery, Automated Backups (+25 more)
 
-### Community 52 - "ui/index.ts"
-Cohesion: 0.10
-Nodes (34): Chip(), ChipProps, styles, DAY_PILL_HEIGHT, DayStrip(), DayStripDay, DayStripProps, styles (+26 more)
+### Community 52 - "homeComponents.test.tsx"
+Cohesion: 0.12
+Nodes (16): Chip(), ChipProps, styles, DAY_PILL_HEIGHT, DayStripDay, DayStripProps, styles, FilterChipItem (+8 more)
 
 ### Community 53 - "edge-functions"
 Cohesion: 0.40
@@ -345,7 +352,7 @@ Nodes (4): on, pull_request, push, branches
 
 ### Community 55 - "package.json"
 Cohesion: 0.10
-Nodes (20): expo-constants@~58.0.15, expo-glass-effect@~58.0.5, expo-symbols@~58.0.4, @expo/vector-icons@^15.0.2, expo-web-browser@~58.0.7, @react-native-async-storage/async-storage@2.2.0, react-native-svg@15.16.0, toqr@^0.1.1 (+12 more)
+Nodes (20): expo-camera@~58.0.14, expo-image@~58.0.18, expo-linking@~58.0.16, react-native-gesture-handler@~3.3.0, react-native-reanimated@4.7.1, react-native-screens@~4.30.1, react-native-worklets@0.13.0, toqr@^0.1.1 (+12 more)
 
 ### Community 56 - "Accessibility (WCAG 2.2)"
 Cohesion: 0.10
@@ -356,40 +363,40 @@ Cohesion: 0.06
 Nodes (33): default, description, description, required, API_LEVEL, APK_URL, api_level, apk_url (+25 more)
 
 ### Community 58 - "services/events.ts"
-Cohesion: 0.12
-Nodes (19): ClientError, EventDetailsRow, EventsError, EventsErrorCode, EventsFilter, EventSummaryRow, getEventById(), OfferRow (+11 more)
+Cohesion: 0.11
+Nodes (22): WEDNESDAY, ClientError, EventDetailsRow, EventsError, EventsErrorCode, EventsFilter, EventSummaryRow, getEventById() (+14 more)
 
 ### Community 59 - "Quick Reference"
 Cohesion: 0.20
 Nodes (9): Anti-Pattern Detection, Common Patterns, Configuration Template, Data Type Quick Reference, Index Cheat Sheet, PostgreSQL Patterns, Quick Reference, Related (+1 more)
 
 ### Community 60 - "VenuesMapScreenContent.tsx"
-Cohesion: 0.16
-Nodes (20): GlassSearchField(), filterVenuesByName(), firstEventByVenue(), KNOWN_ACCENTS, KYIV_REGION, mappableVenues(), resolveSelectedVenueId(), base (+12 more)
-
-### Community 61 - "theme/index.ts"
-Cohesion: 0.10
-Nodes (25): react-native, TicketScreen(), AppTextProps, Tone, ButtonProps, ButtonVariant, styles, EventCardProps (+17 more)
-
-### Community 62 - "EventsScreenContent.tsx"
 Cohesion: 0.14
-Nodes (23): EventsScreen(), EventCarouselCard(), EventCarouselCardProps, styles, CoverColor, coverColors(), HolaStar(), HolaStarCover() (+15 more)
+Nodes (21): MapScreen(), tabBarInset(), filterVenuesByName(), firstEventByVenue(), KNOWN_ACCENTS, KYIV_REGION, mappableVenues(), projectToSurface() (+13 more)
+
+### Community 61 - "ui/index.ts"
+Cohesion: 0.10
+Nodes (31): ButtonProps, ButtonVariant, styles, EventCardProps, EventCoverColor, styles, GlassSurfaceProps, styles (+23 more)
+
+### Community 62 - "EventCarouselCard.tsx"
+Cohesion: 0.15
+Nodes (20): react-native-svg, EventCarouselCard(), EventCarouselCardProps, styles, CoverColor, coverColors(), HolaStar(), HolaStarCover() (+12 more)
 
 ### Community 63 - "services/admin.ts"
-Cohesion: 0.11
-Nodes (32): defaultServices, Services, useEventEditor(), venueEventQueryKey(), myVenuesQueryKey, AdminError, AdminErrorCode, ClientError (+24 more)
+Cohesion: 0.13
+Nodes (28): AdminError, AdminErrorCode, ClientError, createEvent(), createOffer(), eventColumns(), EventListRow, EventRow (+20 more)
 
-### Community 64 - "offerFormValidation.ts"
-Cohesion: 0.15
-Nodes (16): EventOffersSectionProps, base, offer, OfferFormProps, base, emptyOfferForm, OFFER_TERMS_MAX_LENGTH, OFFER_TITLE_MAX_LENGTH (+8 more)
+### Community 64 - "OfferForm.tsx"
+Cohesion: 0.20
+Nodes (15): OfferForm(), OfferFormProps, styles, base, emptyOfferForm, OFFER_TERMS_MAX_LENGTH, OFFER_TITLE_MAX_LENGTH, OfferFormErrors (+7 more)
 
 ### Community 65 - "expo-router"
-Cohesion: 0.33
-Nodes (7): expo-router@~58.0.30, expo-router, StaffEventFormScreen(), StaffEventsScreen(), StaffOfferFormScreen(), useSession(), VenueEventsArea()
+Cohesion: 0.25
+Nodes (10): expo-router@~58.0.30, expo-router, ScannerScreen(), StaffEventFormScreen(), StaffEventsScreen(), StaffOfferFormScreen(), useSession(), EventFormArea() (+2 more)
 
 ### Community 66 - "@tanstack/react-query"
-Cohesion: 0.21
-Nodes (13): @tanstack/react-query, ClaimOfferButton(), ClaimOfferButtonProps, LABEL, mockClaim, renderButton(), ClaimButtonState, FAILURE_STATE (+5 more)
+Cohesion: 0.23
+Nodes (12): @tanstack/react-query, ClaimOfferButton(), ClaimOfferButtonProps, LABEL, mockClaim, renderButton(), ClaimButtonState, FAILURE_STATE (+4 more)
 
 ### Community 67 - "build"
 Cohesion: 0.05
@@ -399,125 +406,141 @@ Nodes (38): env, name, runs-on, steps, timeout-minutes, concurrency, cancel-in-p
 Cohesion: 0.10
 Nodes (19): Admin form fields, Colors, Day strip, Event card, Event covers (until real photos exist), Event, QR and map kit, Every screen, Hola Fest — design rules (+11 more)
 
-### Community 69 - "useAdminVenueEvents.ts"
-Cohesion: 0.17
-Nodes (12): defaultServices, Services, admin, host, item, UseAdminVenueEvents, useAdminVenueEvents(), venueEventsQueryKey() (+4 more)
+### Community 69 - "useEventEditor.ts"
+Cohesion: 0.10
+Nodes (20): defaultServices, Services, admin, host, item, UseAdminVenueEvents, useAdminVenueEvents(), venueEventsQueryKey() (+12 more)
 
 ### Community 70 - "app/_layout.tsx"
 Cohesion: 0.46
 Nodes (4): RootLayout(), SessionGate(), createQueryClient(), useAppFonts()
 
 ### Community 71 - "useOfferEditor.ts"
-Cohesion: 0.15
-Nodes (13): OfferSubmission, defaultServices, eventOffersQueryKey(), Services, offer, UseEventOffers, useEventOffers(), defaultServices (+5 more)
+Cohesion: 0.25
+Nodes (7): OfferSubmission, eventOffersQueryKey(), defaultServices, Services, offer, UseOfferEditor, useOfferEditor()
 
-### Community 73 - "react"
-Cohesion: 0.12
-Nodes (23): 0007 — Taxi deep links, Consequences, Context, Decision, react, styles, TaxiBar(), TaxiBarProps (+15 more)
+### Community 72 - "react"
+Cohesion: 0.13
+Nodes (19): react, SwitchField(), EventFormAreaProps, EventOffers(), styles, EventOffersSection(), EventOffersSectionProps, OfferItem() (+11 more)
+
+### Community 73 - "EventTaxiBar.tsx"
+Cohesion: 0.17
+Nodes (18): styles, TaxiBar(), TaxiBarProps, destination, openMock, EventTaxiBar(), EventTaxiBarProps, PLACEHOLDER_PROVIDERS (+10 more)
 
 ### Community 74 - "claimedTokens.ts"
-Cohesion: 0.28
-Nodes (11): expo-secure-store@~58.0.2, expo-secure-store, getClaimToken(), rememberClaimToken(), mockRead, mockSave, tokenKey(), deleteSecret() (+3 more)
+Cohesion: 0.30
+Nodes (11): expo-secure-store, getClaimToken(), rememberClaimToken(), mockRead, mockSave, tokenKey(), deleteSecret(), readSecret() (+3 more)
 
-### Community 75 - "QRTicket.tsx"
-Cohesion: 0.13
-Nodes (20): DarkRun, QRCode(), qrDarkRuns(), QRTicket(), QRTicketProps, QRTicketStatus, STATUS_LABEL, styles (+12 more)
+### Community 75 - "theme/index.ts"
+Cohesion: 0.21
+Nodes (13): AccentBlobs(), styles, contrastRatio(), parseHex(), relativeLuminance(), brand, ColorScheme, glassOnCover (+5 more)
 
-### Community 76 - "eventFormValidation.ts"
-Cohesion: 0.11
-Nodes (21): EventFormProps, base, emptyEventForm, EventFormErrors, EventFormValues, EventSubmission, eventToFormValues(), LINEUP_ITEM_MAX_LENGTH (+13 more)
+### Community 76 - "EventForm.tsx"
+Cohesion: 0.19
+Nodes (17): EventForm(), EventFormProps, styles, base, emptyEventForm, EventFormErrors, EventFormValues, EventSubmission (+9 more)
 
-### Community 77 - "EventOfferCard.tsx"
-Cohesion: 0.12
-Nodes (16): EventDetailsProps, offerCondition(), CTA_BY_STATE, EventOfferCardProps, event, onBack, onOpenVenue, renderScreen() (+8 more)
+### Community 77 - "EventScreenContent.test.tsx"
+Cohesion: 0.23
+Nodes (9): EventScreen(), EventDetailsProps, EventScreenContent(), event, onBack, onOpenVenue, renderScreen(), useEvent() (+1 more)
 
 ### Community 78 - "VenueMap.tsx"
 Cohesion: 0.18
-Nodes (18): MapPin(), darkMapStyle(), StyleRule, MappableVenue, projectToSurface(), styles, venueAccent(), VenueMap() (+10 more)
+Nodes (18): MapPin(), darkMapStyle(), StyleRule, MappableVenue, styles, VenueAccent, venueAccent(), VenueMap() (+10 more)
 
-### Community 79 - "useEvents.ts"
-Cohesion: 0.29
-Nodes (14): dayRange(), endOfWeek(), eventKeys, EVENTS_STALE_TIME_MS, startOfWeek(), WEDNESDAY, useEvent(), useEventsForDay() (+6 more)
+### Community 79 - "kyivTime.ts"
+Cohesion: 0.17
+Nodes (27): formatHomeDate(), HomeHeader(), styles, dayTile(), homeDays(), weekDays(), dayRange(), endOfWeek() (+19 more)
 
-### Community 80 - "ScannerScreenContent"
-Cohesion: 0.39
-Nodes (4): ScannerScreen(), ScannerScreenContent(), useScanRedeem(), onCodeScanned()
+### Community 80 - "react-native"
+Cohesion: 0.17
+Nodes (12): react-native, react-native-safe-area-context, styles, FAILURE_MESSAGE, ScanFailureReason, ScanResultProps, styles, EventScreenContentProps (+4 more)
 
-### Community 81 - "EventDetails.tsx"
+### Community 81 - "kit.test.tsx"
 Cohesion: 0.09
-Nodes (28): styles, GlassIconButton(), INFO_CHIP_HEIGHT, InfoChip(), InfoChipProps, styles, LINEUP_CHIP_HEIGHT, LineupChip() (+20 more)
+Nodes (21): @expo/vector-icons, FEATHER_NAME, GlassIconButtonProps, GlassIconName, styles, GlassSearchField(), GlassSearchFieldProps, SEARCH_FIELD_HEIGHT (+13 more)
 
-### Community 82 - "shareEvent.ts"
-Cohesion: 0.53
-Nodes (4): expo-linking@~58.0.16, expo-linking, eventLink(), shareEvent()
-
-### Community 83 - "auth/index.ts"
-Cohesion: 0.43
-Nodes (3): Deps, UseStaffLogin, useStaffLogin()
+### Community 83 - "StaffLoginForm.tsx"
+Cohesion: 0.29
+Nodes (6): StaffLoginForm(), StaffLoginFormProps, styles, Deps, UseStaffLogin, useStaffLogin()
 
 ### Community 84 - "claims.test.ts"
 Cohesion: 0.20
 Nodes (5): ClaimsError, from, getSession, invoke, row
 
-### Community 85 - "GlassSurface"
-Cohesion: 0.08
-Nodes (27): FEATHER_NAME, GlassIconButtonProps, GlassIconName, styles, GlassPillButton(), GlassPillButtonProps, styles, GlassSearchFieldProps (+19 more)
+### Community 85 - "AppText.tsx"
+Cohesion: 0.13
+Nodes (17): AppTextProps, Tone, GlassPillButton(), GlassPillButtonProps, styles, MapVenueCard(), MapVenueCardProps, styles (+9 more)
 
 ### Community 86 - "useMyClaims.ts"
-Cohesion: 0.36
-Nodes (5): claimKeys, useClaimToken(), useMyClaims(), getMyClaims(), toMyClaim()
+Cohesion: 0.43
+Nodes (4): claimKeys, useClaimToken(), useMyClaims(), getMyClaims()
 
-### Community 87 - "VenueEventsList.test.tsx"
-Cohesion: 0.40
-Nodes (4): base, draft, published, VenueEventsListProps
+### Community 87 - "@testing-library/react-native"
+Cohesion: 0.15
+Nodes (8): @testing-library/react-native, requestPermission, useScanRedeem(), onCodeScanned(), base, draft, published, VenueEventsListProps
 
-### Community 88 - "eventFormat.ts"
-Cohesion: 0.17
-Nodes (25): carouselCardProps(), CurfewInfo, curfewInfo(), dayFromId(), dayTile(), eventsOnDay(), filterEvents(), formatDayHeading() (+17 more)
+### Community 88 - "t"
+Cohesion: 0.21
+Nodes (24): coverImageUri(), EventDetails(), styles, carouselCardProps(), CurfewInfo, curfewInfo(), dayFromId(), eventsOnDay() (+16 more)
 
-### Community 90 - "tabsShell.test.tsx"
-Cohesion: 0.31
-Nodes (6): FloatingTabBar(), ITEMS, TabsLayout(), MapScreen(), mockNavigate, mockPush
+### Community 90 - "i18n/index.ts"
+Cohesion: 0.14
+Nodes (12): EventsScreen(), FloatingTabBar(), ITEMS, TabsLayout(), TabBarItem, CTA_BY_STATE, EventOfferCardProps, mockNavigate (+4 more)
 
 ### Community 91 - "TicketScreenContent.tsx"
 Cohesion: 0.23
-Nodes (14): AccentBlobs(), QRCard(), detailsText(), pillText(), styles, TicketScreenContent(), TicketScreenContentProps, useNow() (+6 more)
+Nodes (12): QRTicketStatus, detailsText(), pillText(), styles, TicketScreenContentProps, useNow(), formatCountdown(), formatValidUntil() (+4 more)
 
 ### Community 92 - "staff/index.ts"
-Cohesion: 0.24
-Nodes (8): StaffScreen(), getStaffAccess(), StaffAccess, StaffArea(), StaffAreaProps, UseStaffAccess, useStaffAccess(), AdminVenue
+Cohesion: 0.18
+Nodes (12): StaffScreen(), getStaffAccess(), StaffAccess, StaffArea(), StaffAreaProps, StaffHome(), StaffHomeProps, styles (+4 more)
 
 ### Community 93 - "useVenues.ts"
 Cohesion: 0.44
 Nodes (5): useVenue(), useVenues(), venueKeys, VENUES_STALE_TIME_MS, getPublishedVenues()
 
-### Community 95 - "@testing-library/react-native"
-Cohesion: 0.15
-Nodes (10): expo-brightness@~58.0.2, expo-brightness, @testing-library/react-native, requestPermission, claim, mockClaims, mockToken, getBrightness (+2 more)
+### Community 94 - "EventsScreenContent.tsx"
+Cohesion: 0.17
+Nodes (14): filterEvents(), HOME_FILTER_IDS, HomeFilterId, CarouselSkeleton(), EmptyDay(), EventsScreenContent(), EventsScreenContentProps, FILTER_CHIPS (+6 more)
+
+### Community 95 - "useMaxBrightness.test.tsx"
+Cohesion: 0.38
+Nodes (5): expo-brightness@~58.0.2, expo-brightness, getBrightness, setBrightness, useMaxBrightness()
+
+### Community 96 - "QRTicket.tsx"
+Cohesion: 0.19
+Nodes (12): QRCard(), QRCardProps, styles, DarkRun, QRCode(), qrDarkRuns(), QRTicket(), QRTicketProps (+4 more)
 
 ### Community 97 - "db-backend.md"
 Cohesion: 0.50
 Nodes (3): How you work, Never, You may edit only
 
+### Community 99 - "MyTicketsContent.tsx"
+Cohesion: 0.21
+Nodes (9): TicketsScreen(), Message(), MyTicketsContent(), MyTicketsContentProps, styles, TicketRow(), claim, mockClaims (+1 more)
+
+### Community 100 - "0007 — Taxi deep links"
+Cohesion: 0.40
+Nodes (4): 0007 — Taxi deep links, Consequences, Context, Decision
+
 ## Knowledge Gaps
 - **1 isolated node(s):** `expo/tsconfig.base`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 777 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 779 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **16 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `t()` connect `AppText` to `supabase.ts`, `fonts.ts`, `VenuesMapScreenContent.tsx`, `theme/index.ts`, `EventsScreenContent.tsx`, `@tanstack/react-query`, `Hola Fest — design rules`, `app/_layout.tsx`, `react`, `EventOfferCard.tsx`, `VenueMap.tsx`, `ScannerScreenContent`, `EventDetails.tsx`, `auth/index.ts`, `GlassSurface`, `eventFormat.ts`, `tabsShell.test.tsx`, `TicketScreenContent.tsx`, `@testing-library/react-native`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+- **Why does `t()` connect `t` to `supabase.ts`, `AppText`, `VenuesMapScreenContent.tsx`, `OfferForm.tsx`, `expo-router`, `@tanstack/react-query`, `Hola Fest — design rules`, `app/_layout.tsx`, `react`, `EventTaxiBar.tsx`, `EventForm.tsx`, `EventScreenContent.test.tsx`, `VenueMap.tsx`, `kyivTime.ts`, `react-native`, `StaffLoginForm.tsx`, `@testing-library/react-native`, `i18n/index.ts`, `TicketScreenContent.tsx`, `staff/index.ts`, `EventsScreenContent.tsx`, `MyTicketsContent.tsx`?**
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `dependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.06666666666666667 - nodes in this community are weakly interconnected._
-- **Why does `react-native` connect `theme/index.ts` to `dependencies`, `AppText`, `react`, `QRTicket.tsx`, `EventOfferCard.tsx`, `VenueMap.tsx`, `EventDetails.tsx`, `shareEvent.ts`, `ui/index.ts`, `GlassSurface`, `package.json`, `tabsShell.test.tsx`, `TicketScreenContent.tsx`, `VenuesMapScreenContent.tsx`, `EventsScreenContent.tsx`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+  _Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected._
+- **Why does `react-native` connect `react-native` to `dependencies`, `AppText`, `homeComponents.test.tsx`, `package.json`, `VenuesMapScreenContent.tsx`, `ui/index.ts`, `EventCarouselCard.tsx`, `OfferForm.tsx`, `react`, `EventTaxiBar.tsx`, `claimedTokens.ts`, `theme/index.ts`, `EventForm.tsx`, `EventScreenContent.test.tsx`, `VenueMap.tsx`, `kyivTime.ts`, `kit.test.tsx`, `shareEvent.ts`, `StaffLoginForm.tsx`, `AppText.tsx`, `t`, `i18n/index.ts`, `TicketScreenContent.tsx`, `staff/index.ts`, `EventsScreenContent.tsx`, `QRTicket.tsx`, `MyTicketsContent.tsx`?**
+  _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.1 - nodes in this community are weakly interconnected._
-- **Why does `@testing-library/react-native` connect `@testing-library/react-native` to `devDependencies`, `supabase.ts`, `sessionStore.ts`, `AppText`, `ui/index.ts`, `package.json`, `VenuesMapScreenContent.tsx`, `theme/index.ts`, `offerFormValidation.ts`, `@tanstack/react-query`, `useAdminVenueEvents.ts`, `app/_layout.tsx`, `useOfferEditor.ts`, `react`, `QRTicket.tsx`, `eventFormValidation.ts`, `EventOfferCard.tsx`, `VenueMap.tsx`, `useEvents.ts`, `ScannerScreenContent`, `EventDetails.tsx`, `auth/index.ts`, `useMyClaims.ts`, `VenueEventsList.test.tsx`, `tabsShell.test.tsx`, `staff/index.ts`, `useVenues.ts`?**
-  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+- **Why does `@testing-library/react-native` connect `@testing-library/react-native` to `devDependencies`, `supabase.ts`, `Hola Fest — design rules`, `DateTimeField.tsx`, `homeComponents.test.tsx`, `package.json`, `services/events.ts`, `VenuesMapScreenContent.tsx`, `ui/index.ts`, `OfferForm.tsx`, `@tanstack/react-query`, `useEventEditor.ts`, `app/_layout.tsx`, `useOfferEditor.ts`, `react`, `EventTaxiBar.tsx`, `EventForm.tsx`, `EventScreenContent.test.tsx`, `VenueMap.tsx`, `react-native`, `kit.test.tsx`, `StaffLoginForm.tsx`, `useMyClaims.ts`, `i18n/index.ts`, `staff/index.ts`, `useVenues.ts`, `EventsScreenContent.tsx`, `useMaxBrightness.test.tsx`, `QRTicket.tsx`, `MyTicketsContent.tsx`?**
+  _High betweenness centrality (0.036) - this node is a cross-community bridge._
 - **Should `expo` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
