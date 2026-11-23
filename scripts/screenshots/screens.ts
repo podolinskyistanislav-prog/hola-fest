@@ -9,10 +9,9 @@ export type ScreenConfig = {
 export const SCREENS: readonly ScreenConfig[] = [
   { name: 'home', path: '/' },
   { name: 'event', path: '/event/00000000-0000-4000-8000-000000000013' },
-  { name: 'venue', path: '/venue/00000000-0000-4000-8000-000000000001' },
+  { name: 'ticket', path: '/ticket/00000000-0000-4000-8000-000000000113' },
   { name: 'map', path: '/map' },
-  { name: 'tickets', path: '/tickets' },
-  { name: 'staff-login', path: '/staff-login' },
+  { name: 'my-qr', path: '/tickets' },
 ];
 
 export const THEMES = ['light', 'dark'] as const;
