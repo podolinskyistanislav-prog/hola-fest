@@ -1,6 +1,6 @@
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
-export type TabIconName = 'calendar' | 'map-pin' | 'qr';
+export type TabIconName = 'calendar' | 'map-pin' | 'qr' | 'headphones';
 
 export interface TabIconProps {
   name: TabIconName;
@@ -33,6 +33,13 @@ export function TabIcon({ name, color, size }: TabIconProps) {
         <>
           <Path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z" />
           <Circle cx={12} cy={9} r={2.5} />
+        </>
+      ) : null}
+      {name === 'headphones' ? (
+        <>
+          <Path d="M4 17v-5a8 8 0 0 1 16 0v5" />
+          <Rect x={3} y={14} width={4} height={7} rx={1.5} />
+          <Rect x={17} y={14} width={4} height={7} rx={1.5} />
         </>
       ) : null}
       {name === 'qr' ? (
