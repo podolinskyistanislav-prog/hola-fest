@@ -28,7 +28,9 @@ jobs:
       github.event_name != 'issues' ||
       github.event.action == 'closed' ||
       github.event.label.name == 'status:needs-founder' ||
-      github.event.label.name == 'status:queued'
+      github.event.label.name == 'status:queued' ||
+      github.event.label.name == 'status:review' ||
+      github.event.label.name == 'status:blocked'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
