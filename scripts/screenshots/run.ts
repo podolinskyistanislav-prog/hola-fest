@@ -4,12 +4,20 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
+import { createHash } from 'node:crypto';
 import { extname, join } from 'node:path';
 
+import { createClient } from '@supabase/supabase-js';
 import { chromium } from 'playwright';
 
-import { appEnvFromSupabaseStatus, buildShotPlan, resolveStaticPath } from './plan';
-import { OUTPUT_DIR, SCREENS, THEMES, VIEWPORT } from './screens';
+import {
+  appEnvFromSupabaseStatus,
+  buildShotPlan,
+  readStatusValue,
+  resolveStaticPath,
+  supabaseSessionStorageKey,
+} from './plan';
+import { OUTPUT_DIR, SCREENS, THEMES, TICKET_OFFER_ID, TICKET_TOKEN, VIEWPORT } from './screens';
 
 const WEB_DIR = 'dist/screenshots-web';
 const MIME: Record<string, string> = {
@@ -33,8 +41,34 @@ function readSupabaseStatus(): string {
   }
 }
 
-function exportWeb(): void {
-  const status = readSupabaseStatus();
+/**
+ * Signs in a throwaway anonymous demo guest (as the app does) and gives it a claim for the
+ * seeded offer, written with the local service role key. The ticket screen then reads real
+ * offer, venue and event data through the normal RLS-protected claims query.
+ * Returns the localStorage entry that starts the browser signed in as that guest.
+ */
+async function seedDemoClaimSession(status: string): Promise<Record<string, string>> {
+  const { EXPO_PUBLIC_SUPABASE_URL: url, EXPO_PUBLIC_SUPABASE_ANON_KEY: anonKey } =
+    appEnvFromSupabaseStatus(status);
+  const serviceKey = readStatusValue(status, 'SERVICE_ROLE_KEY');
+  if (!url || !anonKey || !serviceKey) throw new Error('Local Supabase keys are missing.');
+
+  const guest = createClient(url, anonKey, { auth: { persistSession: false } });
+  const { data, error } = await guest.auth.signInAnonymously();
+  if (error || !data.session) throw new Error('Could not sign in the demo guest.');
+
+  const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
+  const { error: claimError } = await admin.from('claims').insert({
+    offer_id: TICKET_OFFER_ID,
+    user_id: data.session.user.id,
+    token_hash: createHash('sha256').update(TICKET_TOKEN).digest('hex'),
+  });
+  if (claimError) throw new Error('Could not create the demo claim.');
+
+  return { [supabaseSessionStorageKey(url)]: JSON.stringify(data.session) };
+}
+
+function exportWeb(status: string): void {
   const env = { ...process.env, ...appEnvFromSupabaseStatus(status) };
   rmSync(WEB_DIR, { recursive: true, force: true });
   execFileSync('npx', ['expo', 'export', '--platform', 'web', '--output-dir', WEB_DIR], {
@@ -64,8 +98,13 @@ function serveWeb(): Promise<{ url: string; close: () => void }> {
 }
 
 async function main(): Promise<void> {
-  const plan = buildShotPlan(SCREENS, THEMES);
-  exportWeb();
+  const status = readSupabaseStatus();
+  const session = await seedDemoClaimSession(status);
+  const plan = buildShotPlan(SCREENS, THEMES).map((shot) => ({
+    ...shot,
+    seed: { ...shot.seed, ...session },
+  }));
+  exportWeb(status);
   rmSync(OUTPUT_DIR, { recursive: true, force: true });
   mkdirSync(OUTPUT_DIR, { recursive: true });
 

@@ -1,5 +1,26 @@
-import { appEnvFromSupabaseStatus, buildShotPlan, resolveStaticPath } from './plan';
+import {
+  appEnvFromSupabaseStatus,
+  buildShotPlan,
+  readStatusValue,
+  resolveStaticPath,
+  supabaseSessionStorageKey,
+} from './plan';
 import { SCREENS, THEMES } from './screens';
+
+describe('supabaseSessionStorageKey', () => {
+  it('uses the first hostname label like supabase-js', () => {
+    expect(supabaseSessionStorageKey('http://127.0.0.1:54321')).toBe('sb-127-auth-token');
+    expect(supabaseSessionStorageKey('https://abcd.supabase.co')).toBe('sb-abcd-auth-token');
+  });
+});
+
+describe('readStatusValue', () => {
+  it('returns a named value, or undefined when missing', () => {
+    const output = 'API_URL="http://x"\nSERVICE_ROLE_KEY="k"';
+    expect(readStatusValue(output, 'SERVICE_ROLE_KEY')).toBe('k');
+    expect(readStatusValue(output, 'NOPE')).toBeUndefined();
+  });
+});
 
 describe('buildShotPlan', () => {
   it('makes one shot per screen and theme', () => {
