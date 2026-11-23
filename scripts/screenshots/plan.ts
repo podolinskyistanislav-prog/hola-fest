@@ -64,3 +64,18 @@ export function resolveStaticPath(
   }
   return exists('/index.html') ? '/index.html' : null;
 }
+
+/** The localStorage key supabase-js uses for a project's session (`sb-<first host label>-auth-token`). */
+export function supabaseSessionStorageKey(supabaseUrl: string): string {
+  const host = new URL(supabaseUrl).hostname.split('.')[0];
+  return `sb-${host}-auth-token`;
+}
+
+/** Reads one `KEY="value"` entry from `supabase status -o env` output. */
+export function readStatusValue(output: string, name: string): string | undefined {
+  for (const line of output.split('\n')) {
+    const match = /^([A-Z_]+)="?([^"]*)"?$/.exec(line.trim());
+    if (match?.[1] === name) return match[2];
+  }
+  return undefined;
+}
