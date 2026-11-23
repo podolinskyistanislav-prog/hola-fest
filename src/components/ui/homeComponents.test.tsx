@@ -277,6 +277,25 @@ describe.each(['dark', 'light'] as const)('home components (%s)', (scheme) => {
         height: 30,
       });
     });
+
+    it('caps a long offer pill to one line so the title and date keep their room', async () => {
+      const longText = 'Два коктейлі за ціною одного для всієї компанії';
+      await render(
+        <WeekOfferRow
+          title="House Friday"
+          dateAndVenue="Пт, 6 листопада · Bavovna"
+          offerText={longText}
+        />,
+      );
+      expect(screen.getByText(longText).props.numberOfLines).toBe(1);
+      expect(flat(screen.getByText(longText).parent)).toMatchObject({
+        maxWidth: layout.offerPillMaxWidth,
+      });
+      expect(flat(screen.getByText('House Friday').parent)).toMatchObject({
+        flex: 1,
+        minWidth: 0,
+      });
+    });
   });
 });
 
