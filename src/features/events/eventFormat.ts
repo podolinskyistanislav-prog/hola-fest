@@ -143,7 +143,7 @@ export function carouselCardProps(event: EventSummary, index: number) {
     title: event.title,
     venue: event.venue.name,
     timeRange: formatEventTimeRange(event.startsAt, event.endsAt),
-    priceFrom: formatPriceFrom(event.priceFromUah),
+    priceFrom: formatPriceFrom(event.priceFromUah) ?? t('events.priceUnknown'),
     offerBadge: event.offers[0]?.title,
     coverColor: index % 2 === 0 ? ('yellow' as const) : ('pink' as const),
   };
