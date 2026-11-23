@@ -1,7 +1,7 @@
 import { MapVenueCard } from '@/components/ui';
 import { formatEventTime } from '@/features/events/eventFormat';
 import { t } from '@/lib/i18n';
-import { buildTaxiLinks, openTaxiLink } from '@/lib/taxi';
+import { buildMainTaxiLink, openTaxiLink } from '@/lib/taxi';
 import type { EventSummary } from '@/types/events';
 
 import { venueAccent, type MappableVenue } from './venueMap';
@@ -17,7 +17,7 @@ export interface VenueMapCardProps {
 /** Card for one venue on the map: tonight's event, "Подія" and "Поїхати" (opens the first taxi app). */
 export function VenueMapCard({ venue, todayEvent, onOpenVenue, onOpenEvent }: VenueMapCardProps) {
   const openTaxi = () => {
-    const [link] = buildTaxiLinks(venue);
+    const link = buildMainTaxiLink(venue);
     if (link) void openTaxiLink(link).catch(() => undefined);
   };
 

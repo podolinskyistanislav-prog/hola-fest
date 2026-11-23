@@ -1,4 +1,4 @@
-import { buildTaxiLinks, openTaxiLink, type TaxiDestination } from './taxi';
+import { buildMainTaxiLink, buildTaxiLinks, openTaxiLink, type TaxiDestination } from './taxi';
 
 const venue: TaxiDestination = {
   name: 'Bavovna Club',
@@ -11,12 +11,12 @@ const encodedAddress = encodeURIComponent('вул. Хрещатик, 1');
 describe('buildTaxiLinks', () => {
   const links = buildTaxiLinks(venue);
 
-  it('returns Uklon, Bolt, Uber in this order', () => {
-    expect(links.map((l) => l.provider)).toEqual(['uklon', 'bolt', 'uber']);
+  it('returns Bolt, Uklon, Uber in this order', () => {
+    expect(links.map((l) => l.provider)).toEqual(['bolt', 'uklon', 'uber']);
   });
 
   it('builds the Uklon link', () => {
-    expect(links[0]).toEqual({
+    expect(links[1]).toEqual({
       provider: 'uklon',
       label: 'Uklon',
       appUrl: `uklon://order?dropoff_lat=50.45&dropoff_lng=30.5234&dropoff_address=${encodedAddress}`,
@@ -25,10 +25,10 @@ describe('buildTaxiLinks', () => {
   });
 
   it('builds the Bolt link', () => {
-    expect(links[1]).toEqual({
+    expect(links[0]).toEqual({
       provider: 'bolt',
       label: 'Bolt',
-      appUrl: `bolt://ride?destination_lat=50.45&destination_lng=30.5234&destination_address=${encodedAddress}`,
+      appUrl: `bolt://r?destination_lat=50.45&destination_lng=30.5234&destination_name=${encodedAddress}`,
       fallbackUrl: 'https://bolt.eu/en/app/',
     });
   });
@@ -43,13 +43,13 @@ describe('buildTaxiLinks', () => {
   });
 
   it('uses the name when the address is missing', () => {
-    const [uklon] = buildTaxiLinks({ ...venue, address: null });
-    expect(uklon?.appUrl).toContain('dropoff_address=Bavovna%20Club');
+    const [bolt] = buildTaxiLinks({ ...venue, address: null });
+    expect(bolt?.appUrl).toContain('destination_name=Bavovna%20Club');
   });
 
   it('encodes characters that would break the query string', () => {
-    const [uklon] = buildTaxiLinks({ ...venue, address: 'A&B=C#1' });
-    expect(uklon?.appUrl).toContain('dropoff_address=A%26B%3DC%231');
+    const [bolt] = buildTaxiLinks({ ...venue, address: 'A&B=C#1' });
+    expect(bolt?.appUrl).toContain('destination_name=A%26B%3DC%231');
   });
 
   it.each([
@@ -62,6 +62,19 @@ describe('buildTaxiLinks', () => {
     [0, 0],
   ])('rejects invalid coordinates (%p, %p)', (lat, lng) => {
     expect(buildTaxiLinks({ ...venue, lat, lng })).toEqual([]);
+  });
+});
+
+describe('buildMainTaxiLink', () => {
+  it('returns the Bolt link with the Bolt page as fallback', () => {
+    expect(buildMainTaxiLink(venue)).toMatchObject({
+      provider: 'bolt',
+      fallbackUrl: 'https://bolt.eu/en/app/',
+    });
+  });
+
+  it('returns null for invalid coordinates', () => {
+    expect(buildMainTaxiLink({ ...venue, lat: null })).toBeNull();
   });
 });
 

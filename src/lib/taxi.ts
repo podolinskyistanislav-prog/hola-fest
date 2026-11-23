@@ -28,7 +28,7 @@ function isValidCoordinate(lat: number | null, lng: number | null): boolean {
   );
 }
 
-/** Builds taxi links in product order: Uklon, Bolt, Uber. Returns [] for invalid coordinates. */
+/** Builds taxi links in product order: Bolt (main), Uklon, Uber. Returns [] for invalid coordinates. */
 export function buildTaxiLinks(destination: TaxiDestination): TaxiLink[] {
   if (!isValidCoordinate(destination.lat, destination.lng)) {
     return [];
@@ -40,16 +40,16 @@ export function buildTaxiLinks(destination: TaxiDestination): TaxiLink[] {
 
   return [
     {
+      provider: 'bolt',
+      label: 'Bolt',
+      appUrl: `bolt://r?destination_lat=${latitude}&destination_lng=${longitude}&destination_name=${address}`,
+      fallbackUrl: 'https://bolt.eu/en/app/',
+    },
+    {
       provider: 'uklon',
       label: 'Uklon',
       appUrl: `uklon://order?dropoff_lat=${latitude}&dropoff_lng=${longitude}&dropoff_address=${address}`,
       fallbackUrl: 'https://uklon.com.ua/',
-    },
-    {
-      provider: 'bolt',
-      label: 'Bolt',
-      appUrl: `bolt://ride?destination_lat=${latitude}&destination_lng=${longitude}&destination_address=${address}`,
-      fallbackUrl: 'https://bolt.eu/en/app/',
     },
     {
       provider: 'uber',
@@ -58,6 +58,11 @@ export function buildTaxiLinks(destination: TaxiDestination): TaxiLink[] {
       fallbackUrl: 'https://m.uber.com/ul/',
     },
   ];
+}
+
+/** The main ride option (Bolt), or null for invalid coordinates. */
+export function buildMainTaxiLink(destination: TaxiDestination): TaxiLink | null {
+  return buildTaxiLinks(destination).find((link) => link.provider === 'bolt') ?? null;
 }
 
 type LinkOpener = Pick<typeof Linking, 'openURL'>;
