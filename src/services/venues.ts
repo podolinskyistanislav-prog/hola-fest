@@ -15,7 +15,7 @@ export class VenuesError extends Error {
   }
 }
 
-const VENUE_COLUMNS = 'id, slug, name, address, lat, lng, has_shelter';
+const VENUE_COLUMNS = 'id, slug, name, address, lat, lng, has_shelter, instagram_url, cover_path';
 const EVENT_COLUMNS = 'id, title, starts_at, ends_at, price_from_uah, cover_path';
 const DETAILS_COLUMNS = `${VENUE_COLUMNS}, events(${EVENT_COLUMNS})`;
 
@@ -27,6 +27,8 @@ type VenueRow = {
   lat: number | null;
   lng: number | null;
   has_shelter: boolean;
+  instagram_url: string | null;
+  cover_path: string | null;
 };
 
 type VenueEventRow = {
@@ -57,6 +59,8 @@ function toVenue(row: VenueRow): Venue {
     lat: row.lat,
     lng: row.lng,
     hasShelter: row.has_shelter,
+    instagramUrl: row.instagram_url,
+    coverPath: row.cover_path,
   };
 }
 

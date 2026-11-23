@@ -6,6 +6,8 @@ export type Venue = {
   lat: number | null;
   lng: number | null;
   hasShelter: boolean;
+  instagramUrl: string | null;
+  coverPath: string | null;
 };
 
 export type VenueEvent = {

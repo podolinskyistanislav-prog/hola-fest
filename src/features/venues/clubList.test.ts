@@ -6,7 +6,17 @@ import { clubRows } from './clubList';
 const now = new Date('2026-11-04T12:00:00Z');
 
 function venue(id: string, name: string, address: string | null = null): Venue {
-  return { id, slug: id, name, address, lat: null, lng: null, hasShelter: false };
+  return {
+    id,
+    slug: id,
+    name,
+    address,
+    lat: null,
+    lng: null,
+    hasShelter: false,
+    instagramUrl: null,
+    coverPath: null,
+  };
 }
 
 function eventAt(venueId: string, startsAt: string): EventSummary {
