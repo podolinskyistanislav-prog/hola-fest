@@ -27,6 +27,8 @@ const venue: VenueDetails = {
   lat: null,
   lng: null,
   hasShelter: true,
+  instagramUrl: null,
+  coverPath: null,
   upcomingEvents: [
     {
       id: 'e1',

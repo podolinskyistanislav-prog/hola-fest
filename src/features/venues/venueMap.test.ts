@@ -17,6 +17,8 @@ const base: Venue = {
   lat: 50.45,
   lng: 30.52,
   hasShelter: false,
+  instagramUrl: null,
+  coverPath: null,
 };
 
 describe('mappableVenues', () => {

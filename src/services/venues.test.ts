@@ -24,6 +24,8 @@ const venueRow = {
   lat: 50.4,
   lng: 30.5,
   has_shelter: true,
+  instagram_url: 'https://instagram.com/club',
+  cover_path: 'venues/club.jpg',
 };
 
 const venue = {
@@ -34,6 +36,8 @@ const venue = {
   lat: 50.4,
   lng: 30.5,
   hasShelter: true,
+  instagramUrl: 'https://instagram.com/club',
+  coverPath: 'venues/club.jpg',
 };
 
 beforeEach(() => jest.resetAllMocks());
@@ -44,7 +48,9 @@ describe('getPublishedVenues', () => {
 
     expect(await getPublishedVenues()).toEqual([venue]);
     expect(from).toHaveBeenCalledWith('venues');
-    expect(q.select).toHaveBeenCalledWith('id, slug, name, address, lat, lng, has_shelter');
+    expect(q.select).toHaveBeenCalledWith(
+      'id, slug, name, address, lat, lng, has_shelter, instagram_url, cover_path',
+    );
     expect(q.eq).toHaveBeenCalledWith('is_published', true);
   });
 

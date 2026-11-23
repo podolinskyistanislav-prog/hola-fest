@@ -12,6 +12,8 @@ const venue: MappableVenue = {
   lat: 50.45,
   lng: 30.52,
   hasShelter: false,
+  instagramUrl: null,
+  coverPath: null,
 };
 
 type Listener = (event: { source: unknown; data: unknown }) => void;

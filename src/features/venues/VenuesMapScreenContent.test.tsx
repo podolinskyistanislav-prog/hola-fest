@@ -57,6 +57,8 @@ const venue: Venue = {
   lat: 50.45,
   lng: 30.52,
   hasShelter: true,
+  instagramUrl: null,
+  coverPath: null,
 };
 
 const panorama: Venue = {

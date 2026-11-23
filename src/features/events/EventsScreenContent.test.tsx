@@ -51,6 +51,8 @@ const venue: Venue = {
   lat: null,
   lng: null,
   hasShelter: false,
+  instagramUrl: null,
+  coverPath: null,
 };
 
 const onOpenEvent = jest.fn();
