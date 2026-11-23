@@ -4,12 +4,22 @@ export type ScreenConfig = {
   name: string;
   /** Route in the web build, starting with `/`. */
   path: string;
+  /** localStorage entries written before the page loads (e.g. a claim token for the ticket). */
+  seed?: Readonly<Record<string, string>>;
 };
+
+/** Seeded offer "Free tonight cocktail" (supabase/seed.sql). */
+const TICKET_OFFER_ID = '00000000-0000-4000-8000-000000000113';
 
 export const SCREENS: readonly ScreenConfig[] = [
   { name: 'home', path: '/' },
   { name: 'event', path: '/event/00000000-0000-4000-8000-000000000013' },
-  { name: 'ticket', path: '/ticket/00000000-0000-4000-8000-000000000113' },
+  {
+    name: 'ticket',
+    path: '/ticket/' + TICKET_OFFER_ID,
+    // Same key as claimedTokens.ts; a fake token that is only drawn as a QR.
+    seed: { ['claim-token.' + TICKET_OFFER_ID]: 'screenshot-demo-claim-token' },
+  },
   { name: 'map', path: '/map' },
   { name: 'my-qr', path: '/tickets' },
 ];

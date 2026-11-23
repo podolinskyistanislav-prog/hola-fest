@@ -18,6 +18,23 @@ describe('buildShotPlan', () => {
     ]);
   });
 
+  it('carries each screen seed into its shots, defaulting to none', () => {
+    const plan = buildShotPlan(
+      [
+        { name: 'home', path: '/' },
+        { name: 'ticket', path: '/ticket/1', seed: { 'claim-token.1': 'x' } },
+      ],
+      ['light'],
+    );
+    expect(plan.map((s) => s.seed)).toEqual([{}, { 'claim-token.1': 'x' }]);
+  });
+
+  it('seeds a claim token for the ticket screen under the claimedTokens key', () => {
+    const ticket = SCREENS.find((s) => s.name === 'ticket');
+    const offerId = ticket?.path.split('/').pop();
+    expect(Object.keys(ticket?.seed ?? {})).toEqual(['claim-token.' + offerId]);
+  });
+
   it('accepts the real screen config', () => {
     expect(buildShotPlan(SCREENS, THEMES)).toHaveLength(SCREENS.length * THEMES.length);
   });
