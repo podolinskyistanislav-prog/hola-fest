@@ -15,6 +15,7 @@ export default function EventScreen() {
         eventId={id}
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         onOpenVenue={(venueId) => router.push({ pathname: '/venue/[id]', params: { id: venueId } })}
+        onOpenDj={(slug) => router.push({ pathname: '/dj/[slug]', params: { slug } })}
         onClaimed={(offerId) => router.push(`/ticket/${offerId}` as Href)}
       />
     </View>

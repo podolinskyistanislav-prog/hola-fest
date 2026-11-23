@@ -50,6 +50,7 @@ const event: EventDetails = {
 
 const onBack = jest.fn();
 const onOpenVenue = jest.fn();
+const onOpenDj = jest.fn();
 
 async function renderScreen() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -59,6 +60,7 @@ async function renderScreen() {
         eventId="e1"
         onBack={onBack}
         onOpenVenue={onOpenVenue}
+        onOpenDj={onOpenDj}
         onClaimed={jest.fn()}
       />
     </QueryClientProvider>,
@@ -154,6 +156,13 @@ describe('EventScreenContent', () => {
     jest.mocked(getEventById).mockResolvedValue(null);
     await renderScreen();
     expect(await screen.findByText(t('event.notFoundTitle'))).toBeTruthy();
+  });
+
+  it('opens the DJ page from a lineup chip', async () => {
+    jest.mocked(getEventById).mockResolvedValue(event);
+    await renderScreen();
+    await fireEvent.press(await screen.findByRole('link', { name: 'DJ Alpha' }));
+    expect(onOpenDj).toHaveBeenCalledWith('dj-alpha');
   });
 
   it('goes back, shares and opens the venue', async () => {
