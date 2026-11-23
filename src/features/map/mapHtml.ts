@@ -98,7 +98,7 @@ const SCRIPT = `
     [previous, id].forEach(function (key) {
       if (key && markers[key]) markers[key].setIcon(iconFor(venues[key]));
     });
-    if (id && venues[id] && cfg.interactive) map.panTo([venues[id].lat, venues[id].lng]);
+    if (id && venues[id] && (cfg.interactive || cfg.compact)) map.panTo([venues[id].lat, venues[id].lng]);
   }
   function fitTo(ids) {
     var points = Object.keys(venues)
