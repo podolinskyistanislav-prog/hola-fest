@@ -20,10 +20,10 @@ const destination = { name: 'Bavovna', address: 'вул. Хрещатик, 1', l
 beforeEach(() => openMock.mockReset());
 
 describe('TaxiBar', () => {
-  it('shows Uklon, Bolt, Uber in that order', async () => {
+  it('shows Bolt, Uklon, Uber in that order', async () => {
     await render(<TaxiBar destination={destination} />);
     const labels = screen.getAllByRole('button').map((b) => b.props.accessibilityLabel);
-    expect(labels).toEqual(['Uklon', 'Bolt', 'Uber']);
+    expect(labels).toEqual(['Bolt', 'Uklon', 'Uber']);
   });
 
   it('opens the tapped provider', async () => {

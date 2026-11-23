@@ -5,9 +5,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccentBlobs, AppText, Button, GlassIconButton, QRCard } from '@/components/ui';
 import { GlassPillButton } from '@/components/ui/GlassPillButton';
 import { Feather } from '@expo/vector-icons';
-import { EventTaxiBar } from '@/features/events/EventTaxiBar';
 import { formatKyivTime } from '@/lib/kyivTime';
 import { t } from '@/lib/i18n';
+import { buildMainTaxiLink, openTaxiLink } from '@/lib/taxi';
 import { brand, fontFamily, radius, space, useTheme } from '@/theme';
 import type { MyClaim } from '@/types/claims';
 
@@ -65,7 +65,6 @@ export function TicketScreenContent({ offerId, onBack }: TicketScreenContentProp
   const claims = useMyClaims();
   const now = useNow();
   const brightness = useMaxBrightness();
-  const [taxiOpen, setTaxiOpen] = useState(false);
 
   if (token.isLoading) {
     return (
@@ -94,6 +93,10 @@ export function TicketScreenContent({ offerId, onBack }: TicketScreenContentProp
   const claim = claims.data?.find((candidate) => candidate.offer.id === offerId);
   const venue = claim?.offer.event.venue;
   const venueName = venue?.name ?? t('ticket.venueFallback');
+  const openBolt = () => {
+    const link = venue ? buildMainTaxiLink(venue) : null;
+    if (link) void openTaxiLink(link).catch(() => undefined);
+  };
 
   return (
     <View style={styles.screen}>
@@ -128,13 +131,12 @@ export function TicketScreenContent({ offerId, onBack }: TicketScreenContentProp
       </View>
 
       <View style={[styles.bottom, { bottom: insets.bottom + space.xl }]}>
-        {taxiOpen && venue ? <EventTaxiBar destination={venue} /> : null}
         <View style={styles.bottomRow}>
           <GlassPillButton
             label={t('ticket.taxi').replace('{venue}', venueName)}
             height={BOTTOM_BUTTON_SIZE}
             flex
-            onPress={() => setTaxiOpen((open) => !open)}
+            onPress={openBolt}
           />
           <GlassIconButton
             icon="brightness"

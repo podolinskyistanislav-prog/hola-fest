@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import * as Brightness from 'expo-brightness';
 
 import { t } from '@/lib/i18n';
+import { openTaxiLink } from '@/lib/taxi';
 import { getMyClaims } from '@/services/claims';
 import type { MyClaim } from '@/types/claims';
 
@@ -22,6 +23,10 @@ jest.mock('expo-brightness', () => ({
 }));
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
+jest.mock('@/lib/taxi', () => ({
+  ...jest.requireActual('@/lib/taxi'),
+  openTaxiLink: jest.fn(),
 }));
 jest.mock('./claimedTokens', () => ({ getClaimToken: jest.fn() }));
 
@@ -134,7 +139,8 @@ describe('TicketScreenContent', () => {
     expect(screen.getByText('Покажи його на вході в закладі')).toBeTruthy();
   });
 
-  it('opens the taxi choice from the bottom button', async () => {
+  it('opens Bolt directly from the bottom button', async () => {
+    jest.mocked(openTaxiLink).mockResolvedValue();
     mockToken.mockResolvedValue('stored-token');
     const venue = { ...claim.offer.event.venue, lat: 50.4, lng: 30.5 };
     mockClaims.mockResolvedValue([
@@ -142,7 +148,7 @@ describe('TicketScreenContent', () => {
     ]);
     await renderWithClient(<TicketScreenContent offerId="o1" onBack={jest.fn()} />);
     await fireEvent.press(await screen.findByRole('button', { name: 'Поїхати в Bavovna' }));
-    expect(screen.getByRole('button', { name: 'Uklon' })).toBeTruthy();
+    expect(openTaxiLink).toHaveBeenCalledWith(expect.objectContaining({ provider: 'bolt' }));
   });
 
   it('closes with the glass close button', async () => {
