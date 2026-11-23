@@ -9,7 +9,7 @@
 | App                  | Expo (SDK 58) + Expo Router, TypeScript strict, iOS / Android / web from one codebase |
 | Backend              | Supabase: Postgres, Auth (Apple + Google), Storage, Edge Functions, Realtime          |
 | Server state         | TanStack Query (added with the first data feature)                                    |
-| Map                  | react-native-maps (native), simple list fallback on web                               |
+| Map                  | Leaflet + OSM/CARTO tiles in react-native-webview (native) / iframe (web), no key     |
 | Push                 | expo-notifications                                                                    |
 | Builds               | EAS Build (cloud)                                                                     |
 | Errors / analytics   | Sentry, PostHog (added in the observability task)                                     |

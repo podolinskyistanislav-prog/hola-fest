@@ -1,5 +1,7 @@
 # 0006 — Map: react-native-maps, platform split, Google Maps key
 
+> **Superseded by [0010](0010-leaflet-map.md).**
+
 **Context.** The map tab shows venue pins. We want the native maps with no custom drawn map. The web build is for previews only (see 0005) and `react-native-maps` has no web support.
 
 **Decision.**
