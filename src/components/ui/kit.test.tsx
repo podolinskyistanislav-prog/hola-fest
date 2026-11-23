@@ -125,6 +125,25 @@ describe.each(['dark', 'light'] as const)('UI kit in %s theme', (scheme) => {
     expect(screen.queryByText('claim-token-123')).toBeNull();
   });
 
+  it('QRCard uses the clear glassCard fill so the blobs glow through', async () => {
+    await render(
+      <QRCard
+        token="t"
+        offerTitle="Title"
+        details="d"
+        codeLabel="c"
+        countdown="1"
+        qrLabel="QR-код офера"
+      />,
+    );
+    const card = screen.getByLabelText('QR-код офера').parent;
+    const style = flat(card as never);
+    expect(style.backgroundColor).toBe(
+      scheme === 'dark' ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.35)',
+    );
+    expect(style.borderRadius).toBe(36);
+  });
+
   it('AccentBlobs draws a yellow and a pink circle', async () => {
     await render(<AccentBlobs />);
     const hidden = { includeHiddenElements: true };

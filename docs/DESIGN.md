@@ -84,7 +84,7 @@ Built 1:1 from `Event.html`, `Offer.html` and `Map.html`. All copy arrives trans
 
 - `GlassIconButton` (back, share, close, brightness): round glass, 44 (56 for the bottom toggle). `InfoChip` (32, optional yellow check or shield icon) and `LineupChip` (32, outlined) are read-only facts.
 - `OfferCard`: pink, radius 28, yellow star top-right, kicker, Unbounded 700 22 title, condition, black 50 CTA with white text. `TaxiBar`: floating glass 72 with a glass button per provider.
-- `QRCard`: glass radius 36 around a white QR tile (drawn with plain views, works offline), title, details and a yellow countdown pill. `AccentBlobs` sit behind it so the glass has something to refract.
+- `QRCard`: clear glass (own `glassCard` token, not `GlassSurface`: 10% white fill, 0.28 border, top highlight, deep shadow, blur on web; light theme 35% white fill so blobs still glow through) radius 36 around a white QR tile (drawn with plain views, works offline), title, details and a yellow countdown pill. `AccentBlobs` sit behind it so the glass has something to refract.
 - `MapPin`: name pill above a 16 dot with a 25% halo in the venue accent. `MapVenueCard`: glass radius 30 with a star thumb, address, tonight's event, yellow "Подія" and glass "Поїхати" (46). `GlassSearchField`: glass 52 with a search icon.
 
 ## Event covers (until real photos exist)
