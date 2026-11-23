@@ -1,16 +1,18 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 
 import { VenuesMapScreenContent } from '@/features/venues';
 import { useTheme } from '@/theme';
 
-/** Map tab. */
+/** Map tab. Opens with a club selected when given the `venue` param. */
 export default function MapScreen() {
   const { colors } = useTheme();
   const router = useRouter();
+  const { venue } = useLocalSearchParams<{ venue?: string }>();
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <VenuesMapScreenContent
+        initialVenueId={venue}
         onOpenVenue={(id) => router.push({ pathname: '/venue/[id]', params: { id } })}
         onOpenEvent={(id) => router.push({ pathname: '/event/[id]', params: { id } })}
       />

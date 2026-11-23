@@ -45,6 +45,41 @@ export function firstEventByVenue<T extends { startsAt: Date; venue: { id: strin
   return result;
 }
 
+export interface TodayOffer {
+  key: string;
+  venueId: string;
+  eventId: string;
+  eventTitle: string;
+  startsAt: Date;
+  venueName: string;
+  offerTitle: string;
+}
+
+/** One entry per offer of today's events, earliest event first, for the "Акції сьогодні" list. */
+export function todayOffers(
+  events: readonly {
+    id: string;
+    title: string;
+    startsAt: Date;
+    venue: { id: string; name: string };
+    offers: readonly { id: string; title: string }[];
+  }[],
+): TodayOffer[] {
+  return events
+    .flatMap((event) =>
+      event.offers.map((offer) => ({
+        key: `${event.id}:${offer.id}`,
+        venueId: event.venue.id,
+        eventId: event.id,
+        eventTitle: event.title,
+        startsAt: event.startsAt,
+        venueName: event.venue.name,
+        offerTitle: offer.title,
+      })),
+    )
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+}
+
 /**
  * The venue whose card is shown: an explicit choice (`null` = dismissed) or, before any choice,
  * the first venue that has an event tonight.

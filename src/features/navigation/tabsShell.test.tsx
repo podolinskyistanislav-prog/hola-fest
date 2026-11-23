@@ -13,7 +13,10 @@ jest.mock('expo-glass-effect', () => {
   const { View } = jest.requireActual('react-native');
   return { GlassView: View, isLiquidGlassAvailable: () => false };
 });
-jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }) }));
+jest.mock('expo-router', () => ({
+  useRouter: () => ({ push: mockPush }),
+  useLocalSearchParams: () => ({}),
+}));
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));

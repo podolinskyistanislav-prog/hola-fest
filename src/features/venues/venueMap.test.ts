@@ -5,6 +5,7 @@ import {
   firstEventByVenue,
   mappableVenues,
   resolveSelectedVenueId,
+  todayOffers,
   venueAccent,
 } from './venueMap';
 
@@ -60,6 +61,36 @@ describe('firstEventByVenue', () => {
     const late = { id: 'late', startsAt: new Date('2026-11-06T20:00:00Z'), venue: { id: 'v1' } };
     const early = { id: 'early', startsAt: new Date('2026-11-06T18:00:00Z'), venue: { id: 'v1' } };
     expect(firstEventByVenue([late, early]).get('v1')).toBe(early);
+  });
+});
+
+describe('todayOffers', () => {
+  it('lists every offer of every event, earliest event first', () => {
+    const late = {
+      id: 'e2',
+      title: 'Late',
+      startsAt: new Date('2026-11-06T20:00:00Z'),
+      venue: { id: 'v2', name: 'Panorama Bar' },
+      offers: [{ id: 'o2', title: '−15%' }],
+    };
+    const early = {
+      id: 'e1',
+      title: 'Early',
+      startsAt: new Date('2026-11-06T18:00:00Z'),
+      venue: { id: 'v1', name: 'Bavovna' },
+      offers: [
+        { id: 'o1', title: 'Шот' },
+        { id: 'o3', title: 'Вхід' },
+      ],
+    };
+    const none = { ...early, id: 'e3', offers: [] };
+    const result = todayOffers([late, none, early]);
+    expect(result.map((offer) => offer.key)).toEqual(['e1:o1', 'e1:o3', 'e2:o2']);
+    expect(result[2]).toMatchObject({
+      venueId: 'v2',
+      venueName: 'Panorama Bar',
+      offerTitle: '−15%',
+    });
   });
 });
 
