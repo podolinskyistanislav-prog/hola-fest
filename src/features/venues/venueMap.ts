@@ -10,6 +10,20 @@ export const KYIV_REGION = {
   longitudeDelta: 0.12,
 };
 
+const PROJECTION_MARGIN = 0.1;
+
+/**
+ * Where a venue sits on the web fallback surface, as 0–1 fractions from the top-left.
+ * The surface shows `KYIV_REGION`; venues outside it stick to the edge margin so every pin stays visible.
+ */
+export function projectToSurface(venue: { lat: number; lng: number }): { x: number; y: number } {
+  const clamp = (value: number) =>
+    Math.min(1 - PROJECTION_MARGIN, Math.max(PROJECTION_MARGIN, value));
+  const x = (venue.lng - KYIV_REGION.longitude) / KYIV_REGION.longitudeDelta + 0.5;
+  const y = 0.5 - (venue.lat - KYIV_REGION.latitude) / KYIV_REGION.latitudeDelta;
+  return { x: clamp(x), y: clamp(y) };
+}
+
 /** Venues that have coordinates and can be drawn on the map. */
 export function mappableVenues(venues: readonly Venue[]): MappableVenue[] {
   return venues.filter((venue): venue is MappableVenue => venue.lat !== null && venue.lng !== null);
