@@ -70,5 +70,6 @@ const styles = StyleSheet.create({
     borderRadius: layout.offerPillHeight / 2,
     justifyContent: 'center',
     flexShrink: 0,
+    maxWidth: layout.offerPillMaxWidth,
   },
 });

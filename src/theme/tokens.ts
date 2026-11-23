@@ -161,6 +161,7 @@ export const layout = {
   carouselCardHeight: 230,
   offerThumbSize: 56,
   offerPillHeight: 30,
+  offerPillMaxWidth: 140,
 } as const;
 
 /** 4-point spacing scale. Screen edge padding is `screen`. */
