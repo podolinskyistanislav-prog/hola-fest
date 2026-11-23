@@ -1,9 +1,8 @@
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Platform, StyleSheet, View, useWindowDimensions, type ViewStyle } from 'react-native';
 
-import { brand, fontFamily, space, ticket } from '@/theme';
+import { brand, fontFamily, space, ticket, useTheme } from '@/theme';
 
 import { AppText } from './AppText';
-import { GlassSurface } from './GlassSurface';
 import { QRCode } from './QRTicket';
 
 export interface QRCardProps {
@@ -27,12 +26,33 @@ const COUNTDOWN_HEIGHT = 30;
 const CARD_RADIUS = 36;
 const TILE_RADIUS = 24;
 
+/** Backdrop blur exists on web only; native shows the translucent fill over the blobs. */
+const webBlur =
+  Platform.OS === 'web'
+    ? ({ backdropFilter: 'blur(40px) saturate(180%)' } as unknown as ViewStyle)
+    : undefined;
+
 /** Glass card for the QR screen: white QR tile, offer title, details and the one-time-code countdown. */
 export function QRCard({ token, offerTitle, details, codeLabel, countdown, qrLabel }: QRCardProps) {
   const { width } = useWindowDimensions();
+  const { colors } = useTheme();
   const side = Math.min(MAX_QR_SIDE, width - (space.screen + CARD_PADDING + TILE_PADDING) * 2);
   return (
-    <GlassSurface style={styles.card}>
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: colors.glassCard.fill,
+          borderColor: colors.glassCard.border,
+          shadowColor: colors.glassCard.shadow,
+        },
+        webBlur,
+      ]}
+    >
+      <View
+        pointerEvents="none"
+        style={[styles.highlight, { backgroundColor: colors.glassCard.highlight }]}
+      />
       <View accessible accessibilityRole="image" accessibilityLabel={qrLabel} style={styles.tile}>
         <QRCode token={token} side={side} />
       </View>
@@ -52,12 +72,22 @@ export function QRCard({ token, offerTitle, details, codeLabel, countdown, qrLab
           </AppText>
         </View>
       </View>
-    </GlassSurface>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: CARD_RADIUS, padding: CARD_PADDING, gap: 18 },
+  card: {
+    borderRadius: CARD_RADIUS,
+    padding: CARD_PADDING,
+    gap: 18,
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 1,
+    shadowRadius: 50,
+    elevation: 12,
+  },
+  highlight: { position: 'absolute', top: 0, left: CARD_RADIUS, right: CARD_RADIUS, height: 1 },
   tile: {
     backgroundColor: ticket.paper,
     borderRadius: TILE_RADIUS,

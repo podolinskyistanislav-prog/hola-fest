@@ -52,6 +52,14 @@ export interface Palette {
     border: string;
     highlight: string;
   };
+  /** Large clear glass card (the QR ticket) where blobs behind it must glow through. */
+  glassCard: {
+    fill: string;
+    border: string;
+    /** Inner top highlight line. */
+    highlight: string;
+    shadow: string;
+  };
   /** Small glass buttons on the screen background (the search button). */
   glassControl: {
     fill: string;
@@ -102,6 +110,12 @@ export const palettes: Record<ColorScheme, Palette> = {
       border: 'rgba(255,255,255,0.16)',
       highlight: 'rgba(255,255,255,0.22)',
     },
+    glassCard: {
+      fill: 'rgba(255,255,255,0.10)',
+      border: 'rgba(255,255,255,0.28)',
+      highlight: 'rgba(255,255,255,0.4)',
+      shadow: 'rgba(0,0,0,0.45)',
+    },
     glassButton: { fill: 'rgba(255,255,255,0.1)', border: 'rgba(255,255,255,0.18)' },
     glassOnCover,
   },
@@ -125,6 +139,12 @@ export const palettes: Record<ColorScheme, Palette> = {
       fill: 'rgba(244,244,245,0.7)',
       border: 'rgba(0,0,0,0.08)',
       highlight: 'rgba(255,255,255,0.95)',
+    },
+    glassCard: {
+      fill: 'rgba(255,255,255,0.35)',
+      border: 'rgba(255,255,255,0.7)',
+      highlight: 'rgba(255,255,255,0.9)',
+      shadow: 'rgba(0,0,0,0.18)',
     },
     glassButton: { fill: 'rgba(0,0,0,0.06)', border: 'rgba(0,0,0,0.1)' },
     glassOnCover,
