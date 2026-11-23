@@ -80,6 +80,17 @@ describe('MyTicketsContent', () => {
     expect(await screen.findByText('Тут з’являться твої QR')).toBeTruthy();
     await fireEvent.press(screen.getByRole('button', { name: 'До подій' }));
     expect(onOpenEvents).toHaveBeenCalled();
+    expect(screen.getAllByTestId('stamp-empty')).toHaveLength(5);
+    expect(screen.getByText('5 візитів — коктейль у подарунок')).toBeTruthy();
+    expect(screen.getByText('Скоро')).toBeTruthy();
+  });
+
+  it('shows a loyalty card per claimed club with used claims as stamps', async () => {
+    mockClaims.mockResolvedValue([claim, { ...claim, id: 'c2', status: 'redeemed' }]);
+    await renderWithClient(<MyTicketsContent onOpenTicket={jest.fn()} onOpenEvents={jest.fn()} />);
+    expect(await screen.findByText('Bavovna', { exact: true })).toBeTruthy();
+    expect(screen.getAllByTestId('stamp-filled')).toHaveLength(1);
+    expect(screen.getAllByTestId('stamp-empty')).toHaveLength(4);
   });
 
   it('shows an error state with retry', async () => {

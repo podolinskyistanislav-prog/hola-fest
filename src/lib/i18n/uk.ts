@@ -130,6 +130,7 @@ export const uk = {
   'tickets.emptyAction': 'До подій',
   'tickets.errorTitle': 'Не вдалося завантажити квитки',
   'tickets.errorBody': 'Перевір з’єднання й спробуй ще раз. Відкритий квиток працює і без мережі.',
+  'tickets.loyaltyReward': 'коктейль у подарунок',
   'tickets.statusActive': 'Діє',
   'tickets.statusRedeemed': 'Використано',
   'tickets.statusExpired': 'Термін минув',

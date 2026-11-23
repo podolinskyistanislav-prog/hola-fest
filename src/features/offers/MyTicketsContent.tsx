@@ -2,12 +2,13 @@ import type { ReactNode } from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppText, Button, tabBarInset } from '@/components/ui';
+import { AppText, Button, LoyaltyStampCard, tabBarInset } from '@/components/ui';
 import { formatEventDay } from '@/features/events/eventFormat';
 import { t } from '@/lib/i18n';
 import { layout, radius, space, useTheme } from '@/theme';
 import type { MyClaim } from '@/types/claims';
 
+import { LOYALTY_GOAL, loyaltyCards } from './loyaltyCards';
 import { ticketStatus } from './ticketStatus';
 import { useMyClaims } from './useMyClaims';
 
@@ -29,6 +30,27 @@ function Message({ title, body, action }: { title: string; body: string; action?
       </AppText>
       <AppText tone="muted">{body}</AppText>
       {action}
+    </View>
+  );
+}
+
+function LoyaltySection({ claims }: { claims: readonly MyClaim[] }) {
+  const cards = loyaltyCards(claims);
+  const reward = t('tickets.loyaltyReward');
+  if (cards.length === 0) {
+    return <LoyaltyStampCard visits={0} goal={LOYALTY_GOAL} reward={reward} />;
+  }
+  return (
+    <View style={styles.loyalty}>
+      {cards.map((card) => (
+        <LoyaltyStampCard
+          key={card.venueId}
+          title={card.venueName}
+          visits={card.visits}
+          goal={LOYALTY_GOAL}
+          reward={reward}
+        />
+      ))}
     </View>
   );
 }
@@ -119,9 +141,12 @@ export function MyTicketsContent({ onOpenTicket, onOpenEvents }: MyTicketsConten
           <TicketRow claim={item} onPress={() => onOpenTicket(item.offer.id)} />
         )}
         ListHeaderComponent={
-          <AppText variant="title" accessibilityRole="header" style={styles.title}>
-            {t('tickets.title')}
-          </AppText>
+          <View style={styles.header}>
+            <AppText variant="title" accessibilityRole="header">
+              {t('tickets.title')}
+            </AppText>
+            <LoyaltySection claims={claims.data ?? []} />
+          </View>
         }
         ListEmptyComponent={
           <Message
@@ -139,7 +164,8 @@ export function MyTicketsContent({ onOpenTicket, onOpenEvents }: MyTicketsConten
 const styles = StyleSheet.create({
   screen: { flex: 1, paddingTop: SCREEN_TOP },
   list: { gap: space.md, paddingHorizontal: space.screen },
-  title: { paddingBottom: space.sm },
+  header: { gap: space.md, paddingBottom: space.sm },
+  loyalty: { gap: space.md },
   skeleton: { height: SKELETON_HEIGHT, borderRadius: radius.row },
   row: {
     flexDirection: 'row',
