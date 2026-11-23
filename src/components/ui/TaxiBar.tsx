@@ -16,7 +16,17 @@ export interface TaxiProvider {
 export interface TaxiBarProps {
   /** "Поїхати". */
   label: string;
+  /** Bolt is shown first and filled; the others stay glass, in the given order. */
   providers: readonly TaxiProvider[];
+}
+
+const PRIMARY_PROVIDER_ID = 'bolt';
+
+function boltFirst(providers: readonly TaxiProvider[]): TaxiProvider[] {
+  return [
+    ...providers.filter((provider) => provider.id === PRIMARY_PROVIDER_ID),
+    ...providers.filter((provider) => provider.id !== PRIMARY_PROVIDER_ID),
+  ];
 }
 
 export const TAXI_BAR_HEIGHT = 72;
@@ -30,11 +40,12 @@ export function TaxiBar({ label, providers }: TaxiBarProps) {
         {label}
       </AppText>
       <View style={styles.providers}>
-        {providers.map((provider) => (
+        {boltFirst(providers).map((provider) => (
           <GlassPillButton
             key={provider.id}
             label={provider.label}
             height={PROVIDER_HEIGHT}
+            primary={provider.id === PRIMARY_PROVIDER_ID}
             onPress={provider.onPress}
           />
         ))}
