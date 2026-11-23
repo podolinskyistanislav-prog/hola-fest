@@ -1,17 +1,17 @@
 # Graph Report - hola-fest  (2026-11-23)
 
 ## Corpus Check
-- 278 files · ~88,065 words
+- 278 files · ~88,088 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 12 file(s) not represented in the graph (top: (none) 10, .example 1, .toml 1)
 
 ## Summary
-- 1711 nodes · 3863 edges · 102 communities (90 shown, 12 thin omitted)
+- 1711 nodes · 3864 edges · 102 communities (90 shown, 12 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 51 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `babd96b2`
+- Built from commit: `c34b4f43`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,7 +21,7 @@
 - expo
 - Hola Fest — Architecture
 - compilerOptions
-- services/venues.ts
+- supabase.ts
 - scripts
 - Hola Fest — Product
 - with
@@ -46,7 +46,7 @@
 - expo-glass-effect@~58.0.5
 - expo-image@~58.0.18
 - expo-linking@~58.0.16
-- kyivTime.ts
+- fonts.ts
 - ui-ux.md
 - expo-symbols@~58.0.4
 - expo-system-ui@~58.0.7
@@ -122,7 +122,7 @@
 ## God Nodes (most connected - your core abstractions)
 1. `AppText()` - 100 edges
 2. `useTheme()` - 98 edges
-3. `t()` - 89 edges
+3. `t()` - 90 edges
 4. `react-native` - 71 edges
 5. `Button()` - 50 edges
 6. `space` - 44 edges
@@ -168,7 +168,7 @@ Nodes (12): { defineConfig }, expoConfig, NO_FEATURES_IN_UI, NO_SERVICES_IN_UI, 
 Cohesion: 0.17
 Nodes (11): expo/tsconfig.base, compilerOptions, noFallthroughCasesInSwitch, noUncheckedIndexedAccess, paths, strict, types, exclude (+3 more)
 
-### Community 5 - "services/venues.ts"
+### Community 5 - "supabase.ts"
 Cohesion: 0.14
 Nodes (15): ClientError, getVenueById(), from, Result, venue, venueRow, toVenue(), toVenueEvent() (+7 more)
 
@@ -256,7 +256,7 @@ Nodes (47): 1. Tests BEFORE Code, 2. Coverage Requirements, 3. Test Types, 4. Gi
 Cohesion: 0.20
 Nodes (10): GITHUB_TOKEN, secrets-scan, permissions, contents, pull-requests, name, permissions, runs-on (+2 more)
 
-### Community 30 - "kyivTime.ts"
+### Community 30 - "fonts.ts"
 Cohesion: 0.16
 Nodes (20): DateTimeFieldProps, formatDateTime(), pad(), parseDateTime(), formatHomeDate(), dayTile(), CURFEW_KYIV_HOUR, dayKeyParts() (+12 more)
 
@@ -516,8 +516,8 @@ Nodes (3): How you work, Never, You may edit only
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `t()` connect `t` to `Button.tsx`, `Hola Fest — design rules`, `kyivTime.ts`, `expo-linking@~58.0.16`, `react-dom@19.3.0`, `ui/index.ts`, `services/events.ts`, `VenuesMapScreenContent.tsx`, `space`, `OfferFormArea.tsx`, `useClaimOffer.ts`, `Hola Fest — design rules`, `MyTicketsContent.tsx`, `EventFormArea.tsx`, `components/TaxiBar.tsx`, `EventScreenContent.test.tsx`, `VenueMap.tsx`, `react-native`, `AppText`, `eventFormat.ts`, `tabsShell.test.tsx`, `ticketStatus.ts`, `@testing-library/react-native`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
+- **Why does `t()` connect `t` to `Button.tsx`, `Hola Fest — design rules`, `fonts.ts`, `expo-linking@~58.0.16`, `react-dom@19.3.0`, `ui/index.ts`, `services/events.ts`, `VenuesMapScreenContent.tsx`, `space`, `OfferFormArea.tsx`, `useClaimOffer.ts`, `Hola Fest — design rules`, `MyTicketsContent.tsx`, `EventFormArea.tsx`, `components/TaxiBar.tsx`, `EventScreenContent.test.tsx`, `VenueMap.tsx`, `react-native`, `AppText`, `eventFormat.ts`, `tabsShell.test.tsx`, `ticketStatus.ts`, `@testing-library/react-native`?**
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `package.json` be split into smaller, more focused modules?**
