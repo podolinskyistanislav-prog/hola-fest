@@ -15,6 +15,11 @@ const ITEMS: readonly TabBarItem[] = [
     renderIcon: (props) => <TabIcon name="map-pin" {...props} />,
   },
   {
+    id: 'djs',
+    label: t('tabs.djs'),
+    renderIcon: (props) => <TabIcon name="headphones" {...props} />,
+  },
+  {
     id: 'tickets',
     label: t('tabs.tickets'),
     renderIcon: (props) => <TabIcon name="qr" {...props} />,
@@ -41,6 +46,7 @@ export default function TabsLayout() {
     <Tabs tabBar={(props) => <FloatingTabBar {...props} />} screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="map" />
+      <Tabs.Screen name="djs" />
       <Tabs.Screen name="tickets" />
     </Tabs>
   );

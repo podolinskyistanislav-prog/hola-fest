@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { AppText, GlassIconButton, InfoChip, LineupChip } from '@/components/ui';
 import { HolaStar } from '@/components/ui/HolaStar';
 import { TAXI_BAR_HEIGHT } from '@/components/ui/TaxiBar';
+import { djSlug } from '@/lib/djName';
 import { t } from '@/lib/i18n';
 import { brand, radius, space, useTheme } from '@/theme';
 import type { EventDetails as EventDetailsData } from '@/types/events';
@@ -20,6 +21,8 @@ export interface EventDetailsProps {
   safeAreaBottom: number;
   onBack: () => void;
   onOpenVenue: (venueId: string) => void;
+  /** Called with the DJ slug when a lineup chip is tapped. */
+  onOpenDj: (slug: string) => void;
   /** Called after an offer was claimed, to open its ticket. */
   onClaimed: (offerId: string) => void;
   /** Injectable clock for "Сьогодні" and the expired offer state. */
@@ -44,6 +47,7 @@ export function EventDetails({
   safeAreaBottom,
   onBack,
   onOpenVenue,
+  onOpenDj,
   onClaimed,
   now = new Date(),
 }: EventDetailsProps) {
@@ -118,9 +122,21 @@ export function EventDetails({
               {t('event.lineup')}
             </AppText>
             <View style={styles.chips}>
-              {artists.map((name) => (
-                <LineupChip key={name} label={name} />
-              ))}
+              {artists.map((name) =>
+                event.lineup.length > 0 && djSlug(name) !== '' ? (
+                  <Pressable
+                    key={name}
+                    accessibilityRole="link"
+                    accessibilityLabel={name}
+                    hitSlop={6}
+                    onPress={() => onOpenDj(djSlug(name))}
+                  >
+                    <LineupChip label={name} />
+                  </Pressable>
+                ) : (
+                  <LineupChip key={name} label={name} />
+                ),
+              )}
             </View>
           </View>
 

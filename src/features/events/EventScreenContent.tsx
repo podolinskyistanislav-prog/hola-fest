@@ -12,6 +12,7 @@ export interface EventScreenContentProps {
   eventId: string | undefined;
   onBack: () => void;
   onOpenVenue: (venueId: string) => void;
+  onOpenDj: (slug: string) => void;
   onClaimed: (offerId: string) => void;
 }
 
@@ -23,6 +24,7 @@ export function EventScreenContent({
   eventId,
   onBack,
   onOpenVenue,
+  onOpenDj,
   onClaimed,
 }: EventScreenContentProps) {
   const { colors } = useTheme();
@@ -73,6 +75,7 @@ export function EventScreenContent({
       safeAreaBottom={insets.bottom}
       onBack={onBack}
       onOpenVenue={onOpenVenue}
+      onOpenDj={onOpenDj}
       onClaimed={onClaimed}
     />
   );
