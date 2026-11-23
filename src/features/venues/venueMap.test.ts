@@ -5,6 +5,7 @@ import {
   firstEventByVenue,
   KYIV_REGION,
   mappableVenues,
+  projectToSurface,
   resolveSelectedVenueId,
   venueAccent,
 } from './venueMap';
@@ -86,5 +87,27 @@ describe('KYIV_REGION', () => {
   it('is centered on Kyiv', () => {
     expect(KYIV_REGION.latitude).toBeCloseTo(50.45, 1);
     expect(KYIV_REGION.longitude).toBeCloseTo(30.52, 1);
+  });
+});
+
+describe('projectToSurface', () => {
+  it('puts the region centre in the middle', () => {
+    const { x, y } = projectToSurface({ lat: KYIV_REGION.latitude, lng: KYIV_REGION.longitude });
+    expect(x).toBeCloseTo(0.5);
+    expect(y).toBeCloseTo(0.5);
+  });
+
+  it('puts north above and east to the right of the centre', () => {
+    const { x, y } = projectToSurface({
+      lat: KYIV_REGION.latitude + 0.02,
+      lng: KYIV_REGION.longitude + 0.02,
+    });
+    expect(x).toBeGreaterThan(0.5);
+    expect(y).toBeLessThan(0.5);
+  });
+
+  it('keeps far-away venues inside the surface', () => {
+    expect(projectToSurface({ lat: 0, lng: 0 })).toEqual({ x: 0.1, y: 0.9 });
+    expect(projectToSurface({ lat: 80, lng: 80 })).toEqual({ x: 0.9, y: 0.1 });
   });
 });

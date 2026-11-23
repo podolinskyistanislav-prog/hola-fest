@@ -45,6 +45,7 @@ export const uk = {
   'events.retry': 'Спробувати ще раз',
   'events.loading': 'Завантажуємо події',
   'events.priceFrom': 'від {price} ₴',
+  'events.priceUnknown': 'від [уточнити] ₴',
   'events.weekday.1': 'Пн',
   'events.weekday.2': 'Вт',
   'events.weekday.3': 'Ср',

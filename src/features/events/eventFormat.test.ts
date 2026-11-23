@@ -137,6 +137,11 @@ describe('carouselCardProps', () => {
       coverColor: 'yellow',
     });
   });
+  it('shows a placeholder price when the price is unknown', () => {
+    expect(carouselCardProps({ ...event, priceFromUah: null }, 0).priceFrom).toBe(
+      'від [уточнити] ₴',
+    );
+  });
   it('alternates cover colors and badges the first offer', () => {
     const props = carouselCardProps({ ...event, offers: [offer] }, 1);
     expect(props.coverColor).toBe('pink');
