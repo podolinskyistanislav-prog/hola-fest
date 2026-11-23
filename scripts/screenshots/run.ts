@@ -80,6 +80,11 @@ async function main(): Promise<void> {
       });
       for (const shot of plan.filter((s) => s.theme === theme)) {
         const page = await context.newPage();
+        if (Object.keys(shot.seed).length > 0) {
+          await page.addInitScript((entries: Record<string, string>) => {
+            for (const [key, value] of Object.entries(entries)) localStorage.setItem(key, value);
+          }, shot.seed);
+        }
         const response = await page.goto(`${server.url}${shot.path}`, { waitUntil: 'networkidle' });
         if (!response?.ok()) throw new Error(`Screen ${shot.screen} did not load`);
         await page.waitForSelector('#root > *');

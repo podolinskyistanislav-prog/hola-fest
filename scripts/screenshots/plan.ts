@@ -5,6 +5,7 @@ export type Shot = {
   theme: Theme;
   path: string;
   file: string;
+  seed: Readonly<Record<string, string>>;
 };
 
 /** One shot per screen and theme, e.g. `home.dark.png`. */
@@ -16,8 +17,14 @@ export function buildShotPlan(screens: readonly ScreenConfig[], themes: readonly
     if (names.has(name)) throw new Error(`Duplicate screen name: ${name}`);
     names.add(name);
   }
-  return screens.flatMap(({ name, path }) =>
-    themes.map((theme) => ({ screen: name, theme, path, file: `${name}.${theme}.png` })),
+  return screens.flatMap(({ name, path, seed }) =>
+    themes.map((theme) => ({
+      screen: name,
+      theme,
+      path,
+      file: `${name}.${theme}.png`,
+      seed: seed ?? {},
+    })),
   );
 }
 
