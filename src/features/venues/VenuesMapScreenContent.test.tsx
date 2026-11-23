@@ -17,21 +17,28 @@ jest.mock('@expo/vector-icons', () => ({ Feather: () => null }));
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }),
 }));
-jest.mock('react-native-maps', () => {
-  const { View } = jest.requireActual('react-native');
-  const MapView = ({ children, onPress }: { children: React.ReactNode; onPress: () => void }) => (
-    <View testID="map" onTouchEnd={onPress}>
-      {children}
+jest.mock('@/features/map', () => {
+  const { Pressable, Text, View } = jest.requireActual('react-native');
+  const VenueMap = ({
+    venues,
+    onSelect,
+  }: {
+    venues: { id: string; name: string }[];
+    onSelect: (id: string | null) => void;
+  }) => (
+    <View>
+      {venues.map((venue) => (
+        <Pressable
+          key={venue.id}
+          accessibilityLabel={venue.name}
+          onPress={() => onSelect(venue.id)}
+        >
+          <Text>{venue.name}</Text>
+        </Pressable>
+      ))}
     </View>
   );
-  const Marker = ({
-    children,
-    onPress,
-  }: {
-    children: React.ReactNode;
-    onPress: (event: { stopPropagation: () => void }) => void;
-  }) => <View onTouchEnd={() => onPress({ stopPropagation: () => undefined })}>{children}</View>;
-  return { __esModule: true, default: MapView, Marker };
+  return { VenueMap };
 });
 jest.mock('@/services/events', () => ({
   getEventsForRange: jest.fn(),
@@ -126,7 +133,7 @@ describe('VenuesMapScreenContent', () => {
     await renderScreen();
     expect(screen.queryByText(t('map.noEventsToday'))).toBeNull();
 
-    await fireEvent(await screen.findByLabelText('Bavovna'), 'touchEnd');
+    await fireEvent.press(await screen.findByLabelText('Bavovna'));
     expect(await screen.findByText(t('map.noEventsToday'))).toBeTruthy();
     expect(screen.getByText(t('map.noAddress'))).toBeTruthy();
     await fireEvent.press(screen.getByRole('button', { name: t('map.openEvent') }));

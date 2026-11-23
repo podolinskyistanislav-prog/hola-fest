@@ -21,11 +21,7 @@ jest.mock('@/services/events', () => ({
   getEventsForRange: jest.fn().mockResolvedValue([]),
   getEventById: jest.fn(),
 }));
-jest.mock('react-native-maps', () => ({
-  __esModule: true,
-  default: () => null,
-  Marker: () => null,
-}));
+jest.mock('@/features/map', () => ({ VenueMap: () => null }));
 jest.mock('@/services/claims', () => ({ claimOffer: jest.fn() }));
 jest.mock('@/services/venues', () => ({
   getPublishedVenues: jest.fn().mockResolvedValue([]),

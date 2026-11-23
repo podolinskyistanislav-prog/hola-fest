@@ -7,8 +7,10 @@ import { useEventsForDay } from '@/features/events/useEvents';
 import { t } from '@/lib/i18n';
 import { space, useTheme } from '@/theme';
 
+import { VenueMap } from '@/features/map';
+
 import { useVenues } from './useVenues';
-import { VenueMap } from './VenueMap';
+import { VenueMapCard } from './VenueMapCard';
 import {
   filterVenuesByName,
   firstEventByVenue,
@@ -48,6 +50,7 @@ export function VenuesMapScreenContent({ onOpenVenue, onOpenEvent }: VenuesMapSc
   const todayEvents = useMemo(() => firstEventByVenue(today.data ?? []), [today.data]);
   const visible = useMemo(() => filterVenuesByName(mappable, query), [mappable, query]);
   const selectedId = resolveSelectedVenueId(visible, choice, new Set(todayEvents.keys()));
+  const selected = visible.find((venue) => venue.id === selectedId);
 
   if (venues.isLoading) {
     return (
@@ -73,15 +76,17 @@ export function VenuesMapScreenContent({ onOpenVenue, onOpenEvent }: VenuesMapSc
 
   return (
     <View style={styles.fill}>
-      <VenueMap
-        venues={visible}
-        selectedId={selectedId}
-        todayEvents={todayEvents}
-        onSelectVenue={setChoice}
-        onOpenVenue={onOpenVenue}
-        onOpenEvent={onOpenEvent}
-        bottomInset={tabBarInset(insets.bottom)}
-      />
+      <VenueMap venues={visible} selectedId={selectedId} onSelect={setChoice} />
+      {selected ? (
+        <View style={[styles.card, { bottom: tabBarInset(insets.bottom) }]}>
+          <VenueMapCard
+            venue={selected}
+            todayEvent={todayEvents.get(selected.id)}
+            onOpenVenue={onOpenVenue}
+            onOpenEvent={onOpenEvent}
+          />
+        </View>
+      ) : null}
       <View style={styles.search} pointerEvents="box-none">
         <GlassSearchField
           label={t('map.searchLabel')}
@@ -102,6 +107,7 @@ export function VenuesMapScreenContent({ onOpenVenue, onOpenEvent }: VenuesMapSc
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   message: { flex: 1, padding: space.screen, gap: space.md, justifyContent: 'center' },
+  card: { position: 'absolute', left: space.screen, right: space.screen },
   search: { position: 'absolute', top: SEARCH_TOP, left: space.screen, right: space.screen },
   noMatches: { marginTop: space.md, textAlign: 'center' },
 });
