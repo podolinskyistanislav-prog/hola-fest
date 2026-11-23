@@ -140,6 +140,64 @@ describe('VenuesMapScreenContent', () => {
     expect(onOpenVenue).toHaveBeenCalledWith('v1');
   });
 
+  it('shows the offer pill and opens the club page from the card', async () => {
+    jest.mocked(getPublishedVenues).mockResolvedValue([venue, panorama]);
+    jest.mocked(getEventsForRange).mockResolvedValue([
+      {
+        ...tonight,
+        offers: [{ id: 'o1', title: 'Шот у подарунок', terms: null, validUntil: null }],
+      },
+    ]);
+    await renderScreen();
+
+    expect((await screen.findAllByText('Шот у подарунок')).length).toBeGreaterThan(0);
+    await fireEvent.press(screen.getByRole('button', { name: t('map.openVenue') }));
+    expect(onOpenVenue).toHaveBeenCalledWith('v2');
+  });
+
+  it('lists today’s offers collapsed, and tapping a row selects that club', async () => {
+    jest.mocked(getPublishedVenues).mockResolvedValue([venue, panorama]);
+    jest.mocked(getEventsForRange).mockResolvedValue([
+      {
+        ...tonight,
+        offers: [{ id: 'o1', title: 'Шот у подарунок', terms: null, validUntil: null }],
+      },
+    ]);
+    await renderScreen();
+    await screen.findByText(t('map.openVenue'));
+    await fireEvent.press(await screen.findByLabelText('Bavovna'));
+    expect(screen.getByText(t('map.noEventsToday'))).toBeTruthy();
+    expect(screen.queryByLabelText(/Rooftop Sunset, Panorama Bar/)).toBeNull();
+
+    await fireEvent.press(screen.getByRole('button', { name: `${t('map.offersToday')}, 1` }));
+    await fireEvent.press(screen.getByLabelText(/Rooftop Sunset, Panorama Bar/));
+    expect(screen.getByText('Сьогодні: Rooftop Sunset · 19:00')).toBeTruthy();
+  });
+
+  it('shows a placeholder in the offers section when there are none', async () => {
+    jest.mocked(getPublishedVenues).mockResolvedValue([venue]);
+    await renderScreen();
+    await fireEvent.press(
+      await screen.findByRole('button', { name: `${t('map.offersToday')}, 0` }),
+    );
+    expect(screen.getByText(t('map.offersTodayEmpty'))).toBeTruthy();
+  });
+
+  it('opens with the club from the venue param selected', async () => {
+    jest.mocked(getPublishedVenues).mockResolvedValue([venue, panorama]);
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    await render(
+      <QueryClientProvider client={client}>
+        <VenuesMapScreenContent
+          onOpenVenue={onOpenVenue}
+          onOpenEvent={onOpenEvent}
+          initialVenueId="v2"
+        />
+      </QueryClientProvider>,
+    );
+    expect(await screen.findByText('вул. Хрещатик, 1')).toBeTruthy();
+  });
+
   it('filters venues by name with the search field', async () => {
     jest.mocked(getPublishedVenues).mockResolvedValue([venue, panorama]);
     await renderScreen();
