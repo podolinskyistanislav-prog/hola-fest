@@ -40,14 +40,24 @@ Funnel we measure: event viewed → offer claimed → offer redeemed → taxi bu
 
 ## Explicitly NOT in the MVP
 
-- Phone-number login, SMS, email/password **for guests** (staff use email/password)
+- Phone-number login, SMS, email/password **for guests** (staff use email/password). Exception: a guest who wants to post in the Feed confirms an email with a one-time code (see Feed)
 - Sign in with Apple / Google (after the MVP, with guest-account linking)
 - In-app payments or ticket sales
-- Social features (friends, chat, check-ins)
+- Social features beyond the Feed (friends, direct messages, check-ins)
 - Recommendations / personalization
 - Reviews and ratings
 - Cities other than Kyiv, venues beyond the 2 partners
 - Taxi API integrations (deep links only)
+
+## Feed (founder decision 2026-11-24)
+
+One shared feed like Threads. Everyone posts in the same stream: guests, clubs and DJs. There are no separate streams.
+
+- **Labels** next to the author name: `Клуб` (venue member posting as the venue), `Діджей`, `Hola` (team). Guests have no label.
+- **Reading** is open to everyone, including anonymous guests. **Posting, commenting and liking** need a confirmed email (one-time code); the anonymous account is upgraded and keeps its data.
+- Posts: text up to 500 characters, up to 4 photos. Likes, comments (one reply level), report, block, delete own post.
+- **No direct event promotion in the Feed.** No posts like "come to X tonight", ticket or entry prices, discounts or promo codes, links, or event announcements. Events and offers live in Події and on the map. Enforced on the server and by reports. Rules: `docs/FEED_RULES.md`.
+- Store requirements for user content: report, block, a filter for objectionable content, and a way for the team to hide posts and ban users.
 
 ## Kyiv-specific requirements
 
