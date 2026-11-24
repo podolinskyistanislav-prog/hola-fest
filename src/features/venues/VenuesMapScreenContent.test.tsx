@@ -130,7 +130,7 @@ describe('VenuesMapScreenContent', () => {
     expect(onOpenEvent).toHaveBeenCalledWith('e1');
   });
 
-  it('shows the card of a tapped pin; without an event "Подія" opens the venue', async () => {
+  it('shows the card of a tapped pin; without an event only "Клуб" opens the venue', async () => {
     jest.mocked(getPublishedVenues).mockResolvedValue([venue]);
     await renderScreen();
     expect(screen.queryByText(t('map.noEventsToday'))).toBeNull();
@@ -138,11 +138,12 @@ describe('VenuesMapScreenContent', () => {
     await fireEvent.press(await screen.findByLabelText('Bavovna'));
     expect(await screen.findByText(t('map.noEventsToday'))).toBeTruthy();
     expect(screen.getByText(t('map.noAddress'))).toBeTruthy();
-    await fireEvent.press(screen.getByRole('button', { name: t('map.openEvent') }));
+    expect(screen.queryByRole('button', { name: t('map.openEvent') })).toBeNull();
+    await fireEvent.press(screen.getByRole('button', { name: t('map.openVenue') }));
     expect(onOpenVenue).toHaveBeenCalledWith('v1');
   });
 
-  it('shows the offer pill and opens the club page from the card', async () => {
+  it('keeps offers off the card and opens the club page from it', async () => {
     jest.mocked(getPublishedVenues).mockResolvedValue([venue, panorama]);
     jest.mocked(getEventsForRange).mockResolvedValue([
       {
@@ -152,7 +153,8 @@ describe('VenuesMapScreenContent', () => {
     ]);
     await renderScreen();
 
-    expect((await screen.findAllByText('Шот у подарунок')).length).toBeGreaterThan(0);
+    await screen.findByText('Сьогодні: Rooftop Sunset · 19:00');
+    expect(screen.queryByText('Шот у подарунок')).toBeNull();
     await fireEvent.press(screen.getByRole('button', { name: t('map.openVenue') }));
     expect(onOpenVenue).toHaveBeenCalledWith('v2');
   });
