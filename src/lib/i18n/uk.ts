@@ -37,7 +37,7 @@ export const uk = {
   'home.clubsEmpty': 'Клубів поки немає.',
   'home.clubsError': 'Не вдалося завантажити клуби.',
   'home.clubNoEvents': 'Подій поки немає',
-  'home.clubWeekEvents': '{count} цього тижня',
+  'home.clubNoEventsDay': 'Цього дня подій немає',
   'events.title': 'Сьогодні в Києві',
   'events.emptyTitle': 'Подій поки немає',
   'events.emptyBody': 'Скоро тут з’являться події Bavovna і Panorama Bar.',

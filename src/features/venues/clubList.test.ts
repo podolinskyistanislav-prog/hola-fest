@@ -3,7 +3,7 @@ import type { Venue } from '@/types/venues';
 
 import { clubRows } from './clubList';
 
-const now = new Date('2026-11-04T12:00:00Z');
+const day = '2026-11-04';
 
 function venue(id: string, name: string, address: string | null = null): Venue {
   return {
@@ -33,33 +33,47 @@ function eventAt(venueId: string, startsAt: string): EventSummary {
 }
 
 describe('clubRows', () => {
-  it('puts venues with an event today first, then sorts by name', () => {
+  it('puts venues with an event that day first, then sorts by name', () => {
     const rows = clubRows(
       [venue('a', 'Альфа'), venue('b', 'Бета'), venue('c', 'Гамма')],
       [eventAt('c', '2026-11-04T18:00:00Z')],
-      now,
+      day,
     );
     expect(rows.map((row) => row.name)).toEqual(['Гамма', 'Альфа', 'Бета']);
   });
 
-  it("shows tonight's event, the week count or a placeholder", () => {
+  it("shows the picked day's first event, +N for more, or a placeholder", () => {
     const rows = clubRows(
       [venue('a', 'А'), venue('b', 'Б'), venue('c', 'В')],
       [
         eventAt('a', '2026-11-04T18:00:00Z'),
-        eventAt('b', '2026-11-05T18:00:00Z'),
-        eventAt('b', '2026-11-06T18:00:00Z'),
-        eventAt('b', '2026-11-07T18:00:00Z'),
+        eventAt('b', '2026-11-04T19:00:00Z'),
+        eventAt('b', '2026-11-04T21:00:00Z'),
+        eventAt('c', '2026-11-05T18:00:00Z'),
       ],
-      now,
+      day,
     );
-    expect(rows[0]?.eventLine).toBe('Сьогодні: House Friday · 20:00');
-    expect(rows[1]?.eventLine).toBe('3 події цього тижня');
-    expect(rows[2]?.eventLine).toBe('Подій поки немає');
+    expect(rows[0]?.eventLine).toBe('House Friday · 20:00');
+    expect(rows[1]?.eventLine).toBe('House Friday · 21:00 +1');
+    expect(rows[2]?.eventLine).toBe('Цього дня подій немає');
+  });
+
+  it('follows the picked day', () => {
+    const events = [eventAt('a', '2026-11-05T18:00:00Z')];
+    expect(clubRows([venue('a', 'А')], events, day)[0]?.hasEvents).toBe(false);
+    expect(clubRows([venue('a', 'А')], events, '2026-11-05')[0]?.hasEvents).toBe(true);
+  });
+
+  it('groups by the Kyiv day, not the UTC day', () => {
+    const events = [eventAt('a', '2026-11-04T22:30:00Z')];
+    expect(clubRows([venue('a', 'А')], events, day)[0]?.hasEvents).toBe(false);
+    expect(clubRows([venue('a', 'А')], events, '2026-11-05')[0]?.eventLine).toBe(
+      'House Friday · 00:30',
+    );
   });
 
   it('uses a placeholder when the address is unknown', () => {
-    expect(clubRows([venue('a', 'А', null)], [], now)[0]?.address).toBe(
+    expect(clubRows([venue('a', 'А', null)], [], day)[0]?.address).toBe(
       'Адресу буде додано згодом',
     );
   });

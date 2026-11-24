@@ -1,4 +1,4 @@
-import { formatEventsCount, formatEventTime } from '@/features/events/eventFormat';
+import { formatEventTime } from '@/features/events/eventFormat';
 import { t } from '@/lib/i18n';
 import { kyivDayKey } from '@/lib/kyivTime';
 import type { EventSummary } from '@/types/events';
@@ -12,29 +12,27 @@ export type ClubRow = {
   address: string;
   eventLine: string;
   accent: VenueAccent;
-  hasEventToday: boolean;
+  hasEvents: boolean;
 };
 
 /**
- * Home "Клуби" list: venues with an event today first, then alphabetical.
- * The line shows tonight's event, else the number of events this week, else a placeholder.
+ * Home "Клуби" list for one Kyiv day ("YYYY-MM-DD"): venues with an event that day first, then alphabetical.
+ * The line shows that day's first event (+N when there are more), else a placeholder.
  */
 export function clubRows(
   venues: readonly Venue[],
   events: readonly EventSummary[],
-  now: Date,
+  dayId: string,
 ): ClubRow[] {
-  const todayKey = kyivDayKey(now);
   const rows = venues.map((venue) => {
-    const own = events
-      .filter((event) => event.venue.id === venue.id)
+    const onDay = events
+      .filter((event) => event.venue.id === venue.id && kyivDayKey(event.startsAt) === dayId)
       .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
-    const tonight = own.find((event) => kyivDayKey(event.startsAt) === todayKey);
-    let eventLine = t('home.clubNoEvents');
-    if (tonight) {
-      eventLine = `${t('map.today')} ${tonight.title} · ${formatEventTime(tonight.startsAt)}`;
-    } else if (own.length > 0) {
-      eventLine = t('home.clubWeekEvents').replace('{count}', formatEventsCount(own.length));
+    const first = onDay[0];
+    let eventLine = t('home.clubNoEventsDay');
+    if (first) {
+      eventLine = `${first.title} · ${formatEventTime(first.startsAt)}`;
+      if (onDay.length > 1) eventLine += ` +${onDay.length - 1}`;
     }
     return {
       id: venue.id,
@@ -42,11 +40,10 @@ export function clubRows(
       address: venue.address ?? t('map.noAddress'),
       eventLine,
       accent: venueAccent(venue.slug),
-      hasEventToday: tonight !== undefined,
+      hasEvents: first !== undefined,
     };
   });
   return rows.sort(
-    (a, b) =>
-      Number(b.hasEventToday) - Number(a.hasEventToday) || a.name.localeCompare(b.name, 'uk'),
+    (a, b) => Number(b.hasEvents) - Number(a.hasEvents) || a.name.localeCompare(b.name, 'uk'),
   );
 }
