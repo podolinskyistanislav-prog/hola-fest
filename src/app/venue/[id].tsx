@@ -14,6 +14,7 @@ export default function VenueScreen() {
       <VenueScreenContent
         venueId={id}
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        onOpenMap={(venue) => router.navigate({ pathname: '/map', params: { venue } })}
         onOpenEvent={(eventId) => router.push({ pathname: '/event/[id]', params: { id: eventId } })}
       />
     </View>

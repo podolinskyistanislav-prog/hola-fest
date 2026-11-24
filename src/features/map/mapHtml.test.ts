@@ -36,6 +36,10 @@ describe('buildMapHtml', () => {
     expect(html).toContain('"compact":true');
   });
 
+  it('centres the selected pin in a compact preview as well as in the full map', () => {
+    expect(buildMapHtml(options)).toContain('(cfg.interactive || cfg.compact)) map.panTo');
+  });
+
   it('draws pins as a label pill and a dot, with an enlarged selected state', () => {
     const html = buildMapHtml(options);
     expect(html).toContain('pin-label');
