@@ -17,12 +17,33 @@ Funnel we measure: event viewed → offer claimed → offer redeemed → taxi bu
 
 ## Roles
 
-| Role          | Who                  | Can                                                                                                            |
-| ------------- | -------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `guest`       | Anyone with the app  | Browse venues and events without logging in. Log in (Apple / Google) to claim an offer and see their QR codes. |
-| `host`        | Door staff of a club | Scan a guest QR and mark it redeemed — **only for their own venue**.                                           |
-| `venue_admin` | Club manager         | Create/edit their venue's events and offers, see their venue's stats.                                          |
-| `superadmin`  | Founder              | Everything; onboards venues and assigns staff.                                                                 |
+| Role / account | Who                                        | Can                                                                                                                                  |
+| -------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `guest`        | Anyone with the app (anonymous by default) | Browse; claim offers; after email confirmation, post in the Feed.                                                                    |
+| `venue_owner`  | Business owner, approved by the team       | Everything a `venue_admin` can, plus edit the venue profile (photos, description, address) and invite or remove staff.               |
+| `venue_admin`  | Club manager (invited by the owner)        | Create, edit, schedule and pause the venue's events and offers (Offer builder); see claim and redemption stats.                      |
+| `host`         | Door staff (invited by the owner or admin) | Scan a guest QR and mark it redeemed, **only for their own venue**.                                                                  |
+| `dj`           | DJ, approved by the team                   | Edit their public DJ profile (photo, cover, stage name, bio, genres, links); see their gigs; post in the Feed with the Діджей label. |
+| `superadmin`   | Founder / Hola team                        | Everything; approves venue and DJ applications; moderation.                                                                          |
+
+### Account types and approval (founder decision 2026-11-24)
+
+- Every account starts as a guest. After email confirmation (the same one-time code as the Feed), the user can choose **"Я заклад"** or **"Я діджей"** and fill in an application.
+- Applications stay **pending until a superadmin approves them**. Rights (venue membership, DJ profile, labels) are granted on the server by the approval, never by the app. Rejected applications get a reason.
+- An approved owner gets a new venue (or is linked to an existing one) and can invite admins and hosts by email.
+- An approved DJ gets a public DJ profile. Venues pick DJs from the list when they build an event lineup; free-text names stay as a fallback.
+
+### Offer builder
+
+Venue owners and admins build offers themselves, without the team:
+
+- Templates: % off entry, fixed amount off, free entry until a time, a gift (drink or shot), 2 for 1, custom text.
+- The title is generated from the template ("−20% на вхід", "Шот у подарунок") and can be edited. Terms are generated too ("Покажи QR на вході до 23:00").
+- When: tied to an event, or a date and time window at the venue.
+- Limits: total claims and per-guest limit.
+- Live preview exactly as guests will see it (card, badge, QR screen).
+- Publish now or schedule; pause, duplicate, end. Stats per offer: views (later), claims, redemptions.
+- The server validates everything (window inside the event, limits > 0, the owner owns the venue) and keeps the Feed rule: offers live in Події, not in the Feed.
 
 ## User stories (MVP)
 
