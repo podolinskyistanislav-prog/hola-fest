@@ -185,6 +185,25 @@ describe.each(['dark', 'light'] as const)('UI kit in %s theme', (scheme) => {
     expect(onTaxi).toHaveBeenCalledTimes(1);
   });
 
+  it('MapVenueCard without an event makes the club button primary', async () => {
+    const onOpenClub = jest.fn();
+    await render(
+      <MapVenueCard
+        name="Panorama Bar"
+        address="вул. Хрещатик, 1/2"
+        todayEvent="Сьогодні немає подій"
+        clubLabel="Клуб"
+        taxiLabel="Поїхати"
+        onOpenClub={onOpenClub}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: 'Подія' })).toBeNull();
+    const club = screen.getByRole('button', { name: 'Клуб' });
+    expect(flat(club as never).backgroundColor).toBe(brand.yellow);
+    await fireEvent.press(club);
+    expect(onOpenClub).toHaveBeenCalledTimes(1);
+  });
+
   it('GlassSearchField is a 52px labelled input with the placeholder', async () => {
     const onChangeText = jest.fn();
     await render(
