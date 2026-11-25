@@ -57,6 +57,23 @@ export async function signOut(): Promise<void> {
   if (error) throw toAuthError(error);
 }
 
+/**
+ * Starts upgrading the current anonymous guest to a real account: Supabase emails a 6-digit
+ * code. The user id, claims and QR tickets stay the same.
+ */
+export async function requestEmailCode(email: string): Promise<void> {
+  const { error } = await supabase.auth.updateUser({ email });
+  if (error) throw toAuthError(error);
+}
+
+/** Confirms the emailed code; the guest becomes a permanent account with the same user id. */
+export async function confirmEmailCode(email: string, code: string): Promise<void> {
+  const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email_change' });
+  if (error) throw toAuthError(error);
+  const refreshed = await supabase.auth.refreshSession();
+  if (refreshed.error) throw toAuthError(refreshed.error);
+}
+
 /** Subscribes to auth changes. Returns an unsubscribe function. */
 export function onAuthChange(
   callback: (event: AuthChangeEvent, session: Session | null) => void,
