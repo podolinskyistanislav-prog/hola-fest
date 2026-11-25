@@ -14,11 +14,15 @@ export interface MapVenueCardProps {
   todayEvent: string;
   /** Thumb color: the venue accent. */
   accent?: 'yellow' | 'pink';
-  /** "Подія". */
-  eventLabel: string;
+  /** "Подія". Shown only together with `onOpenEvent`. */
+  eventLabel?: string;
+  /** "Клуб". Becomes the yellow primary button when there is no event button. */
+  clubLabel?: string;
   /** "Поїхати". */
   taxiLabel: string;
+  /** Pass only when the venue has an event today. */
   onOpenEvent?: () => void;
+  onOpenClub?: () => void;
   onTaxi?: () => void;
 }
 
@@ -33,10 +37,17 @@ export function MapVenueCard({
   todayEvent,
   accent = 'pink',
   eventLabel,
+  clubLabel,
   taxiLabel,
   onOpenEvent,
+  onOpenClub,
   onTaxi,
 }: MapVenueCardProps) {
+  const primary = onOpenEvent
+    ? { label: eventLabel, onPress: onOpenEvent }
+    : onOpenClub
+      ? { label: clubLabel, onPress: onOpenClub }
+      : null;
   const thumb = accent === 'pink' ? brand.pink : brand.yellow;
   const star = accent === 'pink' ? brand.yellow : brand.pink;
   return (
@@ -58,16 +69,18 @@ export function MapVenueCard({
         </View>
       </View>
       <View style={styles.actions}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={eventLabel}
-          onPress={onOpenEvent}
-          style={({ pressed }) => [styles.action, pressed && styles.pressed]}
-        >
-          <AppText variant="bodyStrong" tone="onAccent">
-            {eventLabel}
-          </AppText>
-        </Pressable>
+        {primary ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={primary.label}
+            onPress={primary.onPress}
+            style={({ pressed }) => [styles.action, pressed && styles.pressed]}
+          >
+            <AppText variant="bodyStrong" tone="onAccent">
+              {primary.label}
+            </AppText>
+          </Pressable>
+        ) : null}
         <GlassPillButton label={taxiLabel} height={BUTTON_HEIGHT} onPress={onTaxi} flex />
       </View>
     </GlassSurface>
