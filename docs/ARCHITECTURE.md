@@ -58,7 +58,8 @@ Forbidden:
 All tables live in `public`, all have RLS **enabled** (the project auto-enables it), and no table is exposed to the API until a migration grants it explicitly.
 
 ```
-profiles      id (= auth.users.id) PK, display_name, is_superadmin bool default false, created_at
+profiles      id (= auth.users.id) PK, display_name (2–30), handle unique ([a-z0-9_.] 3–20), avatar_path,
+              is_dj bool, is_banned bool, is_superadmin bool default false, created_at
 venues        id uuid PK, slug unique, name, address, lat, lng, description, cover_path,
               instagram_url, has_shelter bool, is_published bool, created_at
 venue_members venue_id → venues, user_id → profiles, role ('admin' | 'host'), PK(venue_id, user_id)
@@ -69,7 +70,17 @@ offers        id uuid PK, event_id → events, title, terms, max_claims int null
               created_at timestamptz default now()
 claims        id uuid PK, offer_id → offers, user_id → profiles, token_hash text unique,
               status ('issued' | 'redeemed' | 'void'), issued_at, redeemed_at, redeemed_by → profiles
+posts         id uuid PK, author_id → profiles, as_venue_id → venues null, body ≤500, image_paths text[] ≤4,
+              created_at, edited_at, hidden_at, hidden_reason ('reports' | 'moderator')
+post_likes    PK(post_id → posts, user_id → profiles)
+post_comments id uuid PK, post_id → posts, author_id → profiles, parent_id → post_comments (one level), body ≤500,
+              created_at, hidden_at, hidden_reason
+post_reports  id PK, post_id | comment_id (exactly one), reporter_id → profiles, reason
+              ('event_promo' | 'abuse' | 'adult' | 'spam' | 'other'), unique per reporter + target
+user_blocks   PK(blocker_id, blocked_id) → profiles
 ```
+
+View `feed_posts` (owner view, applies its own filters): visible posts with author name (venue name when posted as a club), handle, avatar, `label` (`club` > `dj` > `hola` (superadmin) > null), `like_count`, `comment_count`, `liked_by_me`; excludes hidden posts, banned authors and authors the caller blocked. Storage bucket `feed-images`: public read, 5 MB, jpeg/png/webp, write only under `<uid>/…` by confirmed non-banned users.
 
 Indexes: `events(venue_id, starts_at)`, `events using gin(tags)`, `events(starts_at) where status='published'`, `claims(offer_id)`, `claims(user_id)`.
 
@@ -82,9 +93,14 @@ Indexes: `events(venue_id, starts_at)`, `events using gin(tags)`, `events(starts
 | offers        | everyone, active offers of published events; venue `admin` also sees inactive ones                | venue `admin` of that venue, superadmin   |
 | claims        | the owning user; `host`/`admin` of the claim's venue                                              | **nobody directly** — only Edge Functions |
 | venue_members | the member themself; venue admins of that venue                                                   | superadmin                                |
-| profiles      | the user themself                                                                                 | the user themself (not `is_superadmin`)   |
+| profiles      | the user themself; superadmin reads all                                                           | the user themself (not `is_superadmin`, `is_dj`, `is_banned`); superadmin sets `is_dj` / `is_banned` |
+| posts         | everyone incl. anonymous: not hidden, author not banned, author not blocked by the reader; superadmin reads all | **no direct insert/update** — only the Edge Function (M16.2); author deletes own; superadmin hides/restores |
+| post_comments | same as posts                                                                                     | same as posts                             |
+| post_likes    | the liker                                                                                         | confirmed, non-banned users, as themself  |
+| post_reports  | the reporter; superadmin                                                                          | confirmed, non-banned users, as themself; 3 distinct reports auto-hide the target (trigger) |
+| user_blocks   | the blocker                                                                                       | confirmed, non-banned users, as themself  |
 
-Helper SQL functions (`security definer`, `stable`, fixed `search_path`): `is_superadmin()`, `is_venue_member(venue_id, role)`.
+Helper SQL functions (`security definer`, `stable`, fixed `search_path`): `is_superadmin()`, `is_venue_member(venue_id, role)`, `can_interact()` (confirmed = `is_anonymous` not true, and not banned), `feed_author_visible(author_id)`.
 
 Venue members read their own unpublished venue (migration `venues_select_own_member`) so the admin app can list "my venues"; writes stay superadmin-only. Implemented: `profiles`, `venues`, `venue_members` (migration `rls_profiles_venues_members`) and `events`, `offers`, `claims` (migration `rls_events_offers_claims`). Notes: `is_superadmin` is protected by column-level grants (`authenticated` can only insert `id, display_name` and update `display_name`); superadmin also reads unpublished venues and all `venue_members`; `anon` reads only published venues. Venue admins also read offers of their own draft events and their inactive offers (`is_active = false` is hidden from everyone else by `offers_select`, migration `offers_select_hide_inactive`); superadmin reads everything. `claims` has `select` only (column grant, `token_hash` excluded) for `authenticated` and no grants for `anon`; all claim writes use the service role. Extra helpers (`security definer`, `stable`, fixed `search_path`): `event_venue_id`, `offer_venue_id`, `is_event_public`.
 
