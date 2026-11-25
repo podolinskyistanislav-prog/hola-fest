@@ -19,6 +19,7 @@ describe('brand accents', () => {
   it.each([
     ['yellow', brand.yellow],
     ['pink', brand.pink],
+    ['white', brand.white],
   ])('black text on %s meets WCAG AA', (_name, accent) => {
     expect(contrastRatio(brand.onAccent, accent)).toBeGreaterThanOrEqual(AA_TEXT);
   });
