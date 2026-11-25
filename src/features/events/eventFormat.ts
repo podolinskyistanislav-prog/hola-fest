@@ -128,12 +128,14 @@ export function formatEventsCount(count: number): string {
   return t(`home.eventsCount.${form}`).replace('{count}', String(count));
 }
 
-/** "Сьогодні · 2 події" or "Середа · 2 події". */
+/** "Сьогодні · 2 події" or "Ср, 25 листопада · 2 події". */
 export function formatDayHeading(dayId: string, today: Date, count: number): string {
-  const day =
-    dayId === kyivDayKey(today)
-      ? t('home.today')
-      : t(`events.weekdayLong.${kyivWeekday(dayId)}` as TranslationKey);
+  let day = t('home.today');
+  if (dayId !== kyivDayKey(today)) {
+    const { day: date, month } = dayKeyParts(dayId);
+    const weekday = t(`events.weekday.${kyivWeekday(dayId)}` as TranslationKey);
+    day = `${weekday}, ${date} ${t(`events.month.${month}` as TranslationKey)}`;
+  }
   return `${day} · ${formatEventsCount(count)}`;
 }
 

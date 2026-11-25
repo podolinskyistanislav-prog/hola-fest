@@ -169,8 +169,8 @@ describe('formatDayHeading', () => {
   it('says "Сьогодні" for today', () => {
     expect(formatDayHeading('2026-11-04', today, 2)).toBe('Сьогодні · 2 події');
   });
-  it('uses the weekday for another day', () => {
-    expect(formatDayHeading('2026-11-06', today, 1)).toBe('Пʼятниця · 1 подія');
+  it('uses weekday and date for another day', () => {
+    expect(formatDayHeading('2026-11-06', today, 1)).toBe('Пт, 6 листопада · 1 подія');
   });
 });
 

@@ -94,7 +94,10 @@ export function EventsScreenContent({
     [all, selectedId, filter],
   );
   const venues = useVenues();
-  const clubs = useMemo(() => clubRows(venues.data ?? [], all, today), [venues.data, all, today]);
+  const clubs = useMemo(
+    () => clubRows(venues.data ?? [], all, selectedId),
+    [venues.data, all, selectedId],
+  );
 
   const isToday = selectedId === kyivDayKey(today);
   const hasFilter = filter !== 'all';
