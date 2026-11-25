@@ -111,7 +111,7 @@ Indexes: `events(venue_id, starts_at)`, `events using gin(tags)`, `events(starts
 | user_blocks   | the blocker                                                                                       | confirmed, non-banned users, as themself  |
 | account_applications | the applicant; superadmin reads all | confirmed, non-banned users insert their own (`pending`; columns `id, kind, payload`); decisions only via `approve_application` / `reject_application` (superadmin) |
 | venue_invites | venue `owner` of that venue; superadmin (never `token_hash`) | `create_venue_invite` (owner / superadmin), `accept_venue_invite` (invited confirmed user); owner cancels open invites |
-| djs           | everyone, where `is_published`; the DJ reads their own; superadmin | the DJ edits own profile (not `user_id`, `slug`, `is_published` — trigger); superadmin inserts / deletes |
+| djs           | everyone, where `is_published`; the DJ reads their own; superadmin | the DJ edits own profile (not `user_id`, `slug`, `is_published` — trigger); publishes / unpublishes only via RPC `set_my_dj_published(bool)` (authenticated, confirmed, own row); superadmin inserts / deletes |
 | event_djs     | everyone for public events + published DJs; venue members of that venue | venue `admin` / `owner` of the event's venue (published DJs only), superadmin |
 
 Venue `owner` (M17.1) has every `admin` right (`is_venue_member(v, 'admin')` also matches owners), edits their own venue's details (not `slug` / `is_published` — trigger `guard_venue_team_fields`), removes `admin` / `host` members and invites staff. Storage buckets `venue-media` (folder = venue id; owner / admin write) and `dj-media` (folder = DJ profile id; that DJ writes): public read, 5 MB, jpeg/png/webp.
