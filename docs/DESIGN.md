@@ -91,6 +91,16 @@ Built 1:1 from `Event.html`, `Offer.html` and `Map.html`. All copy arrives trans
 
 `VenueRow` (56 thumb: star in the venue accent or a cover, name, address, event line, chevron), `PhotoGallery` (strip of labelled slots; an empty slot is a camera placeholder "Фото скоро", never hidden), `CollapsibleSection` (title, optional count, chevron; announces `expanded`), `LoyaltyStampCard` (placeholder with a "Скоро" badge, `visits` clamped to `goal`). `TaxiBar` shows Bolt first and filled yellow with black text; Uklon and Uber stay glass. Copy arrives translated; defaults are the Ukrainian strings.
 
+## Builder and cabinet kit
+
+Pure components for the offer builder and the cabinet; labels arrive already translated and both themes are tested (`builderKit.test.tsx`).
+
+- `StepIndicator`: wizard progress bar (`progressbar` role, yellow for done and current steps). `ChoiceCard`: big radio card with icon, title and subtitle; the selected card has a yellow border and icon badge.
+- `StatusPill`: Чернетка / Заплановано / Активний / Пауза / Завершено. Colored fills (pink, green, yellow) carry black text; draft and ended are neutral.
+- `Stepper`: number with − and + (44pt buttons, clamped to min/max). `TimeWindowPicker`: two `DateTimeField`s in Kyiv time; the form validates the range and passes `error`.
+- `ImageUploader`: add tile, preview with replace/remove, upload progress. It does not pick or resize: the screen does that and passes `uri` and `progress`, so no picker dependency lives in `ui/`.
+- `StatTile`: big number plus label. `OfferPreview`: the guest-facing badge, `OfferCard` and QR-screen header from an `OfferDraft` with pre-formatted texts.
+
 ## Event covers (until real photos exist)
 
 A yellow or pink block with the 4-point Hola star in the other accent color, as in the mockups.

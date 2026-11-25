@@ -104,7 +104,7 @@ begin
       ('read offers',                  $$select 1 from public.offers where id::text like '00000000-0000-0000-0000-0000000000%'$$,         '2 2 2 4 3 6'),
       ('read claims',                  $$select 1 from public.claims where id::text like '00000000-0000-0000-0000-0000000000%'$$,         'D 1 2 1 1 2'),
       ('read venue_members',           $$select 1 from public.venue_members where venue_id::text like '00000000-0000-0000-0000-0000000000%'$$, 'D 0 1 2 1 3'),
-      ('read profiles',                $$select 1 from public.profiles where id::text like '00000000-0000-0000-0000-0000000000%'$$,       'D 1 1 1 1 1'),
+      ('read profiles',                $$select 1 from public.profiles where id::text like '00000000-0000-0000-0000-0000000000%'$$,       'D 1 1 1 1 6'),
       ('read claims.token_hash',       'select token_hash from public.claims', 'D D D D D D'),
       ('is_superadmin()',              'select 1 where public.is_superadmin()', '0 0 0 0 0 1'),
       -- venues: only superadmin writes
@@ -137,9 +137,9 @@ begin
       ('venue_members delete',         $$delete from public.venue_members where venue_id = '@b1' and user_id = '@a3'$$, 'D 0 0 0 0 1'),
       ('venue_members move A -> B',    $$update public.venue_members set venue_id = '@b2' where user_id = '@a3'$$, 'D 0 0 0 0 1'),
       -- profiles: only your own row, never is_superadmin
-      ('profiles update own name',     $$update public.profiles set display_name = 'x' where id = '@me'$$, 'D 1 1 1 1 1'),
+      ('profiles update own name',     $$update public.profiles set display_name = 'xx' where id = '@me'$$, 'D 1 1 1 1 1'),
       ('profiles update own is_superadmin', $$update public.profiles set is_superadmin = true where id = '@me'$$, 'D D D D D D'),
-      ('profiles update other name',   $$update public.profiles set display_name = 'x' where id = '@a1'$$, 'D 0 0 0 0 1'),
+      ('profiles update other name',   $$update public.profiles set display_name = 'xx' where id = '@a1'$$, 'D 0 0 0 0 1'),
       ('profiles insert is_superadmin', $$insert into public.profiles (id, display_name, is_superadmin) values ('@me', 'x', true)$$, 'D D D D D D'),
       ('profiles insert for someone else', $$insert into public.profiles (id, display_name) values ('@a7', 'impostor')$$, 'D D D D D D'),
       ('profiles delete own',          $$delete from public.profiles where id = '@me'$$, 'D D D D D D')

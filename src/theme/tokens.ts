@@ -8,6 +8,8 @@
 export const brand = {
   yellow: '#FDD303',
   pink: '#F1277D',
+  /** Fill of the Hola team badge. */
+  white: '#FFFFFF',
   onAccent: '#000000',
 } as const;
 
@@ -163,6 +165,9 @@ export const radius = {
 
 /** Color of drop shadows under floating UI, same in both themes. */
 export const shadowInk = '#000000';
+
+/** Dimmed backdrop behind modal sheets, same in both themes. */
+export const scrim = 'rgba(0,0,0,0.5)';
 
 /** Fixed sizes of the home screen and navigation components (from the Main mockup). */
 export const layout = {

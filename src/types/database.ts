@@ -23,6 +23,58 @@ export type Database = {
   };
   public: {
     Tables: {
+      account_applications: {
+        Row: {
+          created_at: string;
+          decided_at: string | null;
+          decided_by: string | null;
+          id: string;
+          kind: string;
+          payload: NonNullable<Json>;
+          reject_reason: string | null;
+          status: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          id?: string;
+          kind: string;
+          payload: NonNullable<Json>;
+          reject_reason?: string | null;
+          status?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          id?: string;
+          kind?: string;
+          payload?: NonNullable<Json>;
+          reject_reason?: string | null;
+          status?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'account_applications_decided_by_fkey';
+            columns: ['decided_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'account_applications_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       claims: {
         Row: {
           id: string;
@@ -82,6 +134,94 @@ export type Database = {
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      djs: {
+        Row: {
+          bio: string | null;
+          cover_path: string | null;
+          created_at: string;
+          genres: string[];
+          id: string;
+          instagram_url: string | null;
+          is_published: boolean;
+          photo_path: string | null;
+          slug: string;
+          soundcloud_url: string | null;
+          stage_name: string;
+          user_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          bio?: string | null;
+          cover_path?: string | null;
+          created_at?: string;
+          genres?: string[];
+          id?: string;
+          instagram_url?: string | null;
+          is_published?: boolean;
+          photo_path?: string | null;
+          slug: string;
+          soundcloud_url?: string | null;
+          stage_name: string;
+          user_id?: string | null;
+        };
+        Update: {
+          bio?: string | null;
+          cover_path?: string | null;
+          created_at?: string;
+          genres?: string[];
+          id?: string;
+          instagram_url?: string | null;
+          is_published?: boolean;
+          photo_path?: string | null;
+          slug?: string;
+          soundcloud_url?: string | null;
+          stage_name?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'djs_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      event_djs: {
+        Row: {
+          dj_id: string;
+          event_id: string;
+          position: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          dj_id: string;
+          event_id: string;
+          position?: number;
+        };
+        Update: {
+          dj_id?: string;
+          event_id?: string;
+          position?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'event_djs_dj_id_fkey';
+            columns: ['dj_id'];
+            isOneToOne: false;
+            referencedRelation: 'djs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'event_djs_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'events';
             referencedColumns: ['id'];
           },
         ];
@@ -212,27 +352,348 @@ export type Database = {
           },
         ];
       };
-      profiles: {
+      post_comments: {
+        Row: {
+          author_id: string;
+          body: string;
+          created_at: string;
+          hidden_at: string | null;
+          hidden_reason: string | null;
+          id: string;
+          parent_id: string | null;
+          post_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_id: string;
+          body: string;
+          created_at?: string;
+          hidden_at?: string | null;
+          hidden_reason?: string | null;
+          id?: string;
+          parent_id?: string | null;
+          post_id: string;
+        };
+        Update: {
+          author_id?: string;
+          body?: string;
+          created_at?: string;
+          hidden_at?: string | null;
+          hidden_reason?: string | null;
+          id?: string;
+          parent_id?: string | null;
+          post_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'post_comments_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_comments_parent_id_fkey';
+            columns: ['parent_id'];
+            isOneToOne: false;
+            referencedRelation: 'post_comments';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_comments_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_posts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_comments_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'posts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      post_likes: {
         Row: {
           created_at: string;
-          display_name: string | null;
-          id: string;
-          is_superadmin: boolean;
+          post_id: string;
+          user_id: string;
         };
         ComputedFields: never;
         Insert: {
           created_at?: string;
-          display_name?: string | null;
-          id: string;
-          is_superadmin?: boolean;
+          post_id: string;
+          user_id: string;
         };
         Update: {
           created_at?: string;
-          display_name?: string | null;
+          post_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'post_likes_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_posts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_likes_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'posts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_likes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      post_reports: {
+        Row: {
+          comment_id: string | null;
+          created_at: string;
+          id: string;
+          post_id: string | null;
+          reason: string;
+          reporter_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          comment_id?: string | null;
+          created_at?: string;
           id?: string;
+          post_id?: string | null;
+          reason: string;
+          reporter_id: string;
+        };
+        Update: {
+          comment_id?: string | null;
+          created_at?: string;
+          id?: string;
+          post_id?: string | null;
+          reason?: string;
+          reporter_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'post_reports_comment_id_fkey';
+            columns: ['comment_id'];
+            isOneToOne: false;
+            referencedRelation: 'post_comments';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_reports_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_posts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_reports_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'posts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_reports_reporter_id_fkey';
+            columns: ['reporter_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      posts: {
+        Row: {
+          as_venue_id: string | null;
+          author_id: string;
+          body: string;
+          created_at: string;
+          edited_at: string | null;
+          hidden_at: string | null;
+          hidden_reason: string | null;
+          id: string;
+          image_paths: string[];
+        };
+        ComputedFields: never;
+        Insert: {
+          as_venue_id?: string | null;
+          author_id: string;
+          body?: string;
+          created_at?: string;
+          edited_at?: string | null;
+          hidden_at?: string | null;
+          hidden_reason?: string | null;
+          id?: string;
+          image_paths?: string[];
+        };
+        Update: {
+          as_venue_id?: string | null;
+          author_id?: string;
+          body?: string;
+          created_at?: string;
+          edited_at?: string | null;
+          hidden_at?: string | null;
+          hidden_reason?: string | null;
+          id?: string;
+          image_paths?: string[];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'posts_as_venue_id_fkey';
+            columns: ['as_venue_id'];
+            isOneToOne: false;
+            referencedRelation: 'venues';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'posts_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      profiles: {
+        Row: {
+          avatar_path: string | null;
+          created_at: string;
+          display_name: string | null;
+          handle: string | null;
+          id: string;
+          is_banned: boolean;
+          is_dj: boolean;
+          is_superadmin: boolean;
+        };
+        ComputedFields: never;
+        Insert: {
+          avatar_path?: string | null;
+          created_at?: string;
+          display_name?: string | null;
+          handle?: string | null;
+          id: string;
+          is_banned?: boolean;
+          is_dj?: boolean;
+          is_superadmin?: boolean;
+        };
+        Update: {
+          avatar_path?: string | null;
+          created_at?: string;
+          display_name?: string | null;
+          handle?: string | null;
+          id?: string;
+          is_banned?: boolean;
+          is_dj?: boolean;
           is_superadmin?: boolean;
         };
         Relationships: [];
+      };
+      user_blocks: {
+        Row: {
+          blocked_id: string;
+          blocker_id: string;
+          created_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          blocked_id: string;
+          blocker_id: string;
+          created_at?: string;
+        };
+        Update: {
+          blocked_id?: string;
+          blocker_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_blocks_blocked_id_fkey';
+            columns: ['blocked_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'user_blocks_blocker_id_fkey';
+            columns: ['blocker_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      venue_invites: {
+        Row: {
+          accepted_at: string | null;
+          accepted_by: string | null;
+          created_at: string;
+          email: string;
+          expires_at: string;
+          id: string;
+          invited_by: string | null;
+          role: string;
+          token_hash: string;
+          venue_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          email: string;
+          expires_at?: string;
+          id?: string;
+          invited_by?: string | null;
+          role: string;
+          token_hash: string;
+          venue_id: string;
+        };
+        Update: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          email?: string;
+          expires_at?: string;
+          id?: string;
+          invited_by?: string | null;
+          role?: string;
+          token_hash?: string;
+          venue_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'venue_invites_accepted_by_fkey';
+            columns: ['accepted_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'venue_invites_invited_by_fkey';
+            columns: ['invited_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'venue_invites_venue_id_fkey';
+            columns: ['venue_id'];
+            isOneToOne: false;
+            referencedRelation: 'venues';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       venue_members: {
         Row: {
@@ -316,6 +777,41 @@ export type Database = {
       };
     };
     Views: {
+      feed_posts: {
+        Row: {
+          as_venue_id: string | null;
+          author_avatar_path: string | null;
+          author_handle: string | null;
+          author_id: string;
+          author_name: string | null;
+          body: string;
+          comment_count: number | null;
+          created_at: string;
+          edited_at: string | null;
+          id: string;
+          image_paths: string[];
+          label: string | null;
+          like_count: number | null;
+          liked_by_me: boolean | null;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: 'posts_as_venue_id_fkey';
+            columns: ['as_venue_id'];
+            isOneToOne: false;
+            referencedRelation: 'venues';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'posts_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       offer_stats: {
         Row: {
           claims: number | null;
@@ -336,8 +832,16 @@ export type Database = {
       };
     };
     Functions: {
+      accept_venue_invite: { Args: { p_token: string }; Returns: string };
+      application_payload_valid: { Args: { p_kind: string; p_payload: Json }; Returns: boolean };
+      approve_application: { Args: { p_id: string }; Returns: string };
+      can_interact: { Args: Record<PropertyKey, never>; Returns: boolean };
       claim_offer: {
         Args: { p_offer_id: string; p_token_hash: string; p_user_id: string };
+        Returns: string;
+      };
+      create_venue_invite: {
+        Args: { p_email: string; p_role: string; p_venue_id: string };
         Returns: string;
       };
       duplicate_offer: {
@@ -393,8 +897,11 @@ export type Database = {
         };
       };
       event_venue_id: { Args: { p_event_id: string }; Returns: string };
+      feed_author_visible: { Args: { p_author_id: string }; Returns: boolean };
+      handle_available: { Args: { p_handle: string }; Returns: boolean };
       has_claim_on_offer: { Args: { p_offer_id: string }; Returns: boolean };
       hook_before_user_created: { Args: { event: Json }; Returns: Json };
+      is_dj_owner: { Args: { p_dj_id: string }; Returns: boolean };
       is_event_public: { Args: { p_event_id: string }; Returns: boolean };
       is_superadmin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_venue_member: { Args: { p_role?: string; p_venue_id: string }; Returns: boolean };
@@ -444,6 +951,7 @@ export type Database = {
         };
       };
       redeem_claim: { Args: { p_host_id: string; p_token_hash: string }; Returns: string };
+      reject_application: { Args: { p_id: string; p_reason: string }; Returns: undefined };
       resume_offer: {
         Args: { p_offer_id: string };
         Returns: {
@@ -496,6 +1004,8 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      storage_folder_uuid: { Args: { p_name: string }; Returns: string };
+      unique_slug: { Args: { p_base: string; p_table: string }; Returns: string };
     };
     Enums: {
       [_ in never]: never;
