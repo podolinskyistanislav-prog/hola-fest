@@ -101,16 +101,6 @@ export function TicketScreenContent({ offerId, onBack }: TicketScreenContentProp
   return (
     <View style={styles.screen}>
       <AccentBlobs />
-      <View style={[styles.top, { top: insets.top + TOP_OFFSET }]}>
-        <GlassIconButton icon="close" label={t('ticket.close')} onPress={onBack} />
-        <View style={styles.offline}>
-          <Feather name="wifi-off" size={14} color={colors.textMuted} />
-          <AppText tone="muted" style={styles.offlineText}>
-            {t('ticket.offline')}
-          </AppText>
-        </View>
-      </View>
-
       <View style={[styles.content, { paddingTop: insets.top + SCREEN_TOP - TOP_OFFSET }]}>
         <View style={styles.heading}>
           <AppText accessibilityRole="header" style={styles.title}>
@@ -128,6 +118,16 @@ export function TicketScreenContent({ offerId, onBack }: TicketScreenContentProp
           countdown={pillText(claim, now)}
           qrLabel={t('ticket.qrLabel')}
         />
+      </View>
+
+      <View style={[styles.top, { top: insets.top + TOP_OFFSET }]}>
+        <GlassIconButton icon="close" label={t('ticket.close')} onPress={onBack} />
+        <View style={styles.offline}>
+          <Feather name="wifi-off" size={14} color={colors.textMuted} />
+          <AppText tone="muted" style={styles.offlineText}>
+            {t('ticket.offline')}
+          </AppText>
+        </View>
       </View>
 
       <View style={[styles.bottom, { bottom: insets.bottom + space.xl }]}>
