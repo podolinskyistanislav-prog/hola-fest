@@ -178,6 +178,37 @@ describe('VenuesMapScreenContent', () => {
     expect(screen.getByText('Сьогодні: Rooftop Sunset · 19:00')).toBeTruthy();
   });
 
+  it('replaces the card data on every selection: no stale event, no other venue’s offer', async () => {
+    const otherEvent: EventSummary = {
+      ...tonight,
+      id: 'e2',
+      title: 'Luna Night',
+      venue: { ...venue, instagramUrl: null },
+      offers: [{ id: 'o2', title: '−15% на бар', terms: null, validUntil: null }],
+    };
+    jest.mocked(getPublishedVenues).mockResolvedValue([venue, panorama]);
+    jest.mocked(getEventsForRange).mockResolvedValue([otherEvent]);
+    await renderScreen();
+
+    // Bavovna has the event and is selected first.
+    expect(await screen.findByText('Сьогодні: Luna Night · 19:00')).toBeTruthy();
+    await fireEvent.press(screen.getByRole('button', { name: t('map.openEvent') }));
+    expect(onOpenEvent).toHaveBeenCalledWith('e2');
+
+    // Panorama has no event today: no stale event text, no "Подія" button, no foreign offer.
+    await fireEvent.press(screen.getByLabelText('Panorama Bar'));
+    expect(screen.getByText(t('map.noEventsToday'))).toBeTruthy();
+    expect(screen.queryByText('Сьогодні: Luna Night · 19:00')).toBeNull();
+    expect(screen.queryByRole('button', { name: t('map.openEvent') })).toBeNull();
+    expect(screen.queryByText('−15% на бар')).toBeNull();
+    await fireEvent.press(screen.getByRole('button', { name: t('map.openVenue') }));
+    expect(onOpenVenue).toHaveBeenCalledWith('v2');
+
+    // Back to Bavovna: its own event returns.
+    await fireEvent.press(screen.getByLabelText('Bavovna'));
+    expect(screen.getByText('Сьогодні: Luna Night · 19:00')).toBeTruthy();
+  });
+
   it('shows a placeholder in the offers section when there are none', async () => {
     jest.mocked(getPublishedVenues).mockResolvedValue([venue]);
     await renderScreen();
