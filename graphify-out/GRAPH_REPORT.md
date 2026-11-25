@@ -1,7 +1,7 @@
 # Graph Report - hola-fest  (2026-11-25)
 
 ## Corpus Check
-- 323 files · ~102,351 words
+- 325 files · ~105,836 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 12 file(s) not represented in the graph (top: (none) 10, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `51133d92`
+- Built from commit: `764f3315`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -28,7 +28,7 @@
 - with
 - AGENTS.md
 - steps
-- EventForm.tsx
+- Button.tsx
 - .prettierrc.json
 - db-backend.md
 - mobile.md
@@ -38,7 +38,7 @@
 - security-qa.md
 - jest
 - 0001-foundation.md
-- StaffLoginForm.tsx
+- Hola Fest — design rules
 - _layout.tsx
 - task.md
 - pull_request_template.md
@@ -53,7 +53,7 @@
 - @expo/ui@~58.0.27
 - expo-device@~58.0.5
 - expo-linking@~58.0.16
-- services/events.ts
+- react-dom@19.3.0
 - steps
 - react-native-reanimated@4.7.1
 - jobs
@@ -198,7 +198,7 @@ Nodes (5): Building with EAS, Commands, Expo has changed — do not trust your t
 Cohesion: 0.12
 Nodes (16): jobs, refresh, name, on, push, permissions, contents, branches (+8 more)
 
-### Community 12 - "EventForm.tsx"
+### Community 12 - "Button.tsx"
 Cohesion: 0.15
 Nodes (19): DateTimeField(), DateTimeFieldProps, formatDateTime(), pad(), parseDateTime(), Harness(), StringListField(), StringListFieldProps (+11 more)
 
@@ -226,7 +226,7 @@ Nodes (5): 0004 — Screenshot tool: Playwright on the Expo web build, Consequen
 Cohesion: 0.50
 Nodes (4): jest, moduleNameMapper, preset, testPathIgnorePatterns
 
-### Community 22 - "StaffLoginForm.tsx"
+### Community 22 - "Hola Fest — design rules"
 Cohesion: 0.23
 Nodes (8): StaffLogin(), styles, StaffLoginForm(), StaffLoginFormProps, styles, Deps, UseStaffLogin, useStaffLogin()
 
@@ -282,7 +282,7 @@ Nodes (30): concurrency, cancel-in-progress, group, env, name, runs-on, steps, S
 Cohesion: 0.20
 Nodes (5): ClaimsError, from, getSession, invoke, row
 
-### Community 37 - "services/events.ts"
+### Community 37 - "react-dom@19.3.0"
 Cohesion: 0.08
 Nodes (33): EventScreen(), EventDetailsProps, EventScreenContent(), event, onBack, onOpenDj, onOpenVenue, renderScreen() (+25 more)
 
@@ -534,17 +534,17 @@ Nodes (3): Enforcement, Feed rules (Стрічка), For everyone (guests, clubs
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `t()` connect `t` to `supabase.ts`, `EventForm.tsx`, `StaffLoginForm.tsx`, `services/events.ts`, `VenuesMapScreenContent.tsx`, `services/venues.ts`, `EventsScreenContent.tsx`, `react-native`, `OfferForm.tsx`, `useClaimOffer.ts`, `Hola Fest — design rules`, `VenueEventsList.tsx`, `DjScreenContent.tsx`, `components/TaxiBar.tsx`, `services/claims.ts`, `venueWeek.ts`, `TicketScreenContent.tsx`, `useVenues.ts`, `Button`, `staff/index.ts`, `MyTicketsContent.tsx`, `AppText`, `i18n/index.ts`, `theme/index.ts`, `app/_layout.tsx`, `useSession`?**
+- **Why does `t()` connect `t` to `supabase.ts`, `Button.tsx`, `Hola Fest — design rules`, `react-dom@19.3.0`, `VenuesMapScreenContent.tsx`, `services/venues.ts`, `EventsScreenContent.tsx`, `react-native`, `OfferForm.tsx`, `useClaimOffer.ts`, `Hola Fest — design rules`, `VenueEventsList.tsx`, `DjScreenContent.tsx`, `components/TaxiBar.tsx`, `services/claims.ts`, `venueWeek.ts`, `TicketScreenContent.tsx`, `useVenues.ts`, `Button`, `staff/index.ts`, `MyTicketsContent.tsx`, `AppText`, `i18n/index.ts`, `theme/index.ts`, `app/_layout.tsx`, `useSession`?**
   _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **What connects `expo/tsconfig.base` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `package.json` be split into smaller, more focused modules?**
   _Cohesion score 0.08695652173913043 - nodes in this community are weakly interconnected._
-- **Why does `react-native` connect `react-native` to `package.json`, `supabase.ts`, `EventForm.tsx`, `StaffLoginForm.tsx`, `fonts.ts`, `services/events.ts`, `VenuesMapScreenContent.tsx`, `dependencies`, `ui/index.ts`, `EventsScreenContent.tsx`, `OfferForm.tsx`, `VenueEventsList.tsx`, `DjScreenContent.tsx`, `components/TaxiBar.tsx`, `claimedTokens.ts`, `QRTicket.tsx`, `react`, `TicketScreenContent.tsx`, `useVenues.ts`, `Button`, `staff/index.ts`, `MyTicketsContent.tsx`, `AppText`, `theme/index.ts`, `app/_layout.tsx`, `expo-router`, `OfferRow.tsx`?**
+- **Why does `react-native` connect `react-native` to `package.json`, `supabase.ts`, `Button.tsx`, `Hola Fest — design rules`, `fonts.ts`, `react-dom@19.3.0`, `VenuesMapScreenContent.tsx`, `dependencies`, `ui/index.ts`, `EventsScreenContent.tsx`, `OfferForm.tsx`, `VenueEventsList.tsx`, `DjScreenContent.tsx`, `components/TaxiBar.tsx`, `claimedTokens.ts`, `QRTicket.tsx`, `react`, `TicketScreenContent.tsx`, `useVenues.ts`, `Button`, `staff/index.ts`, `MyTicketsContent.tsx`, `AppText`, `theme/index.ts`, `app/_layout.tsx`, `expo-router`, `OfferRow.tsx`?**
   _High betweenness centrality (0.042) - this node is a cross-community bridge._
 - **Should `devDependencies` be split into smaller, more focused modules?**
   _Cohesion score 0.1 - nodes in this community are weakly interconnected._
-- **Why does `@testing-library/react-native` connect `@testing-library/react-native` to `package.json`, `devDependencies`, `supabase.ts`, `EventForm.tsx`, `StaffLoginForm.tsx`, `services/events.ts`, `VenuesMapScreenContent.tsx`, `ui/index.ts`, `services/venues.ts`, `EventsScreenContent.tsx`, `OfferForm.tsx`, `@tanstack/react-query`, `useClaimOffer.ts`, `VenueEventsList.tsx`, `DjScreenContent.tsx`, `sessionStore.ts`, `components/TaxiBar.tsx`, `QRTicket.tsx`, `react`, `services/claims.ts`, `TicketScreenContent.tsx`, `useVenues.ts`, `Button`, `staff/index.ts`, `MyTicketsContent.tsx`, `AppText`, `i18n/index.ts`, `theme/index.ts`, `app/_layout.tsx`, `useMyClaims.ts`, `VenueMap.web.test.tsx`?**
+- **Why does `@testing-library/react-native` connect `@testing-library/react-native` to `package.json`, `devDependencies`, `supabase.ts`, `Button.tsx`, `Hola Fest — design rules`, `react-dom@19.3.0`, `VenuesMapScreenContent.tsx`, `ui/index.ts`, `services/venues.ts`, `EventsScreenContent.tsx`, `OfferForm.tsx`, `@tanstack/react-query`, `useClaimOffer.ts`, `VenueEventsList.tsx`, `DjScreenContent.tsx`, `sessionStore.ts`, `components/TaxiBar.tsx`, `QRTicket.tsx`, `react`, `services/claims.ts`, `TicketScreenContent.tsx`, `useVenues.ts`, `Button`, `staff/index.ts`, `MyTicketsContent.tsx`, `AppText`, `i18n/index.ts`, `theme/index.ts`, `app/_layout.tsx`, `useMyClaims.ts`, `VenueMap.web.test.tsx`?**
   _High betweenness centrality (0.036) - this node is a cross-community bridge._
 - **Should `expo` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
