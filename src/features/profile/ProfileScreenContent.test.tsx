@@ -20,6 +20,10 @@ jest.mock('@/features/auth', () => ({
   useStaffLogin: jest.fn(),
   SignInToPostSheet: () => null,
 }));
+jest.mock('@/services/applications', () => ({
+  listMyApplications: jest.fn(),
+  checkIsSuperadmin: jest.fn(),
+}));
 jest.mock('@/services/profile', () => ({
   getMyProfile: jest.fn(),
   listMyPosts: jest.fn(),

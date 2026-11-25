@@ -10,7 +10,12 @@ export default function ProfileScreen() {
   const router = useRouter();
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <ProfileScreenContent onOpenSetup={() => router.push('/profile-setup')} />
+      <ProfileScreenContent
+        onOpenSetup={() => router.push('/profile-setup')}
+        onOpenApply={() => router.push('/apply')}
+        onOpenCabinet={() => router.push('/staff')}
+        onOpenReview={() => router.push('/staff-applications')}
+      />
     </View>
   );
 }

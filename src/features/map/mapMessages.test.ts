@@ -35,6 +35,14 @@ describe('parseFromMap', () => {
     expect(parseFromMap('{"type":"mapPress"}')).toEqual({ type: 'mapPress' });
   });
 
+  it('reads the point of a tap on the empty map', () => {
+    expect(parseFromMap('{"type":"mapPress","lat":50.45,"lng":30.52}')).toEqual({
+      type: 'mapPress',
+      lat: 50.45,
+      lng: 30.52,
+    });
+  });
+
   it.each([
     ['not a string', 42],
     ['not JSON', 'hello'],

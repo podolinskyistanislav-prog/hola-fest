@@ -16,6 +16,8 @@ export type StaffHomeProps = {
   onRetry: () => void;
   onOpenScanner: () => void;
   onOpenVenueEvents: () => void;
+  /** Given only to a superadmin: opens the queue of account applications. */
+  onOpenApplications?: () => void;
   onSignOut: () => void;
 };
 
@@ -28,10 +30,12 @@ export function StaffHome({
   onRetry,
   onOpenScanner,
   onOpenVenueEvents,
+  onOpenApplications,
   onSignOut,
 }: StaffHomeProps) {
   const { colors } = useTheme();
-  const isEmpty = access !== null && !access.canScan && !access.canManageEvents;
+  const isEmpty =
+    access !== null && !access.canScan && !access.canManageEvents && !onOpenApplications;
 
   return (
     <SafeAreaView style={[styles.screen, { backgroundColor: colors.background }]}>
@@ -55,6 +59,9 @@ export function StaffHome({
       {access?.canScan ? <Button label={t('staff.scanner')} onPress={onOpenScanner} /> : null}
       {access?.canManageEvents ? (
         <Button variant="glass" label={t('staff.venueEvents')} onPress={onOpenVenueEvents} />
+      ) : null}
+      {onOpenApplications ? (
+        <Button variant="glass" label={t('staff.applications')} onPress={onOpenApplications} />
       ) : null}
 
       {signOutError ? (

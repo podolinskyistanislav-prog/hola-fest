@@ -18,6 +18,7 @@ export function VenueMap({
   venues,
   selectedId,
   onSelect,
+  onMapPress,
   interactive = true,
   compact = false,
 }: VenueMapProps) {
@@ -40,11 +41,16 @@ export function VenueMap({
       if (event.source !== frame.current?.contentWindow) return;
       const message = parseFromMap(event.data);
       if (message?.type === 'pinPress') onSelect(message.id);
-      else if (message?.type === 'mapPress') onSelect(null);
+      else if (message?.type === 'mapPress') {
+        onSelect(null);
+        if (message.lat !== undefined && message.lng !== undefined) {
+          onMapPress?.({ lat: message.lat, lng: message.lng });
+        }
+      }
     };
     window.addEventListener('message', listen);
     return () => window.removeEventListener('message', listen);
-  }, [onSelect]);
+  }, [onSelect, onMapPress]);
 
   return (
     <View style={styles.fill} pointerEvents={interactive ? 'auto' : 'none'}>
