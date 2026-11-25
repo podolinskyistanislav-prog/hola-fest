@@ -115,7 +115,7 @@ const SCRIPT = `
     else if (message.type === 'fitTo') fitTo(message.ids);
   }
 
-  if (cfg.interactive) map.on('click', function () { post({ type: 'mapPress' }); });
+  if (cfg.interactive) map.on('click', function (event) { post({ type: 'mapPress', lat: event.latlng.lat, lng: event.latlng.lng }); });
   window.holaMap = { receive: receive };
   window.addEventListener('message', function (event) {
     if (event.source !== window.parent) return;

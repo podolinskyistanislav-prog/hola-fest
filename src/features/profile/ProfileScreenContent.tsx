@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, Button, DjAvatar } from '@/components/ui';
+import { useIsSuperadmin, useMyApplications } from '@/features/applications/useApplications';
 import { SignInToPostSheet, useSession, useStaffLogin } from '@/features/auth';
 import { t } from '@/lib/i18n';
 import { feedImageUrl, type MyPost } from '@/services/profile';
@@ -12,6 +13,12 @@ import { useMyPosts, useMyProfile } from './useProfile';
 
 export interface ProfileScreenContentProps {
   onOpenSetup: () => void;
+  /** Opens "Я заклад / Я діджей" (apply and follow the decision). */
+  onOpenApply?: () => void;
+  /** Opens the venue cabinet (staff area) once a venue application is approved. */
+  onOpenCabinet?: () => void;
+  /** Opens the superadmin queue of applications. */
+  onOpenReview?: () => void;
 }
 
 function PostRow({ post }: { post: MyPost }) {
@@ -24,11 +31,21 @@ function PostRow({ post }: { post: MyPost }) {
 }
 
 /** Own profile reached from the Стрічка: avatar, name, @handle, my posts and sign out. */
-export function ProfileScreenContent({ onOpenSetup }: ProfileScreenContentProps) {
+export function ProfileScreenContent({
+  onOpenSetup,
+  onOpenApply,
+  onOpenCabinet,
+  onOpenReview,
+}: ProfileScreenContentProps) {
   const insets = useSafeAreaInsets();
   const { session, isAnonymous, isLoading } = useSession();
   const userId = session?.user.id;
   const profile = useMyProfile(isAnonymous ? undefined : userId);
+  const applications = useMyApplications(isAnonymous ? undefined : userId);
+  const superadmin = useIsSuperadmin(isAnonymous ? undefined : userId);
+  const hasVenueCabinet = (applications.data ?? []).some(
+    (application) => application.kind === 'venue' && application.status === 'approved',
+  );
   const posts = useMyPosts(isAnonymous ? undefined : userId);
   const { signOut, isLoading: isSigningOut, error: signOutError } = useStaffLogin();
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -104,6 +121,15 @@ export function ProfileScreenContent({ onOpenSetup }: ProfileScreenContentProps)
         ) : null}
       </View>
       {hasIdentity ? null : <Button label={t('profile.setup')} onPress={onOpenSetup} />}
+      {hasIdentity && hasVenueCabinet && onOpenCabinet ? (
+        <Button label={t('profile.openCabinet')} onPress={onOpenCabinet} />
+      ) : null}
+      {hasIdentity && onOpenApply ? (
+        <Button variant="glass" label={t('profile.business')} onPress={onOpenApply} />
+      ) : null}
+      {superadmin.data === true && onOpenReview ? (
+        <Button variant="glass" label={t('profile.moderate')} onPress={onOpenReview} />
+      ) : null}
       <AppText variant="heading" accessibilityRole="header">
         {t('profile.myPosts')}
       </AppText>

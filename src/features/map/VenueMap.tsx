@@ -20,6 +20,7 @@ export function VenueMap({
   venues,
   selectedId,
   onSelect,
+  onMapPress,
   interactive = true,
   compact = false,
 }: VenueMapProps) {
@@ -46,7 +47,12 @@ export function VenueMap({
   const handleMessage = (event: WebViewMessageEvent) => {
     const message = parseFromMap(event.nativeEvent.data);
     if (message?.type === 'pinPress') onSelect(message.id);
-    else if (message?.type === 'mapPress') onSelect(null);
+    else if (message?.type === 'mapPress') {
+      onSelect(null);
+      if (message.lat !== undefined && message.lng !== undefined) {
+        onMapPress?.({ lat: message.lat, lng: message.lng });
+      }
+    }
   };
 
   return (

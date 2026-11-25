@@ -15,7 +15,8 @@ export type ToMapMessage =
   | { type: 'fitTo'; ids?: readonly string[] };
 
 /** Map to app. */
-export type FromMapMessage = { type: 'pinPress'; id: string } | { type: 'mapPress' };
+export type FromMapMessage =
+  { type: 'pinPress'; id: string } | { type: 'mapPress'; lat?: number; lng?: number };
 
 /** Serializes a message for the map page (`postMessage` on web, injected script on native). */
 export function encodeToMap(message: ToMapMessage): string {
@@ -38,7 +39,13 @@ export function parseFromMap(raw: unknown): FromMapMessage | null {
   }
   if (typeof data !== 'object' || data === null) return null;
   const record = data as Record<string, unknown>;
-  if (record.type === 'mapPress') return { type: 'mapPress' };
+  if (record.type === 'mapPress') {
+    const { lat, lng } = record;
+    if (typeof lat === 'number' && typeof lng === 'number' && isFinite(lat) && isFinite(lng)) {
+      return { type: 'mapPress', lat, lng };
+    }
+    return { type: 'mapPress' };
+  }
   if (record.type === 'pinPress' && typeof record.id === 'string') {
     return { type: 'pinPress', id: record.id };
   }
