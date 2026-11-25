@@ -585,6 +585,7 @@ export type Database = {
       };
       event_venue_id: { Args: { p_event_id: string }; Returns: string };
       feed_author_visible: { Args: { p_author_id: string }; Returns: boolean };
+      handle_available: { Args: { p_handle: string }; Returns: boolean };
       hook_before_user_created: { Args: { event: Json }; Returns: Json };
       is_event_public: { Args: { p_event_id: string }; Returns: boolean };
       is_superadmin: { Args: Record<PropertyKey, never>; Returns: boolean };
