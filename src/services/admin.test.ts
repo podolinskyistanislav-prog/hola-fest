@@ -69,6 +69,19 @@ beforeEach(() => {
 });
 
 describe('getMyVenues', () => {
+  it('treats an owner as an admin', async () => {
+    mockQuery({
+      data: [
+        { role: 'owner', venue: { id: 'v3', slug: 'c', name: 'Charlie', is_published: true } },
+      ],
+      error: null,
+    });
+
+    expect(await getMyVenues()).toEqual([
+      { id: 'v3', slug: 'c', name: 'Charlie', isPublished: true, role: 'admin' },
+    ]);
+  });
+
   it('maps memberships to venues sorted by name', async () => {
     const q = mockQuery({
       data: [

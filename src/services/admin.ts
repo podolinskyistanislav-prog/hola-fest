@@ -92,7 +92,8 @@ function toAdminVenue(row: MembershipRow): AdminVenue {
     slug: row.venue.slug,
     name: row.venue.name,
     isPublished: row.venue.is_published,
-    role: row.role === 'admin' ? 'admin' : 'host',
+    // An owner has every admin right in the admin app.
+    role: row.role === 'admin' || row.role === 'owner' ? 'admin' : 'host',
   };
 }
 

@@ -23,6 +23,58 @@ export type Database = {
   };
   public: {
     Tables: {
+      account_applications: {
+        Row: {
+          created_at: string;
+          decided_at: string | null;
+          decided_by: string | null;
+          id: string;
+          kind: string;
+          payload: NonNullable<Json>;
+          reject_reason: string | null;
+          status: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          id?: string;
+          kind: string;
+          payload: NonNullable<Json>;
+          reject_reason?: string | null;
+          status?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          id?: string;
+          kind?: string;
+          payload?: NonNullable<Json>;
+          reject_reason?: string | null;
+          status?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'account_applications_decided_by_fkey';
+            columns: ['decided_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'account_applications_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       claims: {
         Row: {
           id: string;
@@ -75,6 +127,94 @@ export type Database = {
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      djs: {
+        Row: {
+          bio: string | null;
+          cover_path: string | null;
+          created_at: string;
+          genres: string[];
+          id: string;
+          instagram_url: string | null;
+          is_published: boolean;
+          photo_path: string | null;
+          slug: string;
+          soundcloud_url: string | null;
+          stage_name: string;
+          user_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          bio?: string | null;
+          cover_path?: string | null;
+          created_at?: string;
+          genres?: string[];
+          id?: string;
+          instagram_url?: string | null;
+          is_published?: boolean;
+          photo_path?: string | null;
+          slug: string;
+          soundcloud_url?: string | null;
+          stage_name: string;
+          user_id?: string | null;
+        };
+        Update: {
+          bio?: string | null;
+          cover_path?: string | null;
+          created_at?: string;
+          genres?: string[];
+          id?: string;
+          instagram_url?: string | null;
+          is_published?: boolean;
+          photo_path?: string | null;
+          slug?: string;
+          soundcloud_url?: string | null;
+          stage_name?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'djs_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      event_djs: {
+        Row: {
+          dj_id: string;
+          event_id: string;
+          position: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          dj_id: string;
+          event_id: string;
+          position?: number;
+        };
+        Update: {
+          dj_id?: string;
+          event_id?: string;
+          position?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'event_djs_dj_id_fkey';
+            columns: ['dj_id'];
+            isOneToOne: false;
+            referencedRelation: 'djs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'event_djs_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'events';
             referencedColumns: ['id'];
           },
         ];
@@ -459,6 +599,68 @@ export type Database = {
           },
         ];
       };
+      venue_invites: {
+        Row: {
+          accepted_at: string | null;
+          accepted_by: string | null;
+          created_at: string;
+          email: string;
+          expires_at: string;
+          id: string;
+          invited_by: string | null;
+          role: string;
+          token_hash: string;
+          venue_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          email: string;
+          expires_at?: string;
+          id?: string;
+          invited_by?: string | null;
+          role: string;
+          token_hash: string;
+          venue_id: string;
+        };
+        Update: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          email?: string;
+          expires_at?: string;
+          id?: string;
+          invited_by?: string | null;
+          role?: string;
+          token_hash?: string;
+          venue_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'venue_invites_accepted_by_fkey';
+            columns: ['accepted_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'venue_invites_invited_by_fkey';
+            columns: ['invited_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'venue_invites_venue_id_fkey';
+            columns: ['venue_id'];
+            isOneToOne: false;
+            referencedRelation: 'venues';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       venue_members: {
         Row: {
           role: string;
@@ -578,19 +780,30 @@ export type Database = {
       };
     };
     Functions: {
+      accept_venue_invite: { Args: { p_token: string }; Returns: string };
+      application_payload_valid: { Args: { p_kind: string; p_payload: Json }; Returns: boolean };
+      approve_application: { Args: { p_id: string }; Returns: string };
       can_interact: { Args: Record<PropertyKey, never>; Returns: boolean };
       claim_offer: {
         Args: { p_offer_id: string; p_token_hash: string; p_user_id: string };
         Returns: string;
       };
+      create_venue_invite: {
+        Args: { p_email: string; p_role: string; p_venue_id: string };
+        Returns: string;
+      };
       event_venue_id: { Args: { p_event_id: string }; Returns: string };
       feed_author_visible: { Args: { p_author_id: string }; Returns: boolean };
       hook_before_user_created: { Args: { event: Json }; Returns: Json };
+      is_dj_owner: { Args: { p_dj_id: string }; Returns: boolean };
       is_event_public: { Args: { p_event_id: string }; Returns: boolean };
       is_superadmin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_venue_member: { Args: { p_role?: string; p_venue_id: string }; Returns: boolean };
       offer_venue_id: { Args: { p_offer_id: string }; Returns: string };
       redeem_claim: { Args: { p_host_id: string; p_token_hash: string }; Returns: string };
+      reject_application: { Args: { p_id: string; p_reason: string }; Returns: undefined };
+      storage_folder_uuid: { Args: { p_name: string }; Returns: string };
+      unique_slug: { Args: { p_base: string; p_table: string }; Returns: string };
     };
     Enums: {
       [_ in never]: never;
