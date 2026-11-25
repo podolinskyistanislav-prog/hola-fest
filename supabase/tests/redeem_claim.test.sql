@@ -1,6 +1,6 @@
 -- pgTAP: redeem_claim results, atomicity and isolation.
 begin;
-select plan(14);
+select plan(17);
 
 insert into auth.users (id, instance_id, aud, role, is_anonymous) values
   ('00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', true),
@@ -20,12 +20,19 @@ insert into public.offers (id, event_id, title, per_user_limit, valid_until, is_
   ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000e1', 'live', 5, null, true),
   ('00000000-0000-0000-0000-0000000000f2', '00000000-0000-0000-0000-0000000000e1', 'expired', 5, now() - interval '1 hour', true),
   ('00000000-0000-0000-0000-0000000000f3', '00000000-0000-0000-0000-0000000000e1', 'off', 5, null, false);
+-- Offer-builder offers: a venue-level offer (no event) at V2, and a paused event offer at V1.
+insert into public.offers (id, venue_id, title, per_user_limit, kind) values
+  ('00000000-0000-0000-0000-0000000000f4', '00000000-0000-0000-0000-0000000000d2', 'venue-level', 5, 'custom');
+insert into public.offers (id, event_id, title, per_user_limit, status) values
+  ('00000000-0000-0000-0000-0000000000f5', '00000000-0000-0000-0000-0000000000e1', 'paused', 5, 'paused');
 insert into public.claims (offer_id, user_id, token_hash, status) values
   ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000c1', repeat('1', 64), 'issued'),
   ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000c1', repeat('2', 64), 'issued'),
   ('00000000-0000-0000-0000-0000000000f2', '00000000-0000-0000-0000-0000000000c1', repeat('3', 64), 'issued'),
   ('00000000-0000-0000-0000-0000000000f3', '00000000-0000-0000-0000-0000000000c1', repeat('4', 64), 'issued'),
-  ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000c1', repeat('5', 64), 'void');
+  ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000c1', repeat('5', 64), 'void'),
+  ('00000000-0000-0000-0000-0000000000f4', '00000000-0000-0000-0000-0000000000c1', repeat('6', 64), 'issued'),
+  ('00000000-0000-0000-0000-0000000000f5', '00000000-0000-0000-0000-0000000000c1', repeat('7', 64), 'issued');
 
 select is(public.redeem_claim(repeat('1', 64), '00000000-0000-0000-0000-0000000000c2'), 'ok', 'host of the venue redeems');
 select is((select redeemed_by from public.claims where token_hash = repeat('1', 64)),
@@ -43,6 +50,11 @@ select is(public.redeem_claim('not-a-hash', '00000000-0000-0000-0000-0000000000c
 select is(public.redeem_claim(repeat('2', 64), '00000000-0000-0000-0000-0000000000c3'), 'wrong_venue', 'other venue host gets wrong_venue, not already_redeemed');
 select is(public.redeem_claim(repeat('3', 64), '00000000-0000-0000-0000-0000000000c1'), 'wrong_venue', 'guest cannot redeem');
 select is((select status from public.claims where token_hash = repeat('3', 64)), 'issued', 'refused calls changed nothing');
+
+-- Venue-level offers use offers.venue_id; paused offers are not redeemable.
+select is(public.redeem_claim(repeat('6', 64), '00000000-0000-0000-0000-0000000000c2'), 'wrong_venue', 'venue-level offer: host of another venue gets wrong_venue');
+select is(public.redeem_claim(repeat('6', 64), '00000000-0000-0000-0000-0000000000c3'), 'ok', 'venue-level offer: host of that venue redeems');
+select is(public.redeem_claim(repeat('7', 64), '00000000-0000-0000-0000-0000000000c2'), 'expired', 'paused offer is not redeemable');
 
 -- Callable only by service_role.
 select is((select count(*)::int from information_schema.role_routine_grants

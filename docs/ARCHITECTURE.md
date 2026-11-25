@@ -65,9 +65,12 @@ venues        id uuid PK, slug unique, name, address, lat, lng, description, cov
 venue_members venue_id → venues, user_id → profiles, role ('owner' | 'admin' | 'host'), PK(venue_id, user_id)
 events        id uuid PK, venue_id → venues, title, description, lineup text[], tags text[] (genre: techno/house/rooftop), starts_at timestamptz,
               ends_at timestamptz, price_from_uah int, cover_path, status ('draft' | 'published'), created_at
-offers        id uuid PK, event_id → events, title, terms, max_claims int null,
-              per_user_limit int default 1, valid_until timestamptz, is_active bool,
-              created_at timestamptz default now()
+offers        id uuid PK, event_id → events null, venue_id → venues (set from the event by trigger), title, terms,
+              kind ('percent_off' | 'amount_off' | 'free_entry_until' | 'gift' | 'two_for_one' | 'custom'), value text null,
+              starts_at, ends_at timestamptz null, status ('draft' | 'scheduled' | 'live' | 'paused' | 'ended'),
+              max_claims int null, per_user_limit int default 1, created_at timestamptz default now(),
+              legacy, kept in sync by trigger: valid_until (= ends_at), is_active (= status live/scheduled)
+offer_stats   view (security_invoker): offer_id, venue_id, claims, redemptions — rows only for venue admins / superadmin
 claims        id uuid PK, offer_id → offers, user_id → profiles, token_hash text unique,
               status ('issued' | 'redeemed' | 'void'), issued_at, redeemed_at, redeemed_by → profiles
 posts         id uuid PK, author_id → profiles, as_venue_id → venues null, body ≤500, image_paths text[] ≤4,
@@ -97,7 +100,7 @@ Indexes: `events(venue_id, starts_at)`, `events using gin(tags)`, `events(starts
 | ------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------- |
 | venues        | everyone, where `is_published`; members of the venue also read it while unpublished               | superadmin                                |
 | events        | everyone, where `status='published'` and venue published; venue members see drafts of their venue | venue `admin` of that venue, superadmin   |
-| offers        | everyone, active offers of published events; venue `admin` also sees inactive ones                | venue `admin` of that venue, superadmin   |
+| offers        | everyone, live offers (status + window) of published events / venues; venue `admin` sees all; a guest keeps offers they hold a claim on | venue `admin` of that venue (also via RPC `pause_offer`, `resume_offer`, `end_offer`, `duplicate_offer`), superadmin |
 | claims        | the owning user; `host`/`admin` of the claim's venue                                              | **nobody directly** — only Edge Functions |
 | venue_members | the member themself; venue admins of that venue                                                   | superadmin                                |
 | profiles      | the user themself; superadmin reads all                                                           | the user themself (not `is_superadmin`, `is_dj`, `is_banned`); superadmin sets `is_dj` / `is_banned` |
@@ -115,7 +118,7 @@ Venue `owner` (M17.1) has every `admin` right (`is_venue_member(v, 'admin')` als
 
 Helper SQL functions (`security definer`, `stable`, fixed `search_path`): `is_superadmin()`, `is_venue_member(venue_id, role)`, `can_interact()` (confirmed = `is_anonymous` not true, and not banned), `feed_author_visible(author_id)`, `handle_available(handle)` (RPC for profile setup: returns only a boolean; execute for `authenticated` only, not `anon`; the caller's own handle counts as free).
 
-Venue members read their own unpublished venue (migration `venues_select_own_member`) so the admin app can list "my venues"; writes stay superadmin-only. Implemented: `profiles`, `venues`, `venue_members` (migration `rls_profiles_venues_members`) and `events`, `offers`, `claims` (migration `rls_events_offers_claims`). Notes: `is_superadmin` is protected by column-level grants (`authenticated` can only insert `id, display_name` and update `display_name`); superadmin also reads unpublished venues and all `venue_members`; `anon` reads only published venues. Venue admins also read offers of their own draft events and their inactive offers (`is_active = false` is hidden from everyone else by `offers_select`, migration `offers_select_hide_inactive`); superadmin reads everything. `claims` has `select` only (column grant, `token_hash` excluded) for `authenticated` and no grants for `anon`; all claim writes use the service role. Extra helpers (`security definer`, `stable`, fixed `search_path`): `event_venue_id`, `offer_venue_id`, `is_event_public`.
+Venue members read their own unpublished venue (migration `venues_select_own_member`) so the admin app can list "my venues"; writes stay superadmin-only. Implemented: `profiles`, `venues`, `venue_members` (migration `rls_profiles_venues_members`) and `events`, `offers`, `claims` (migration `rls_events_offers_claims`). Notes: `is_superadmin` is protected by column-level grants (`authenticated` can only insert `id, display_name` and update `display_name`); superadmin also reads unpublished venues and all `venue_members`; `anon` reads only published venues. Venue admins also read offers of their own draft events and their inactive offers (`is_active = false` is hidden from everyone else by `offers_select`, migration `offers_select_hide_inactive`); superadmin reads everything. `claims` has `select` only (column grant, `token_hash` excluded) for `authenticated` and no grants for `anon`; all claim writes use the service role. Extra helpers (`security definer`, `stable`, fixed `search_path`): `event_venue_id`, `offer_venue_id`, `is_event_public`, `has_claim_on_offer`. Offer builder (migration `offer_builder_model`, ADR 0011): trigger `offers_validate` validates kind/value, the window and the venue on every write; `offer_effective_status` derives live / scheduled / ended from time; `claim_offer` requires a live offer.
 
 ## Trusted flows (Edge Functions)
 

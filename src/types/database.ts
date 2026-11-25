@@ -112,6 +112,13 @@ export type Database = {
             foreignKeyName: 'claims_offer_id_fkey';
             columns: ['offer_id'];
             isOneToOne: false;
+            referencedRelation: 'offer_stats';
+            referencedColumns: ['offer_id'];
+          },
+          {
+            foreignKeyName: 'claims_offer_id_fkey';
+            columns: ['offer_id'];
+            isOneToOne: false;
             referencedRelation: 'offers';
             referencedColumns: ['id'];
           },
@@ -276,37 +283,57 @@ export type Database = {
       offers: {
         Row: {
           created_at: string;
-          event_id: string;
+          ends_at: string | null;
+          event_id: string | null;
           id: string;
           is_active: boolean;
+          kind: string;
           max_claims: number | null;
           per_user_limit: number;
+          starts_at: string | null;
+          status: string;
           terms: string | null;
           title: string;
           valid_until: string | null;
+          value: string | null;
+          venue_id: string;
+          offer_effective_status: string | null;
+          offer_is_live: boolean | null;
         };
-        ComputedFields: never;
+        ComputedFields: 'offer_effective_status' | 'offer_is_live';
         Insert: {
           created_at?: string;
-          event_id: string;
+          ends_at?: string | null;
+          event_id?: string | null;
           id?: string;
           is_active?: boolean;
+          kind?: string;
           max_claims?: number | null;
           per_user_limit?: number;
+          starts_at?: string | null;
+          status?: string;
           terms?: string | null;
           title: string;
           valid_until?: string | null;
+          value?: string | null;
+          venue_id: string;
         };
         Update: {
           created_at?: string;
-          event_id?: string;
+          ends_at?: string | null;
+          event_id?: string | null;
           id?: string;
           is_active?: boolean;
+          kind?: string;
           max_claims?: number | null;
           per_user_limit?: number;
+          starts_at?: string | null;
+          status?: string;
           terms?: string | null;
           title?: string;
           valid_until?: string | null;
+          value?: string | null;
+          venue_id?: string;
         };
         Relationships: [
           {
@@ -314,6 +341,13 @@ export type Database = {
             columns: ['event_id'];
             isOneToOne: false;
             referencedRelation: 'events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'offers_venue_id_fkey';
+            columns: ['venue_id'];
+            isOneToOne: false;
+            referencedRelation: 'venues';
             referencedColumns: ['id'];
           },
         ];
@@ -778,6 +812,24 @@ export type Database = {
           },
         ];
       };
+      offer_stats: {
+        Row: {
+          claims: number | null;
+          offer_id: string;
+          redemptions: number | null;
+          venue_id: string;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: 'offers_venue_id_fkey';
+            columns: ['venue_id'];
+            isOneToOne: false;
+            referencedRelation: 'venues';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Functions: {
       accept_venue_invite: { Args: { p_token: string }; Returns: string };
@@ -792,17 +844,166 @@ export type Database = {
         Args: { p_email: string; p_role: string; p_venue_id: string };
         Returns: string;
       };
+      duplicate_offer: {
+        Args: { p_offer_id: string };
+        Returns: {
+          created_at: string;
+          ends_at: string | null;
+          event_id: string | null;
+          id: string;
+          is_active: boolean;
+          kind: string;
+          max_claims: number | null;
+          per_user_limit: number;
+          starts_at: string | null;
+          status: string;
+          terms: string | null;
+          title: string;
+          valid_until: string | null;
+          value: string | null;
+          venue_id: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'offers';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      end_offer: {
+        Args: { p_offer_id: string };
+        Returns: {
+          created_at: string;
+          ends_at: string | null;
+          event_id: string | null;
+          id: string;
+          is_active: boolean;
+          kind: string;
+          max_claims: number | null;
+          per_user_limit: number;
+          starts_at: string | null;
+          status: string;
+          terms: string | null;
+          title: string;
+          valid_until: string | null;
+          value: string | null;
+          venue_id: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'offers';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       event_venue_id: { Args: { p_event_id: string }; Returns: string };
       feed_author_visible: { Args: { p_author_id: string }; Returns: boolean };
       handle_available: { Args: { p_handle: string }; Returns: boolean };
+      has_claim_on_offer: { Args: { p_offer_id: string }; Returns: boolean };
       hook_before_user_created: { Args: { event: Json }; Returns: Json };
       is_dj_owner: { Args: { p_dj_id: string }; Returns: boolean };
       is_event_public: { Args: { p_event_id: string }; Returns: boolean };
       is_superadmin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_venue_member: { Args: { p_role?: string; p_venue_id: string }; Returns: boolean };
+      offer_effective_status: {
+        Args: {
+          p_offer: Omit<
+            Database['public']['Tables']['offers']['Row'],
+            Database['public']['Tables']['offers']['ComputedFields']
+          >;
+        };
+        Returns: string;
+      };
+      offer_is_live: {
+        Args: {
+          p_offer: Omit<
+            Database['public']['Tables']['offers']['Row'],
+            Database['public']['Tables']['offers']['ComputedFields']
+          >;
+        };
+        Returns: boolean;
+      };
       offer_venue_id: { Args: { p_offer_id: string }; Returns: string };
+      pause_offer: {
+        Args: { p_offer_id: string };
+        Returns: {
+          created_at: string;
+          ends_at: string | null;
+          event_id: string | null;
+          id: string;
+          is_active: boolean;
+          kind: string;
+          max_claims: number | null;
+          per_user_limit: number;
+          starts_at: string | null;
+          status: string;
+          terms: string | null;
+          title: string;
+          valid_until: string | null;
+          value: string | null;
+          venue_id: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'offers';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       redeem_claim: { Args: { p_host_id: string; p_token_hash: string }; Returns: string };
       reject_application: { Args: { p_id: string; p_reason: string }; Returns: undefined };
+      resume_offer: {
+        Args: { p_offer_id: string };
+        Returns: {
+          created_at: string;
+          ends_at: string | null;
+          event_id: string | null;
+          id: string;
+          is_active: boolean;
+          kind: string;
+          max_claims: number | null;
+          per_user_limit: number;
+          starts_at: string | null;
+          status: string;
+          terms: string | null;
+          title: string;
+          valid_until: string | null;
+          value: string | null;
+          venue_id: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'offers';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      set_offer_status: {
+        Args: { p_from: string[]; p_offer_id: string; p_to: string };
+        Returns: {
+          created_at: string;
+          ends_at: string | null;
+          event_id: string | null;
+          id: string;
+          is_active: boolean;
+          kind: string;
+          max_claims: number | null;
+          per_user_limit: number;
+          starts_at: string | null;
+          status: string;
+          terms: string | null;
+          title: string;
+          valid_until: string | null;
+          value: string | null;
+          venue_id: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'offers';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       storage_folder_uuid: { Args: { p_name: string }; Returns: string };
       unique_slug: { Args: { p_base: string; p_table: string }; Returns: string };
     };
