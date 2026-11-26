@@ -66,6 +66,7 @@ describe('toEventSubmission', () => {
         lineup: [' DJ A ', ''],
         price: '150',
         published: true,
+        djs: [{ id: 'd1', name: 'Nova', photoUrl: null }],
       }),
     ).toEqual({
       input: {
@@ -77,6 +78,7 @@ describe('toEventSubmission', () => {
         priceFromUah: 150,
       },
       status: 'published',
+      djIds: ['d1'],
     });
   });
 });

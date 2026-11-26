@@ -13,6 +13,7 @@ import {
 import { t } from '@/lib/i18n';
 import { space, useTheme } from '@/theme';
 
+import { LineupDjPicker } from './LineupDjPicker';
 import {
   LINEUP_MAX_ITEMS,
   toEventSubmission,
@@ -76,8 +77,9 @@ export function EventForm({
           autoCapitalize="sentences"
           onChangeText={(description) => set({ description })}
         />
+        <LineupDjPicker selected={values.djs} onChange={(djs) => set({ djs })} />
         <StringListField
-          label={t('eventForm.lineup')}
+          label={t('eventForm.lineupText')}
           addLabel={t('eventForm.lineupAdd')}
           items={values.lineup}
           maxItems={LINEUP_MAX_ITEMS}

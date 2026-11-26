@@ -3,6 +3,14 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { EventForm, type EventFormProps } from './EventForm';
 import { emptyEventForm } from './eventFormValidation';
 
+jest.mock('./useDjSearch', () => ({
+  useDjSearch: () => ({
+    data: [{ id: 'd1', name: 'DJ Nova', photoUrl: null }],
+    isError: false,
+    isSuccess: true,
+  }),
+}));
+
 const base: EventFormProps = {
   initialValues: emptyEventForm,
   isNew: true,
@@ -31,7 +39,19 @@ describe('EventForm', () => {
     expect(onSubmit).toHaveBeenCalledWith({
       input: expect.objectContaining({ title: 'Ніч', startsAt: new Date('2026-11-07T18:00:00Z') }),
       status: 'draft',
+      djIds: [],
     });
+  });
+
+  it('adds a searched DJ to the lineup and submits their id', async () => {
+    const onSubmit = jest.fn();
+    await render(<EventForm {...base} onSubmit={onSubmit} />);
+    await fireEvent.press(screen.getByLabelText('Додати: DJ Nova'));
+    expect(screen.getByLabelText('Прибрати: DJ Nova')).toBeTruthy();
+    await fireEvent.changeText(screen.getByLabelText('Назва'), 'Ніч');
+    await fireEvent.changeText(screen.getByLabelText('Початок'), '07.11.2026 20:00');
+    await fireEvent.press(screen.getByLabelText('Зберегти'));
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ djIds: ['d1'] }));
   });
 
   it('shows the edit title, the save error and a disabled button while saving', async () => {

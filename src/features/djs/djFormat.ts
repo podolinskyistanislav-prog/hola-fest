@@ -23,6 +23,18 @@ export function filterDjsByName(djs: readonly Dj[], query: string): Dj[] {
   return djs.filter((dj) => dj.name.toLowerCase().includes(needle));
 }
 
+/**
+ * A DJ-typed link as an https URL that is safe to open, or null: http(s) kept, a bare domain gets
+ * "https://", any other scheme (e.g. `javascript:`) and empty text are rejected.
+ */
+export function safeLinkUrl(text: string | null | undefined): string | null {
+  const trimmed = (text ?? '').trim();
+  if (trimmed === '') return null;
+  if (/^https?:\/\/\S+$/i.test(trimmed)) return trimmed;
+  if (/^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(trimmed)) return `https://${trimmed}`;
+  return null;
+}
+
 /** GigRow props: day, short month, time in Kyiv time. */
 export function gigRowProps(gig: DjGig) {
   const { day, month } = dayKeyParts(kyivDayKey(gig.startsAt));

@@ -14,6 +14,7 @@ export default function ProfileScreen() {
         onOpenSetup={() => router.push('/profile-setup')}
         onOpenApply={() => router.push('/apply')}
         onOpenCabinet={() => router.push('/staff')}
+        onOpenDjCabinet={() => router.push('/dj-cabinet')}
         onOpenReview={() => router.push('/staff-applications')}
       />
     </View>

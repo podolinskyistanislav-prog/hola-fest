@@ -2,12 +2,13 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppText, Button, Chip, DjAvatar, GigRow } from '@/components/ui';
+import { AppText, Button, GigRow } from '@/components/ui';
 import { t } from '@/lib/i18n';
 import { radius, space, useTheme } from '@/theme';
 import type { Dj } from '@/types/djs';
 
-import { genresLine, gigRowProps } from './djFormat';
+import { DjHero } from './DjHero';
+import { gigRowProps } from './djFormat';
 import { useDj } from './useDjs';
 
 export interface DjScreenContentProps {
@@ -56,25 +57,21 @@ function DjBody({
         <Button label={t('dj.back')} variant="inverse" onPress={onBack} />
       </View>
 
-      <View style={styles.hero}>
-        <DjAvatar name={dj.name} size={96} />
-        <AppText variant="title" accessibilityRole="header">
-          {dj.name}
-        </AppText>
-        {dj.genres.length > 0 ? (
-          <View accessibilityLabel={genresLine(dj.genres)} style={styles.chips}>
-            {dj.genres.map((genre) => (
-              <Chip key={genre} label={genresLine([genre])} />
-            ))}
-          </View>
-        ) : null}
-        <AppText tone="muted">{t('dj.bioPlaceholder')}</AppText>
-      </View>
+      <DjHero
+        name={dj.name}
+        genres={dj.genres}
+        photoUrl={dj.photoUrl}
+        coverUrl={dj.coverUrl}
+        bio={dj.bio}
+        instagramUrl={dj.instagramUrl}
+        soundcloudUrl={dj.soundcloudUrl}
+      />
 
       <View style={styles.section}>
         <AppText variant="heading" accessibilityRole="header">
           {t('dj.gigs')}
         </AppText>
+        {dj.gigs.length === 0 ? <AppText tone="muted">{t('dj.noGigs')}</AppText> : null}
         {dj.gigs.map((gig) => (
           <GigRow
             key={gig.eventId}
@@ -145,7 +142,5 @@ const styles = StyleSheet.create({
   },
   body: { paddingHorizontal: space.screen, gap: space.xl },
   backRow: { alignItems: 'flex-start' },
-  hero: { alignItems: 'center', gap: space.md },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, justifyContent: 'center' },
   section: { gap: space.md },
 });

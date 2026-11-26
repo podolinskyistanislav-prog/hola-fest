@@ -1,15 +1,19 @@
 import type { TranslationKey } from '@/lib/i18n';
 import type { AdminEvent, EventInput, EventStatus } from '@/types/admin';
+import type { DjOption } from '@/types/djs';
 
 export const TITLE_MAX_LENGTH = 120;
 export const LINEUP_ITEM_MAX_LENGTH = 80;
 export const LINEUP_MAX_ITEMS = 20;
+export const LINEUP_DJS_MAX = 10;
 
 /** What the form holds while the admin types. */
 export type EventFormValues = {
   title: string;
   description: string;
   lineup: string[];
+  /** Published DJs picked from the platform; saved as event_djs links. */
+  djs: DjOption[];
   startsAt: Date | null;
   endsAt: Date | null;
   price: string;
@@ -24,17 +28,19 @@ export const emptyEventForm: EventFormValues = {
   title: '',
   description: '',
   lineup: [],
+  djs: [],
   startsAt: null,
   endsAt: null,
   price: '',
   published: false,
 };
 
-export function eventToFormValues(event: AdminEvent): EventFormValues {
+export function eventToFormValues(event: AdminEvent, djs: DjOption[] = []): EventFormValues {
   return {
     title: event.title,
     description: event.description ?? '',
     lineup: event.lineup,
+    djs,
     startsAt: event.startsAt,
     endsAt: event.endsAt,
     price: event.priceFromUah === null ? '' : String(event.priceFromUah),
@@ -70,7 +76,7 @@ export function validateEventForm(values: EventFormValues): EventFormErrors {
   return errors;
 }
 
-export type EventSubmission = { input: EventInput; status: EventStatus };
+export type EventSubmission = { input: EventInput; status: EventStatus; djIds: string[] };
 
 /** Service input from valid values. Returns null when validation fails. */
 export function toEventSubmission(values: EventFormValues): EventSubmission | null {
@@ -86,5 +92,6 @@ export function toEventSubmission(values: EventFormValues): EventSubmission | nu
       priceFromUah: price === 'invalid' ? null : price,
     },
     status: values.published ? 'published' : 'draft',
+    djIds: values.djs.map((dj) => dj.id),
   };
 }

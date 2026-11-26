@@ -72,6 +72,7 @@ export function DjsScreenContent({ onOpenDj }: DjsScreenContentProps) {
         renderItem={({ item }) => (
           <DjRow
             name={item.name}
+            photoUri={item.photoUrl}
             genresLine={genresLine(item.genres)}
             nextGigLine={nextGigLine(item)}
             onPress={() => onOpenDj(item.slug)}
