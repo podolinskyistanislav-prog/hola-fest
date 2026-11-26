@@ -17,6 +17,7 @@ const homeBase: CabinetHomeProps = {
   onOpenProfile: jest.fn(),
   onOpenTeam: jest.fn(),
   onOpenEvents: jest.fn(),
+  onOpenOffers: jest.fn(),
   onOpenScanner: jest.fn(),
 };
 

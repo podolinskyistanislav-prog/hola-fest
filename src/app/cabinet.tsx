@@ -14,6 +14,7 @@ export default function CabinetScreen() {
       onOpenProfile={() => router.push('/cabinet-profile')}
       onOpenTeam={() => router.push('/cabinet-team')}
       onOpenEvents={() => router.push('/staff-events')}
+      onOpenOffers={() => router.push('/cabinet-offers')}
       onOpenScanner={() => router.push('/scanner')}
     />
   );

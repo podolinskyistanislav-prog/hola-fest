@@ -13,6 +13,7 @@ export type CabinetAreaProps = {
   onOpenProfile: () => void;
   onOpenTeam: () => void;
   onOpenEvents: () => void;
+  onOpenOffers: () => void;
   onOpenScanner: () => void;
 };
 

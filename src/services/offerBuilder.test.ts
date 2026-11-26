@@ -4,10 +4,13 @@ import {
   generateOfferTerms,
   generateOfferTitle,
   listVenueOfferStats,
+  listVenueOffers,
   OfferBuilderError,
   offerEffectiveStatus,
   pauseOffer,
   resumeOffer,
+  saveVenueOffer,
+  type VenueOfferInput,
 } from './offerBuilder';
 import { supabase } from './supabase';
 
@@ -163,5 +166,91 @@ describe('listVenueOfferStats', () => {
     query.returns = jest.fn(() => Promise.resolve({ data: null, error: { code: '42501' } }));
     from.mockReturnValue(query);
     await expect(listVenueOfferStats('v1')).rejects.toMatchObject({ code: 'forbidden' });
+  });
+});
+
+describe('listVenueOffers', () => {
+  function listQuery(result: { data: unknown; error: unknown }) {
+    const query: Record<string, jest.Mock> = {};
+    query.select = jest.fn(() => query);
+    query.eq = jest.fn(() => query);
+    query.order = jest.fn(() => query);
+    query.returns = jest.fn(() => Promise.resolve(result));
+    from.mockReturnValue(query);
+    return query;
+  }
+
+  it('maps the offers of the venue', async () => {
+    const query = listQuery({ data: [row], error: null });
+    const offers = await listVenueOffers('v1');
+    expect(offers).toHaveLength(1);
+    expect(offers[0]).toMatchObject({ id: 'o1', kind: 'percent_off', status: 'paused' });
+    expect(from).toHaveBeenCalledWith('offers');
+    expect(query.eq).toHaveBeenCalledWith('venue_id', 'v1');
+  });
+
+  it('throws a generic error on failure', async () => {
+    listQuery({ data: null, error: { code: '42501' } });
+    await expect(listVenueOffers('v1')).rejects.toMatchObject({ code: 'forbidden' });
+  });
+});
+
+describe('saveVenueOffer', () => {
+  const input: VenueOfferInput = {
+    eventId: null,
+    kind: 'percent_off',
+    value: '20',
+    title: '−20% на вхід',
+    terms: 'Покажи QR на вході',
+    maxClaims: 50,
+    perUserLimit: 1,
+    startsAt: null,
+    endsAt: new Date('2026-12-01T21:00:00.000Z'),
+    status: 'live',
+  };
+
+  function writeQuery(result: { data: unknown; error: unknown }) {
+    const query: Record<string, jest.Mock> = {};
+    query.insert = jest.fn(() => query);
+    query.update = jest.fn(() => query);
+    query.eq = jest.fn(() => query);
+    query.select = jest.fn(() => query);
+    query.single = jest.fn(() => Promise.resolve(result));
+    from.mockReturnValue(query);
+    return query;
+  }
+
+  it('inserts a new offer for the venue', async () => {
+    const query = writeQuery({ data: row, error: null });
+    await saveVenueOffer('v1', input);
+    expect(query.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        venue_id: 'v1',
+        kind: 'percent_off',
+        max_claims: 50,
+        ends_at: '2026-12-01T21:00:00.000Z',
+        starts_at: null,
+        status: 'live',
+      }),
+    );
+    expect(query.update).not.toHaveBeenCalled();
+  });
+
+  it('updates an existing offer by id', async () => {
+    const query = writeQuery({ data: row, error: null });
+    await saveVenueOffer('v1', input, 'o1');
+    expect(query.update).toHaveBeenCalledWith(expect.objectContaining({ title: '−20% на вхід' }));
+    expect(query.eq).toHaveBeenCalledWith('id', 'o1');
+    expect(query.insert).not.toHaveBeenCalled();
+  });
+
+  it('maps a server validation error without its message', async () => {
+    writeQuery({ data: null, error: { code: '22023', message: 'invalid offer value' } });
+    const failure = await saveVenueOffer('v1', input).catch((error: unknown) => error);
+    expect(failure).toBeInstanceOf(OfferBuilderError);
+    expect(failure).toMatchObject({
+      code: 'invalid_state',
+      message: 'offer_builder_invalid_state',
+    });
   });
 });
