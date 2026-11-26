@@ -201,14 +201,18 @@ function keysetFilter(cursor: string): string | null {
   return `created_at.lt."${createdAt}",and(created_at.eq."${createdAt}",id.lt.${id})`;
 }
 
-/** One page of the feed, newest first, using a keyset cursor on (created_at, id). */
-export async function listFeedPage(cursor?: string, limit = 20): Promise<FeedPage> {
+async function loadPostPage(
+  cursor: string | undefined,
+  limit: number,
+  authorId?: string,
+): Promise<FeedPage> {
   let query = supabase
     .from('feed_posts')
     .select(FEED_COLUMNS)
     .order('created_at', { ascending: false })
     .order('id', { ascending: false })
     .limit(limit + 1);
+  if (authorId) query = query.eq('author_id', authorId);
   if (cursor) {
     const filter = keysetFilter(cursor);
     if (!filter) throw new Error('feed_load_failed');
@@ -223,6 +227,16 @@ export async function listFeedPage(cursor?: string, limit = 20): Promise<FeedPag
     posts: pageRows.flatMap((row) => toFeedPost(row) ?? []),
     nextCursor: rows.length > limit && last ? encodeCursor(last) : null,
   };
+}
+
+/** One page of the feed, newest first, using a keyset cursor on (created_at, id). */
+export function listFeedPage(cursor?: string, limit = 20): Promise<FeedPage> {
+  return loadPostPage(cursor, limit);
+}
+
+/** One page of a single author's posts, newest first, paged like {@link listFeedPage}. */
+export function listAuthorPosts(authorId: string, cursor?: string, limit = 20): Promise<FeedPage> {
+  return loadPostPage(cursor, limit, authorId);
 }
 
 /** A single post for the post page, or null when it is missing or hidden. */
@@ -304,4 +318,135 @@ export async function listMyClubs(): Promise<MyClub[]> {
   if (error) throw new Error('my_clubs_load_failed');
   const rows = (data ?? []) as unknown as { venues: MyClub | null }[];
   return rows.flatMap((row) => (row.venues ? [{ id: row.venues.id, name: row.venues.name }] : []));
+}
+
+export interface FeedAuthor {
+  id: string;
+  name: string;
+  handle: string;
+  avatarUrl: string | null;
+  label: FeedLabel | null;
+}
+
+export interface FeedComment {
+  id: string;
+  postId: string;
+  parentId: string | null;
+  authorId: string;
+  authorName: string;
+  handle: string;
+  avatarUrl: string | null;
+  label: FeedLabel | null;
+  body: string;
+  createdAt: string;
+}
+
+export type ReportReason = 'event_promo' | 'abuse' | 'adult' | 'spam' | 'other';
+
+interface FeedCommentRow {
+  id: string;
+  post_id: string;
+  parent_id: string | null;
+  author_id: string;
+  author_name: string | null;
+  author_handle: string | null;
+  author_avatar_path: string | null;
+  label: string | null;
+  body: string;
+  created_at: string;
+}
+
+interface FeedAuthorRow {
+  id: string;
+  name: string | null;
+  handle: string | null;
+  avatar_path: string | null;
+  label: string | null;
+}
+
+const COMMENT_COLUMNS =
+  'id, post_id, parent_id, author_id, author_name, author_handle, author_avatar_path, label, body, created_at';
+
+const UNIQUE_VIOLATION = '23505';
+
+function toFeedComment(row: FeedCommentRow): FeedComment | null {
+  if (!row.author_name || !row.author_handle) return null;
+  return {
+    id: row.id,
+    postId: row.post_id,
+    parentId: row.parent_id,
+    authorId: row.author_id,
+    authorName: row.author_name,
+    handle: row.author_handle,
+    avatarUrl: row.author_avatar_path ? publicFeedUrl(row.author_avatar_path) : null,
+    label: toFeedLabel(row.label),
+    body: row.body,
+    createdAt: row.created_at,
+  };
+}
+
+/** Visible comments of a post, oldest first. Hidden comments and blocked authors are filtered by the view. */
+export async function listComments(postId: string): Promise<FeedComment[]> {
+  const { data, error } = await supabase
+    .from('feed_comments')
+    .select(COMMENT_COLUMNS)
+    .eq('post_id', postId)
+    .order('created_at', { ascending: true })
+    .order('id', { ascending: true });
+  if (error || !data) throw new Error('comments_load_failed');
+  return (data as FeedCommentRow[]).flatMap((row) => toFeedComment(row) ?? []);
+}
+
+/** The author behind a handle, or null when unknown, banned or blocked by the caller. */
+export async function getFeedAuthor(handle: string): Promise<FeedAuthor | null> {
+  const { data, error } = await supabase
+    .from('feed_authors')
+    .select('id, name, handle, avatar_path, label')
+    .eq('handle', handle)
+    .maybeSingle();
+  if (error) throw new Error('author_load_failed');
+  const row = data as FeedAuthorRow | null;
+  if (!row || !row.name || !row.handle) return null;
+  return {
+    id: row.id,
+    name: row.name,
+    handle: row.handle,
+    avatarUrl: row.avatar_path ? publicFeedUrl(row.avatar_path) : null,
+    label: toFeedLabel(row.label),
+  };
+}
+
+/** Reports a post. Reporting the same post twice is not an error. */
+export async function reportPost(postId: string, reason: ReportReason): Promise<void> {
+  const { error } = await supabase.from('post_reports').insert({ post_id: postId, reason });
+  if (error && error.code !== UNIQUE_VIOLATION) throw new Error('report_failed');
+}
+
+/** Reports a comment. Reporting the same comment twice is not an error. */
+export async function reportComment(commentId: string, reason: ReportReason): Promise<void> {
+  const { error } = await supabase.from('post_reports').insert({ comment_id: commentId, reason });
+  if (error && error.code !== UNIQUE_VIOLATION) throw new Error('report_failed');
+}
+
+/** Blocks a user: their posts and comments disappear for the caller. Blocking twice is not an error. */
+export async function blockUser(blockedId: string): Promise<void> {
+  const { error } = await supabase.from('user_blocks').insert({ blocked_id: blockedId });
+  if (error && error.code !== UNIQUE_VIOLATION) throw new Error('block_failed');
+}
+
+export async function unblockUser(blockedId: string): Promise<void> {
+  const { error } = await supabase.from('user_blocks').delete().eq('blocked_id', blockedId);
+  if (error) throw new Error('unblock_failed');
+}
+
+/** Deletes a post; RLS lets only its author (or a superadmin) do it. */
+export async function deletePost(postId: string): Promise<void> {
+  const { error } = await supabase.from('posts').delete().eq('id', postId);
+  if (error) throw new Error('post_delete_failed');
+}
+
+/** Deletes a comment; RLS lets only its author (or a superadmin) do it. */
+export async function deleteComment(commentId: string): Promise<void> {
+  const { error } = await supabase.from('post_comments').delete().eq('id', commentId);
+  if (error) throw new Error('comment_delete_failed');
 }

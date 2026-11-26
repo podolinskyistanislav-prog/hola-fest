@@ -1,11 +1,20 @@
 import {
+  blockUser,
   createComment,
   createPost,
+  deleteComment,
+  deletePost,
   editPost,
+  getFeedAuthor,
   getFeedPost,
   likePost,
+  listAuthorPosts,
+  listComments,
   listFeedPage,
   listMyClubs,
+  reportComment,
+  reportPost,
+  unblockUser,
   unlikePost,
   uploadPostImage,
 } from './feed';
@@ -242,6 +251,142 @@ describe('feed reads, likes, uploads and clubs', () => {
     expect(await listMyClubs()).toEqual([]);
     from().mockReturnValue(chain({ data: null, error: { message: 'x' } }));
     await expect(listMyClubs()).rejects.toThrow('my_clubs_load_failed');
+  });
+
+  describe('comments, authors, reports, blocks, deletes', () => {
+    const commentRow = (over: Record<string, unknown> = {}) => ({
+      id: 'c1',
+      post_id: 'p1',
+      parent_id: null,
+      author_id: 'u1',
+      author_name: 'Оля',
+      author_handle: 'olya',
+      author_avatar_path: 'u1/a.jpg',
+      label: 'dj',
+      body: 'Круто',
+      created_at: '2026-01-01T10:00:00+00:00',
+      ...over,
+    });
+
+    it('listComments maps rows oldest first and skips incomplete authors', async () => {
+      const q = chain({
+        data: [
+          commentRow(),
+          commentRow({ id: 'c2', parent_id: 'c1', label: null }),
+          commentRow({ author_handle: null }),
+        ],
+        error: null,
+      });
+      from().mockReturnValue(q);
+      const comments = await listComments('p1');
+      expect(from()).toHaveBeenCalledWith('feed_comments');
+      expect(q.eq).toHaveBeenCalledWith('post_id', 'p1');
+      expect(comments).toHaveLength(2);
+      expect(comments[0]).toEqual({
+        id: 'c1',
+        postId: 'p1',
+        parentId: null,
+        authorId: 'u1',
+        authorName: 'Оля',
+        handle: 'olya',
+        avatarUrl: 'https://cdn/u1/a.jpg',
+        label: 'dj',
+        body: 'Круто',
+        createdAt: '2026-01-01T10:00:00+00:00',
+      });
+      expect(comments[1]).toMatchObject({ parentId: 'c1', label: null });
+    });
+
+    it('listComments throws comments_load_failed on error', async () => {
+      from().mockReturnValue(chain({ data: null, error: { message: 'x' } }));
+      await expect(listComments('p1')).rejects.toThrow('comments_load_failed');
+    });
+
+    it('listAuthorPosts filters by author and pages with a cursor', async () => {
+      const q = chain({ data: [row(), row({ id: ID2 })], error: null });
+      from().mockReturnValue(q);
+      const page = await listAuthorPosts('u1', `2026-01-01T10:00:00+00:00|${ID2}`, 1);
+      expect(q.eq).toHaveBeenCalledWith('author_id', 'u1');
+      expect(q.or).toHaveBeenCalled();
+      expect(page.posts).toHaveLength(1);
+      expect(page.nextCursor).toBe(`2026-01-01T10:00:00+00:00|${ID1}`);
+      await expect(listAuthorPosts('u1', 'garbage')).rejects.toThrow('feed_load_failed');
+      from().mockReturnValue(chain({ data: null, error: { message: 'x' } }));
+      await expect(listAuthorPosts('u1')).rejects.toThrow('feed_load_failed');
+    });
+
+    it('getFeedAuthor returns the author, null, or throws', async () => {
+      from().mockReturnValue(
+        chain({
+          data: { id: 'u1', name: 'Оля', handle: 'olya', avatar_path: null, label: 'hola' },
+          error: null,
+        }),
+      );
+      expect(await getFeedAuthor('olya')).toEqual({
+        id: 'u1',
+        name: 'Оля',
+        handle: 'olya',
+        avatarUrl: null,
+        label: 'hola',
+      });
+      from().mockReturnValue(chain({ data: null, error: null }));
+      expect(await getFeedAuthor('nobody')).toBeNull();
+      from().mockReturnValue(chain({ data: null, error: { message: 'x' } }));
+      await expect(getFeedAuthor('olya')).rejects.toThrow('author_load_failed');
+    });
+
+    it('reportPost and reportComment insert a report and tolerate duplicates', async () => {
+      const insert = jest.fn(() => Promise.resolve({ error: null }));
+      from().mockReturnValue({ insert });
+      await reportPost('p1', 'spam');
+      expect(from()).toHaveBeenLastCalledWith('post_reports');
+      expect(insert).toHaveBeenLastCalledWith({ post_id: 'p1', reason: 'spam' });
+      await reportComment('c1', 'abuse');
+      expect(insert).toHaveBeenLastCalledWith({ comment_id: 'c1', reason: 'abuse' });
+
+      insert.mockResolvedValue({ error: { code: '23505' } } as never);
+      await expect(reportPost('p1', 'spam')).resolves.toBeUndefined();
+      await expect(reportComment('c1', 'spam')).resolves.toBeUndefined();
+
+      insert.mockResolvedValue({ error: { code: '42501' } } as never);
+      await expect(reportPost('p1', 'spam')).rejects.toThrow('report_failed');
+      await expect(reportComment('c1', 'spam')).rejects.toThrow('report_failed');
+    });
+
+    it('blockUser inserts, tolerates duplicates and throws otherwise', async () => {
+      const insert = jest.fn(() => Promise.resolve({ error: null }));
+      from().mockReturnValue({ insert });
+      await blockUser('u2');
+      expect(from()).toHaveBeenLastCalledWith('user_blocks');
+      expect(insert).toHaveBeenCalledWith({ blocked_id: 'u2' });
+      insert.mockResolvedValue({ error: { code: '23505' } } as never);
+      await expect(blockUser('u2')).resolves.toBeUndefined();
+      insert.mockResolvedValue({ error: { code: '42501' } } as never);
+      await expect(blockUser('u2')).rejects.toThrow('block_failed');
+    });
+
+    it('unblockUser deletes the block and throws on error', async () => {
+      const q = chain({ error: null });
+      from().mockReturnValue(q);
+      await unblockUser('u2');
+      expect(q.eq).toHaveBeenCalledWith('blocked_id', 'u2');
+      from().mockReturnValue(chain({ error: { message: 'x' } }));
+      await expect(unblockUser('u2')).rejects.toThrow('unblock_failed');
+    });
+
+    it('deletePost and deleteComment delete by id and throw on error', async () => {
+      const q = chain({ error: null });
+      from().mockReturnValue(q);
+      await deletePost('p1');
+      expect(from()).toHaveBeenLastCalledWith('posts');
+      expect(q.eq).toHaveBeenLastCalledWith('id', 'p1');
+      await deleteComment('c1');
+      expect(from()).toHaveBeenLastCalledWith('post_comments');
+      expect(q.eq).toHaveBeenLastCalledWith('id', 'c1');
+      from().mockReturnValue(chain({ error: { message: 'x' } }));
+      await expect(deletePost('p1')).rejects.toThrow('post_delete_failed');
+      await expect(deleteComment('c1')).rejects.toThrow('comment_delete_failed');
+    });
   });
 
   describe('uploadPostImage', () => {
