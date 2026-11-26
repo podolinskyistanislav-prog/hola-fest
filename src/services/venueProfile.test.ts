@@ -4,6 +4,7 @@ import {
   getMyVenueProfile,
   removeVenuePhoto,
   updateVenueProfile,
+  venueMediaUrl,
   uploadVenueFile,
   uploadVenuePhoto,
 } from './venueProfile';
@@ -259,5 +260,15 @@ describe('removeVenuePhoto', () => {
       code: 'forbidden',
     });
     expect(remove).not.toHaveBeenCalled();
+  });
+});
+
+describe('venueMediaUrl', () => {
+  it('returns the public URL from the venue-media bucket', () => {
+    const getPublicUrl = jest.fn(() => ({ data: { publicUrl: 'https://cdn/x.jpg' } }));
+    storageFrom.mockReturnValue({ getPublicUrl });
+    expect(venueMediaUrl('v1/a.jpg')).toBe('https://cdn/x.jpg');
+    expect(storageFrom).toHaveBeenCalledWith('venue-media');
+    expect(getPublicUrl).toHaveBeenCalledWith('v1/a.jpg');
   });
 });

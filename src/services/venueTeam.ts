@@ -114,6 +114,26 @@ export async function cancelVenueInvite(inviteId: string): Promise<void> {
   if (error) throw toVenueCabinetError(error);
 }
 
+export type CabinetVenue = { id: string; name: string; role: VenueRole };
+
+type CabinetRow = { role: string; venue: { id: string; name: string } };
+
+/** Venues the signed-in user belongs to with their real role (owner stays owner), by name. */
+export async function listMyCabinetVenues(): Promise<CabinetVenue[]> {
+  const { data: session } = await supabase.auth.getSession();
+  const userId = session.session?.user.id;
+  if (!userId) throw new VenueCabinetError('forbidden');
+  const { data, error } = await supabase
+    .from('venue_members')
+    .select('role, venue:venues!inner(id, name)')
+    .eq('user_id', userId)
+    .returns<CabinetRow[]>();
+  if (error) throw toVenueCabinetError(error);
+  return (data ?? [])
+    .map((row) => ({ id: row.venue.id, name: row.venue.name, role: toRole(row.role) }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
 /** The invited user accepts with the token from the invite. Returns the venue id. */
 export async function acceptVenueInvite(token: string): Promise<string> {
   const { data, error } = await supabase.rpc('accept_venue_invite', { p_token: token });

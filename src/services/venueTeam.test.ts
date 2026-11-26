@@ -3,14 +3,18 @@ import {
   acceptVenueInvite,
   cancelVenueInvite,
   inviteVenueStaff,
+  listMyCabinetVenues,
   listVenueInvites,
   listVenueMembers,
   removeVenueMember,
 } from './venueTeam';
 
-jest.mock('./supabase', () => ({ supabase: { from: jest.fn(), rpc: jest.fn() } }));
+jest.mock('./supabase', () => ({
+  supabase: { from: jest.fn(), rpc: jest.fn(), auth: { getSession: jest.fn() } },
+}));
 
 const from = supabase.from as unknown as jest.Mock;
+const getSession = supabase.auth.getSession as unknown as jest.Mock;
 const rpc = supabase.rpc as unknown as jest.Mock;
 
 type Result = { data: unknown; error: { code?: string; message: string } | null };
@@ -169,5 +173,30 @@ describe('acceptVenueInvite', () => {
   it('fails when no venue comes back', async () => {
     rpc.mockResolvedValue({ data: null, error: null });
     await expect(acceptVenueInvite('tok')).rejects.toMatchObject({ code: 'unknown' });
+  });
+});
+
+describe('listMyCabinetVenues', () => {
+  it('keeps the real role and sorts by name', async () => {
+    getSession.mockResolvedValue({ data: { session: { user: { id: 'u1' } } } });
+    from.mockReturnValue(
+      chain({
+        data: [
+          { role: 'host', venue: { id: 'b', name: 'Zed' } },
+          { role: 'owner', venue: { id: 'a', name: 'Alfa' } },
+        ],
+        error: null,
+      }),
+    );
+
+    expect(await listMyCabinetVenues()).toEqual([
+      { id: 'a', name: 'Alfa', role: 'owner' },
+      { id: 'b', name: 'Zed', role: 'host' },
+    ]);
+  });
+
+  it('is forbidden without a session', async () => {
+    getSession.mockResolvedValue({ data: { session: null } });
+    await expect(listMyCabinetVenues()).rejects.toMatchObject({ code: 'forbidden' });
   });
 });
