@@ -158,6 +158,67 @@ export function duplicateOffer(offerId: string): Promise<BuilderOffer> {
   return callOfferAction('duplicate_offer', offerId);
 }
 
+const OFFER_COLUMNS =
+  'id, event_id, venue_id, kind, value, title, terms, max_claims, per_user_limit, starts_at, ends_at, status';
+
+/** All offers of a venue, newest first. RLS returns every status to venue admins only. */
+export async function listVenueOffers(venueId: string): Promise<BuilderOffer[]> {
+  const { data, error } = await supabase
+    .from('offers')
+    .select(OFFER_COLUMNS)
+    .eq('venue_id', venueId)
+    .order('created_at', { ascending: false })
+    .returns<OfferRow[]>();
+  if (error) throw toOfferBuilderError(error);
+  return (data ?? []).map(toBuilderOffer);
+}
+
+/** What the wizard saves. `status` is the venue's intent; the server derives live / ended. */
+export type VenueOfferInput = {
+  eventId: string | null;
+  kind: OfferKind;
+  value: string | null;
+  title: string;
+  terms: string | null;
+  maxClaims: number | null;
+  perUserLimit: number;
+  startsAt: Date | null;
+  endsAt: Date | null;
+  status: 'draft' | 'scheduled' | 'live';
+};
+
+function offerColumns(input: VenueOfferInput) {
+  return {
+    event_id: input.eventId,
+    kind: input.kind,
+    value: input.value,
+    title: input.title,
+    terms: input.terms,
+    max_claims: input.maxClaims,
+    per_user_limit: input.perUserLimit,
+    starts_at: input.startsAt ? input.startsAt.toISOString() : null,
+    ends_at: input.endsAt ? input.endsAt.toISOString() : null,
+    status: input.status,
+  };
+}
+
+/**
+ * Creates an offer for the venue, or updates it when `offerId` is given. The server validates
+ * the value, the window and the limits, and RLS lets only venue admins write.
+ */
+export async function saveVenueOffer(
+  venueId: string,
+  input: VenueOfferInput,
+  offerId?: string,
+): Promise<BuilderOffer> {
+  const query = offerId
+    ? supabase.from('offers').update(offerColumns(input)).eq('id', offerId)
+    : supabase.from('offers').insert({ ...offerColumns(input), venue_id: venueId });
+  const { data, error } = await query.select(OFFER_COLUMNS).single<OfferRow>();
+  if (error) throw toOfferBuilderError(error);
+  return toBuilderOffer(data);
+}
+
 type StatsRow = { offer_id: string; claims: number | null; redemptions: number | null };
 
 /** Claims and redemptions for every offer of a venue. RLS returns rows to venue admins only. */

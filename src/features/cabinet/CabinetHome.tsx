@@ -18,6 +18,7 @@ export type CabinetHomeProps = {
   onOpenProfile: () => void;
   onOpenTeam: () => void;
   onOpenEvents: () => void;
+  onOpenOffers: () => void;
   onOpenScanner: () => void;
 };
 
@@ -32,6 +33,7 @@ export function CabinetHome({
   onOpenProfile,
   onOpenTeam,
   onOpenEvents,
+  onOpenOffers,
   onOpenScanner,
 }: CabinetHomeProps) {
   const { colors } = useTheme();
@@ -67,6 +69,7 @@ export function CabinetHome({
 
         <View style={styles.group}>
           <Button label={t('cabinet.events')} onPress={onOpenEvents} />
+          <Button label={t('cabinet.offers')} onPress={onOpenOffers} />
           <Button variant="glass" label={t('staff.scanner')} onPress={onOpenScanner} />
           {role === 'owner' ? (
             <>
