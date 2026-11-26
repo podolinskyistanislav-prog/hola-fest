@@ -20,6 +20,11 @@ const ITEMS: readonly TabBarItem[] = [
     renderIcon: (props) => <TabIcon name="headphones" {...props} />,
   },
   {
+    id: 'feed',
+    label: t('tabs.feed'),
+    renderIcon: (props) => <TabIcon name="feed" {...props} />,
+  },
+  {
     id: 'tickets',
     label: t('tabs.tickets'),
     renderIcon: (props) => <TabIcon name="qr" {...props} />,
@@ -47,6 +52,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" />
       <Tabs.Screen name="map" />
       <Tabs.Screen name="djs" />
+      <Tabs.Screen name="feed" />
       <Tabs.Screen name="tickets" />
     </Tabs>
   );

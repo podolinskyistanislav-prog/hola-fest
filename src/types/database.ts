@@ -729,6 +729,39 @@ export type Database = {
           },
         ];
       };
+      venue_photos: {
+        Row: {
+          created_at: string;
+          id: string;
+          kind: string;
+          path: string;
+          venue_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          kind: string;
+          path: string;
+          venue_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          kind?: string;
+          path?: string;
+          venue_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'venue_photos_venue_id_fkey';
+            columns: ['venue_id'];
+            isOneToOne: false;
+            referencedRelation: 'venues';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       venues: {
         Row: {
           address: string | null;
@@ -905,6 +938,15 @@ export type Database = {
       is_event_public: { Args: { p_event_id: string }; Returns: boolean };
       is_superadmin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_venue_member: { Args: { p_role?: string; p_venue_id: string }; Returns: boolean };
+      list_venue_members: {
+        Args: { p_venue_id: string };
+        Returns: {
+          display_name: string;
+          handle: string;
+          role: string;
+          user_id: string;
+        }[];
+      };
       offer_effective_status: {
         Args: {
           p_offer: Omit<
