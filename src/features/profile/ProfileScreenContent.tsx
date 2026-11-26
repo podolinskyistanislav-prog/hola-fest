@@ -17,6 +17,8 @@ export interface ProfileScreenContentProps {
   onOpenApply?: () => void;
   /** Opens the venue cabinet (staff area) once a venue application is approved. */
   onOpenCabinet?: () => void;
+  /** Opens "Мій профіль діджея" once a DJ application is approved. */
+  onOpenDjCabinet?: () => void;
   /** Opens the superadmin queue of applications. */
   onOpenReview?: () => void;
 }
@@ -35,6 +37,7 @@ export function ProfileScreenContent({
   onOpenSetup,
   onOpenApply,
   onOpenCabinet,
+  onOpenDjCabinet,
   onOpenReview,
 }: ProfileScreenContentProps) {
   const insets = useSafeAreaInsets();
@@ -45,6 +48,9 @@ export function ProfileScreenContent({
   const superadmin = useIsSuperadmin(isAnonymous ? undefined : userId);
   const hasVenueCabinet = (applications.data ?? []).some(
     (application) => application.kind === 'venue' && application.status === 'approved',
+  );
+  const hasDjCabinet = (applications.data ?? []).some(
+    (application) => application.kind === 'dj' && application.status === 'approved',
   );
   const posts = useMyPosts(isAnonymous ? undefined : userId);
   const { signOut, isLoading: isSigningOut, error: signOutError } = useStaffLogin();
@@ -123,6 +129,9 @@ export function ProfileScreenContent({
       {hasIdentity ? null : <Button label={t('profile.setup')} onPress={onOpenSetup} />}
       {hasIdentity && hasVenueCabinet && onOpenCabinet ? (
         <Button label={t('profile.openCabinet')} onPress={onOpenCabinet} />
+      ) : null}
+      {hasIdentity && hasDjCabinet && onOpenDjCabinet ? (
+        <Button label={t('profile.openDj')} onPress={onOpenDjCabinet} />
       ) : null}
       {hasIdentity && onOpenApply ? (
         <Button variant="glass" label={t('profile.business')} onPress={onOpenApply} />

@@ -15,6 +15,8 @@ jest.mock('@/services/admin', () => ({
   setEventStatus: jest.fn(),
 }));
 
+jest.mock('@/services/eventDjs', () => ({ getEventDjs: jest.fn(), setEventDjs: jest.fn() }));
+
 function wrapper({ children }: { children: ReactNode }) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
@@ -36,10 +38,13 @@ const event: AdminEvent = {
 const submission = (status: 'draft' | 'published'): EventSubmission => ({
   input: { title: 'Ніч', startsAt: start },
   status,
+  djIds: ['d2', 'd1'],
 });
 
 function services() {
   return {
+    fetchDjs: jest.fn().mockResolvedValue([{ id: 'd1', name: 'Nova', photoUrl: null }]),
+    replaceDjs: jest.fn().mockResolvedValue(undefined),
     fetchVenues: jest.fn().mockResolvedValue([admin]),
     fetchEvent: jest.fn().mockResolvedValue(event),
     create: jest.fn().mockResolvedValue(event),
@@ -111,6 +116,46 @@ describe('useEventEditor', () => {
     });
     expect(ok).toBe(false);
     expect(s.create).not.toHaveBeenCalled();
+  });
+
+  it('loads the linked DJs and saves the picked ones after the event', async () => {
+    const s = services();
+    const { result } = await renderHook(() => useEventEditor('e1', s), { wrapper });
+    await waitFor(() => expect(result.current.lineupDjs).toHaveLength(1));
+    await act(async () => {
+      await result.current.save(submission('draft'));
+    });
+    expect(s.replaceDjs).toHaveBeenCalledWith('e1', ['d2', 'd1']);
+  });
+
+  it('links DJs to a newly created event', async () => {
+    const s = services();
+    const { result } = await renderHook(() => useEventEditor(undefined, s), { wrapper });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    await act(async () => {
+      await result.current.save(submission('draft'));
+    });
+    expect(s.fetchDjs).not.toHaveBeenCalled();
+    expect(s.replaceDjs).toHaveBeenCalledWith('e1', ['d2', 'd1']);
+  });
+
+  it('reports a save error when linking DJs fails', async () => {
+    const s = services();
+    s.replaceDjs.mockRejectedValue(new Error('boom'));
+    const { result } = await renderHook(() => useEventEditor(undefined, s), { wrapper });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    let ok = true;
+    await act(async () => {
+      ok = await result.current.save(submission('draft'));
+    });
+    expect(ok).toBe(false);
+  });
+
+  it('reports a load error when the linked DJs fail to load', async () => {
+    const s = services();
+    s.fetchDjs.mockRejectedValue(new Error('boom'));
+    const { result } = await renderHook(() => useEventEditor('e1', s), { wrapper });
+    await waitFor(() => expect(result.current.isLoadError).toBe(true));
   });
 
   it('reports a load error', async () => {

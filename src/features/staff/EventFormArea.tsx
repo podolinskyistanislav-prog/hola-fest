@@ -78,7 +78,9 @@ export function EventFormArea({
 
   return (
     <EventForm
-      initialValues={editor.event ? eventToFormValues(editor.event) : emptyEventForm}
+      initialValues={
+        editor.event ? eventToFormValues(editor.event, editor.lineupDjs) : emptyEventForm
+      }
       isNew={eventId === undefined}
       isSaving={editor.isSaving}
       isSaveError={editor.isSaveError}

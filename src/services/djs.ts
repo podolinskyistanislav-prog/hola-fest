@@ -74,23 +74,130 @@ export function groupDjs(events: readonly LineupEvent[]): Dj[] {
   );
 }
 
-/** DJs named in the lineup of published events in the next 30 days. */
-export async function getUpcomingDjs(now: Date = new Date()): Promise<Dj[]> {
+type ProfileGigRow = {
+  event: {
+    id: string;
+    title: string;
+    starts_at: string;
+    status: string;
+    venue: { name: string; is_published: boolean } | null;
+    offers: { title: string; is_active: boolean }[] | null;
+  } | null;
+};
+
+type ProfileRow = {
+  slug: string;
+  stage_name: string;
+  bio: string | null;
+  genres: string[] | null;
+  photo_path: string | null;
+  cover_path: string | null;
+  instagram_url: string | null;
+  soundcloud_url: string | null;
+  event_djs: ProfileGigRow[] | null;
+};
+
+const PROFILE_SELECT =
+  'slug, stage_name, bio, genres, photo_path, cover_path, instagram_url, soundcloud_url, ' +
+  'event_djs(event:events(id, title, starts_at, status, venue:venues(name, is_published), offers(title, is_active)))';
+
+/** Maps a client error to a generic one that is safe to show. */
+export function toDjsError(error: { message?: string }): DjsError {
+  const text = (error.message ?? '').toLowerCase();
+  return new DjsError(text.includes('fetch') || text.includes('network') ? 'network' : 'unknown');
+}
+
+/** Public URL of a file in the dj-media bucket. */
+export function djMediaUrl(path: string): string {
+  return supabase.storage.from('dj-media').getPublicUrl(path).data.publicUrl;
+}
+
+/** Gigs of event links that are published, at a published venue and start in [from, to). */
+export function profileGigs(links: readonly ProfileGigRow[], from: Date, to: Date): DjGig[] {
+  const gigs: DjGig[] = [];
+  for (const { event } of links) {
+    if (!event || event.status !== 'published' || !event.venue?.is_published) continue;
+    const startsAt = new Date(event.starts_at);
+    if (startsAt < from || startsAt >= to) continue;
+    gigs.push({
+      eventId: event.id,
+      title: event.title,
+      startsAt,
+      venueName: event.venue.name,
+      offerTitle: event.offers?.find((offer) => offer.is_active)?.title ?? null,
+    });
+  }
+  return gigs.sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+}
+
+function toProfileDj(row: ProfileRow, from: Date, to: Date): Dj {
+  return {
+    slug: row.slug,
+    name: row.stage_name,
+    genres: row.genres ?? [],
+    gigs: profileGigs(row.event_djs ?? [], from, to),
+    photoUrl: row.photo_path ? djMediaUrl(row.photo_path) : null,
+    coverUrl: row.cover_path ? djMediaUrl(row.cover_path) : null,
+    bio: row.bio,
+    instagramUrl: row.instagram_url,
+    soundcloudUrl: row.soundcloud_url,
+  };
+}
+
+function byNextGigThenName(a: Dj, b: Dj): number {
+  const next = (dj: Dj) => dj.gigs[0]?.startsAt.getTime() ?? Number.POSITIVE_INFINITY;
+  const left = next(a);
+  const right = next(b);
+  if (left !== right) return left < right ? -1 : 1;
+  return a.name.localeCompare(b.name, 'uk');
+}
+
+/**
+ * Published profiles first-class, lineup-text names as fallback: a lineup name that matches a profile
+ * (by its slug or by the slug of its stage name) adds its gigs and genres to that profile;
+ * any other name stays as before. Gigs are deduped by event.
+ */
+export function mergeProfilesWithLineup(profiles: readonly Dj[], lineupDjs: readonly Dj[]): Dj[] {
+  const merged = profiles.map((profile) => ({
+    ...profile,
+    genres: [...profile.genres],
+    gigs: [...profile.gigs],
+  }));
+  const bySlug = new Map<string, Dj>();
+  for (const dj of merged) {
+    bySlug.set(dj.slug, dj);
+    const nameSlug = djSlug(dj.name);
+    if (nameSlug !== '' && !bySlug.has(nameSlug)) bySlug.set(nameSlug, dj);
+  }
+  const fallback: Dj[] = [];
+  for (const lineup of lineupDjs) {
+    const target = bySlug.get(lineup.slug);
+    if (!target) {
+      fallback.push(lineup);
+      continue;
+    }
+    const known = new Set(target.gigs.map((gig) => gig.eventId));
+    for (const gig of lineup.gigs) if (!known.has(gig.eventId)) target.gigs.push(gig);
+    for (const genre of lineup.genres)
+      if (!target.genres.includes(genre)) target.genres.push(genre);
+    target.gigs.sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+  }
+  return [...merged, ...fallback].sort(byNextGigThenName);
+}
+
+async function getLineupTextDjs(from: Date, to: Date): Promise<Dj[]> {
   const { data, error } = await supabase
     .from('events')
     .select('id, title, starts_at, tags, lineup, venue:venues!inner(name), offers(title)')
     .eq('status', 'published')
     .eq('venues.is_published', true)
     .eq('offers.is_active', true)
-    .gte('starts_at', now.toISOString())
-    .lt('starts_at', new Date(now.getTime() + UPCOMING_DAYS * DAY_MS).toISOString())
+    .gte('starts_at', from.toISOString())
+    .lt('starts_at', to.toISOString())
     .order('starts_at', { ascending: true })
     .returns<DjEventRow[]>();
 
-  if (error) {
-    const text = (error.message ?? '').toLowerCase();
-    throw new DjsError(text.includes('fetch') || text.includes('network') ? 'network' : 'unknown');
-  }
+  if (error) throw toDjsError(error);
   return groupDjs(
     (data ?? []).map((row) => ({
       eventId: row.id,
@@ -102,6 +209,29 @@ export async function getUpcomingDjs(now: Date = new Date()): Promise<Dj[]> {
       offerTitle: row.offers?.[0]?.title ?? null,
     })),
   );
+}
+
+async function getPublishedProfileDjs(from: Date, to: Date): Promise<Dj[]> {
+  const { data, error } = await supabase
+    .from('djs')
+    .select(PROFILE_SELECT)
+    .eq('is_published', true)
+    .returns<ProfileRow[]>();
+  if (error) throw toDjsError(error);
+  return (data ?? []).map((row) => toProfileDj(row, from, to));
+}
+
+/**
+ * Published DJ profiles (photo, bio, links, gigs from `event_djs`) plus names that only appear in
+ * the lineup text of published events in the next 30 days.
+ */
+export async function getUpcomingDjs(now: Date = new Date()): Promise<Dj[]> {
+  const to = new Date(now.getTime() + UPCOMING_DAYS * DAY_MS);
+  const [profiles, lineupDjs] = await Promise.all([
+    getPublishedProfileDjs(now, to),
+    getLineupTextDjs(now, to),
+  ]);
+  return mergeProfilesWithLineup(profiles, lineupDjs);
 }
 
 /** One DJ of the upcoming list by slug, or null. */
@@ -116,6 +246,5 @@ export async function setMyDjPublished(published: boolean): Promise<void> {
   if (!error) return;
   if (error.code === '42501') throw new DjsError('forbidden');
   if (error.code === 'P0002') throw new DjsError('no_profile');
-  const text = (error.message ?? '').toLowerCase();
-  throw new DjsError(text.includes('fetch') || text.includes('network') ? 'network' : 'unknown');
+  throw toDjsError(error);
 }
