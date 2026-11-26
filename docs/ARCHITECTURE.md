@@ -85,6 +85,7 @@ account_applications id, user_id → profiles, kind ('venue' | 'dj'), payload js
               ('pending' | 'approved' | 'rejected'), reject_reason, created_at, decided_by, decided_at; one pending per user + kind
 venue_invites id, venue_id → venues, email (lowercase), role ('admin' | 'host'), token_hash unique (sha256), invited_by,
               expires_at (7 days), accepted_by, accepted_at; one open invite per venue + email
+venue_photos  id, venue_id → venues, kind ('outside' | 'inside'), path unique (must start with `<venue_id>/`, file in `venue-media`), created_at
 djs           id, user_id → profiles unique null, stage_name (2–40), slug unique, bio ≤1000, genres text[], photo_path, cover_path,
               instagram_url, soundcloud_url, is_published bool, created_at
 event_djs     PK(event_id → events, dj_id → djs), position int (events.lineup text[] stays as a fallback)
@@ -111,6 +112,7 @@ Indexes: `events(venue_id, starts_at)`, `events using gin(tags)`, `events(starts
 | user_blocks   | the blocker                                                                                       | confirmed, non-banned users, as themself  |
 | account_applications | the applicant; superadmin reads all | confirmed, non-banned users insert their own (`pending`; columns `id, kind, payload`); decisions only via `approve_application` / `reject_application` (superadmin) |
 | venue_invites | venue `owner` of that venue; superadmin (never `token_hash`) | `create_venue_invite` (owner / superadmin), `accept_venue_invite` (invited confirmed user); owner cancels open invites |
+| venue_photos  | everyone, where the venue `is_published`; members of the venue; superadmin | venue `owner` / `admin` and superadmin insert and delete (no update); `list_venue_members(venue)` (security definer, owner / admin / superadmin only) returns the team with `display_name` / `handle` because profiles are private |
 | djs           | everyone, where `is_published`; the DJ reads their own; superadmin | the DJ edits own profile (not `user_id`, `slug`, `is_published` — trigger); superadmin inserts / deletes |
 | event_djs     | everyone for public events + published DJs; venue members of that venue | venue `admin` / `owner` of the event's venue (published DJs only), superadmin |
 
