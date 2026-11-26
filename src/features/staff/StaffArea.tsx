@@ -1,5 +1,6 @@
 import { useIsSuperadmin } from '@/features/applications/useApplications';
 import { useSession, useStaffLogin } from '@/features/auth';
+import { useCabinetVenue } from '@/features/cabinet';
 
 import { StaffHome } from './StaffHome';
 import { useStaffAccess } from './useStaffAccess';
@@ -8,6 +9,8 @@ type StaffAreaProps = {
   onOpenScanner: () => void;
   onOpenVenueEvents: () => void;
   onOpenApplications: () => void;
+  onOpenCabinet: () => void;
+  onOpenAcceptInvite: () => void;
   onSignedOut: () => void;
 };
 
@@ -16,9 +19,12 @@ export function StaffArea({
   onOpenScanner,
   onOpenVenueEvents,
   onOpenApplications,
+  onOpenCabinet,
+  onOpenAcceptInvite,
   onSignedOut,
 }: StaffAreaProps) {
   const { access, isLoading, isError, retry } = useStaffAccess();
+  const { venue: cabinetVenue } = useCabinetVenue();
   const { session } = useSession();
   const superadmin = useIsSuperadmin(session?.user.id);
   const { signOut, isLoading: isSigningOut, error } = useStaffLogin();
@@ -38,6 +44,8 @@ export function StaffArea({
       onOpenScanner={onOpenScanner}
       onOpenVenueEvents={onOpenVenueEvents}
       onOpenApplications={superadmin.data === true ? onOpenApplications : undefined}
+      onOpenCabinet={cabinetVenue ? onOpenCabinet : undefined}
+      onOpenAcceptInvite={access !== null && !access.canScan ? onOpenAcceptInvite : undefined}
       onSignOut={handleSignOut}
     />
   );

@@ -135,6 +135,11 @@ export async function updateVenueProfile(
   }
 }
 
+/** Public URL of a file in `venue-media` (the bucket is public). */
+export function venueMediaUrl(path: string): string {
+  return supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl;
+}
+
 function randomSuffix(): string {
   return Math.random().toString(36).slice(2, 10);
 }

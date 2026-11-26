@@ -18,6 +18,10 @@ export type StaffHomeProps = {
   onOpenVenueEvents: () => void;
   /** Given only to a superadmin: opens the queue of account applications. */
   onOpenApplications?: () => void;
+  /** Given to an owner or admin: opens the "Мій заклад" cabinet. */
+  onOpenCabinet?: () => void;
+  /** Joins a venue team with an invite token. */
+  onOpenAcceptInvite?: () => void;
   onSignOut: () => void;
 };
 
@@ -31,6 +35,8 @@ export function StaffHome({
   onOpenScanner,
   onOpenVenueEvents,
   onOpenApplications,
+  onOpenCabinet,
+  onOpenAcceptInvite,
   onSignOut,
 }: StaffHomeProps) {
   const { colors } = useTheme();
@@ -56,12 +62,23 @@ export function StaffHome({
 
       {isEmpty ? <AppText tone="muted">{t('staff.empty')}</AppText> : null}
 
-      {access?.canScan ? <Button label={t('staff.scanner')} onPress={onOpenScanner} /> : null}
+      {onOpenCabinet ? <Button label={t('cabinet.title')} onPress={onOpenCabinet} /> : null}
+      {access?.canScan ? (
+        <Button
+          variant={onOpenCabinet ? 'glass' : 'primary'}
+          label={t('staff.scanner')}
+          onPress={onOpenScanner}
+        />
+      ) : null}
       {access?.canManageEvents ? (
         <Button variant="glass" label={t('staff.venueEvents')} onPress={onOpenVenueEvents} />
       ) : null}
       {onOpenApplications ? (
         <Button variant="glass" label={t('staff.applications')} onPress={onOpenApplications} />
+      ) : null}
+
+      {onOpenAcceptInvite ? (
+        <Button variant="glass" label={t('cabinet.haveInvite')} onPress={onOpenAcceptInvite} />
       ) : null}
 
       {signOutError ? (
