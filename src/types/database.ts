@@ -1020,6 +1020,7 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      set_my_dj_published: { Args: { p_published: boolean }; Returns: undefined };
       set_offer_status: {
         Args: { p_from: string[]; p_offer_id: string; p_to: string };
         Returns: {

@@ -1,11 +1,12 @@
 import { djSlug, normalizeDjName } from '@/lib/djName';
 
-import { getDjBySlug, getUpcomingDjs, groupDjs } from './djs';
+import { DjsError, getDjBySlug, getUpcomingDjs, groupDjs, setMyDjPublished } from './djs';
 import { supabase } from './supabase';
 
-jest.mock('./supabase', () => ({ supabase: { from: jest.fn() } }));
+jest.mock('./supabase', () => ({ supabase: { from: jest.fn(), rpc: jest.fn() } }));
 
 const from = supabase.from as unknown as jest.Mock;
+const rpc = supabase.rpc as unknown as jest.Mock;
 
 function mockQuery(result: { data: unknown; error: { message: string } | null }) {
   const query: Record<string, jest.Mock> = {};
@@ -133,5 +134,28 @@ describe('getDjBySlug', () => {
     expect((await getDjBySlug(djSlug('Влад Котик')))?.name).toBe('Влад Котик');
     mockQuery({ data: [], error: null });
     expect(await getDjBySlug('nobody')).toBeNull();
+  });
+});
+
+describe('setMyDjPublished', () => {
+  beforeEach(() => rpc.mockReset());
+
+  it('calls the RPC with the flag', async () => {
+    rpc.mockResolvedValue({ error: null });
+    await setMyDjPublished(false);
+    expect(rpc).toHaveBeenCalledWith('set_my_dj_published', { p_published: false });
+  });
+
+  it('maps forbidden, missing profile, network and unknown errors', async () => {
+    rpc.mockResolvedValueOnce({ error: { code: '42501', message: 'secret' } });
+    await expect(setMyDjPublished(true)).rejects.toMatchObject({ code: 'forbidden' });
+    rpc.mockResolvedValueOnce({ error: { code: 'P0002', message: 'x' } });
+    await expect(setMyDjPublished(true)).rejects.toMatchObject({ code: 'no_profile' });
+    rpc.mockResolvedValueOnce({ error: { message: 'Failed to fetch' } });
+    await expect(setMyDjPublished(true)).rejects.toMatchObject({ code: 'network' });
+    rpc.mockResolvedValueOnce({ error: { message: 'boom' } });
+    const failure = await setMyDjPublished(true).catch((e: unknown) => e);
+    expect(failure).toBeInstanceOf(DjsError);
+    expect(failure).toMatchObject({ code: 'unknown' });
   });
 });

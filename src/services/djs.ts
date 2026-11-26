@@ -3,7 +3,7 @@ import type { Dj, DjGig } from '@/types/djs';
 
 import { supabase } from './supabase';
 
-export type DjsErrorCode = 'network' | 'unknown';
+export type DjsErrorCode = 'forbidden' | 'no_profile' | 'network' | 'unknown';
 
 /** Generic, safe-to-show error. Never contains server messages. */
 export class DjsError extends Error {
@@ -108,4 +108,14 @@ export async function getUpcomingDjs(now: Date = new Date()): Promise<Dj[]> {
 export async function getDjBySlug(slug: string, now: Date = new Date()): Promise<Dj | null> {
   const djs = await getUpcomingDjs(now);
   return djs.find((dj) => dj.slug === slug) ?? null;
+}
+
+/** Publishes or unpublishes the signed-in DJ's own profile. The server enforces ownership. */
+export async function setMyDjPublished(published: boolean): Promise<void> {
+  const { error } = await supabase.rpc('set_my_dj_published', { p_published: published });
+  if (!error) return;
+  if (error.code === '42501') throw new DjsError('forbidden');
+  if (error.code === 'P0002') throw new DjsError('no_profile');
+  const text = (error.message ?? '').toLowerCase();
+  throw new DjsError(text.includes('fetch') || text.includes('network') ? 'network' : 'unknown');
 }
