@@ -91,7 +91,7 @@ djs           id, user_id → profiles unique null, stage_name (2–40), slug un
 event_djs     PK(event_id → events, dj_id → djs), position int (events.lineup text[] stays as a fallback)
 ```
 
-View `feed_posts` (owner view, applies its own filters): visible posts with author name (venue name when posted as a club), handle, avatar, `label` (`club` > `dj` > `hola` (superadmin) > null), `like_count`, `comment_count`, `liked_by_me`; excludes hidden posts, banned authors and authors the caller blocked. Storage bucket `feed-images`: public read, 5 MB, jpeg/png/webp, write only under `<uid>/…` by confirmed non-banned users.
+View `feed_posts` (owner view, applies its own filters): visible posts with author name (venue name when posted as a club), handle, avatar, `label` (`club` > `dj` > `hola` (superadmin) > null), `like_count`, `comment_count`, `liked_by_me`; excludes hidden posts, banned authors and authors the caller blocked. Views `feed_comments` (visible comments with author name/handle/avatar/label; excludes hidden comments, banned or blocked authors, and replies under hidden/blocked parents) and `feed_authors` (author lookup by handle; excludes banned and blocked) follow the same owner-view pattern. `post_reports.reporter_id` and `user_blocks.blocker_id` default to `auth.uid()` (policies still require it). Storage bucket `feed-images`: public read, 5 MB, jpeg/png/webp, write only under `<uid>/…` by confirmed non-banned users.
 
 Indexes: `events(venue_id, starts_at)`, `events using gin(tags)`, `events(starts_at) where status='published'`, `claims(offer_id)`, `claims(user_id)`.
 

@@ -63,7 +63,21 @@ export type Database = {
             foreignKeyName: 'account_applications_decided_by_fkey';
             columns: ['decided_by'];
             isOneToOne: false;
+            referencedRelation: 'feed_authors';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'account_applications_decided_by_fkey';
+            columns: ['decided_by'];
+            isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'account_applications_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_authors';
             referencedColumns: ['id'];
           },
           {
@@ -126,7 +140,21 @@ export type Database = {
             foreignKeyName: 'claims_redeemed_by_fkey';
             columns: ['redeemed_by'];
             isOneToOne: false;
+            referencedRelation: 'feed_authors';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'claims_redeemed_by_fkey';
+            columns: ['redeemed_by'];
+            isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'claims_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_authors';
             referencedColumns: ['id'];
           },
           {
@@ -183,6 +211,13 @@ export type Database = {
           user_id?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: 'djs_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'feed_authors';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'djs_user_id_fkey';
             columns: ['user_id'];
@@ -389,7 +424,21 @@ export type Database = {
             foreignKeyName: 'post_comments_author_id_fkey';
             columns: ['author_id'];
             isOneToOne: false;
+            referencedRelation: 'feed_authors';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_comments_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_comments_parent_id_fkey';
+            columns: ['parent_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_comments';
             referencedColumns: ['id'];
           },
           {
@@ -451,6 +500,13 @@ export type Database = {
             foreignKeyName: 'post_likes_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
+            referencedRelation: 'feed_authors';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_likes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
@@ -472,7 +528,7 @@ export type Database = {
           id?: string;
           post_id?: string | null;
           reason: string;
-          reporter_id: string;
+          reporter_id?: string;
         };
         Update: {
           comment_id?: string | null;
@@ -483,6 +539,13 @@ export type Database = {
           reporter_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'post_reports_comment_id_fkey';
+            columns: ['comment_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_comments';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'post_reports_comment_id_fkey';
             columns: ['comment_id'];
@@ -502,6 +565,13 @@ export type Database = {
             columns: ['post_id'];
             isOneToOne: false;
             referencedRelation: 'posts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_reports_reporter_id_fkey';
+            columns: ['reporter_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_authors';
             referencedColumns: ['id'];
           },
           {
@@ -560,6 +630,13 @@ export type Database = {
             foreignKeyName: 'posts_author_id_fkey';
             columns: ['author_id'];
             isOneToOne: false;
+            referencedRelation: 'feed_authors';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'posts_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
@@ -608,7 +685,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           blocked_id: string;
-          blocker_id: string;
+          blocker_id?: string;
           created_at?: string;
         };
         Update: {
@@ -621,7 +698,21 @@ export type Database = {
             foreignKeyName: 'user_blocks_blocked_id_fkey';
             columns: ['blocked_id'];
             isOneToOne: false;
+            referencedRelation: 'feed_authors';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'user_blocks_blocked_id_fkey';
+            columns: ['blocked_id'];
+            isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'user_blocks_blocker_id_fkey';
+            columns: ['blocker_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_authors';
             referencedColumns: ['id'];
           },
           {
@@ -676,7 +767,21 @@ export type Database = {
             foreignKeyName: 'venue_invites_accepted_by_fkey';
             columns: ['accepted_by'];
             isOneToOne: false;
+            referencedRelation: 'feed_authors';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'venue_invites_accepted_by_fkey';
+            columns: ['accepted_by'];
+            isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'venue_invites_invited_by_fkey';
+            columns: ['invited_by'];
+            isOneToOne: false;
+            referencedRelation: 'feed_authors';
             referencedColumns: ['id'];
           },
           {
@@ -713,6 +818,13 @@ export type Database = {
           venue_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'venue_members_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_authors';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'venue_members_user_id_fkey';
             columns: ['user_id'];
@@ -810,6 +922,90 @@ export type Database = {
       };
     };
     Views: {
+      feed_authors: {
+        Row: {
+          avatar_path: string | null;
+          handle: string | null;
+          id: string;
+          label: string | null;
+          name: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          avatar_path?: string | null;
+          handle?: string | null;
+          id?: string | null;
+          label?: never;
+          name?: string | null;
+        };
+        Update: {
+          avatar_path?: string | null;
+          handle?: string | null;
+          id?: string | null;
+          label?: never;
+          name?: string | null;
+        };
+        Relationships: [];
+      };
+      feed_comments: {
+        Row: {
+          author_avatar_path: string | null;
+          author_handle: string | null;
+          author_id: string;
+          author_name: string | null;
+          body: string;
+          created_at: string;
+          id: string;
+          label: string | null;
+          parent_id: string | null;
+          post_id: string;
+        };
+        ComputedFields: never;
+        Relationships: [
+          {
+            foreignKeyName: 'post_comments_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_authors';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_comments_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_comments_parent_id_fkey';
+            columns: ['parent_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_comments';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_comments_parent_id_fkey';
+            columns: ['parent_id'];
+            isOneToOne: false;
+            referencedRelation: 'post_comments';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_comments_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_posts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'post_comments_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'posts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       feed_posts: {
         Row: {
           as_venue_id: string | null;
@@ -834,6 +1030,13 @@ export type Database = {
             columns: ['as_venue_id'];
             isOneToOne: false;
             referencedRelation: 'venues';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'posts_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'feed_authors';
             referencedColumns: ['id'];
           },
           {
