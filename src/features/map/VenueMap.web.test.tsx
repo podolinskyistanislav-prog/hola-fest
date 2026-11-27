@@ -47,10 +47,10 @@ async function post(data: unknown, source: unknown = undefined) {
 }
 
 describe('VenueMap (web)', () => {
-  it('shows the Leaflet page in an iframe', async () => {
+  it('shows the MapLibre page in an iframe', async () => {
     await mount(jest.fn());
     const [frame] = screen.container.queryAll((node) => node.type === 'iframe');
-    expect(frame?.props.srcDoc).toContain('leaflet');
+    expect(frame?.props.srcDoc).toContain('maplibre-gl');
   });
 
   it('selects the venue when the page reports a pin press', async () => {

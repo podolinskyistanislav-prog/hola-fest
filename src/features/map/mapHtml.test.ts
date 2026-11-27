@@ -1,33 +1,44 @@
-import { buildMapHtml, LEAFLET_CSS_SRI, LEAFLET_JS_SRI, MAP_ATTRIBUTION, tileUrl } from './mapHtml';
+import {
+  buildMapHtml,
+  MAPLIBRE_CSS_SRI,
+  MAPLIBRE_JS_SRI,
+  MAP_ATTRIBUTION,
+  styleUrl,
+} from './mapHtml';
 
 const options = { scheme: 'dark', interactive: true, compact: false } as const;
 
-describe('tileUrl', () => {
-  it('uses dark tiles in the dark theme and light tiles in the light one', () => {
-    expect(tileUrl('dark')).toContain('/dark_all/');
-    expect(tileUrl('light')).toContain('/light_all/');
+describe('styleUrl', () => {
+  it('uses the OpenFreeMap dark style in the dark theme and Positron in the light one', () => {
+    expect(styleUrl('dark')).toBe('https://tiles.openfreemap.org/styles/dark');
+    expect(styleUrl('light')).toBe('https://tiles.openfreemap.org/styles/positron');
   });
 });
 
 describe('buildMapHtml', () => {
-  it('loads a pinned Leaflet with integrity hashes', () => {
+  it('loads a pinned MapLibre GL with sha384 integrity hashes', () => {
     const html = buildMapHtml(options);
-    expect(html).toContain('leaflet@1.9.4');
-    expect(html).toContain(LEAFLET_CSS_SRI);
-    expect(html).toContain(LEAFLET_JS_SRI);
+    expect(html).toContain('maplibre-gl@5.9.0');
+    expect(html).toContain(MAPLIBRE_CSS_SRI);
+    expect(html).toContain(MAPLIBRE_JS_SRI);
+    expect(MAPLIBRE_JS_SRI).toMatch(/^sha384-/);
   });
 
-  it('credits OpenStreetMap and CARTO', () => {
+  it('needs no API key and no longer uses CARTO', () => {
     const html = buildMapHtml(options);
-    expect(MAP_ATTRIBUTION).toContain('OpenStreetMap');
-    expect(MAP_ATTRIBUTION).toContain('CARTO');
-    expect(html).toContain('OpenStreetMap');
-    expect(html).toContain('CARTO');
+    expect(html).not.toContain('cartocdn');
+    expect(html).not.toMatch(/api[_-]?key/i);
   });
 
-  it('picks the tile set from the theme', () => {
-    expect(buildMapHtml({ ...options, scheme: 'dark' })).toContain('dark_all');
-    expect(buildMapHtml({ ...options, scheme: 'light' })).toContain('light_all');
+  it('credits OpenFreeMap, OpenMapTiles and OpenStreetMap', () => {
+    expect(MAP_ATTRIBUTION).toContain('OpenFreeMap');
+    expect(MAP_ATTRIBUTION).toContain('OpenMapTiles');
+    expect(buildMapHtml(options)).toContain('OpenStreetMap');
+  });
+
+  it('picks the style from the theme', () => {
+    expect(buildMapHtml({ ...options, scheme: 'dark' })).toContain('styles/dark');
+    expect(buildMapHtml({ ...options, scheme: 'light' })).toContain('styles/positron');
   });
 
   it('passes the interactive and compact flags to the page', () => {
@@ -37,7 +48,7 @@ describe('buildMapHtml', () => {
   });
 
   it('centres the selected pin in a compact preview as well as in the full map', () => {
-    expect(buildMapHtml(options)).toContain('(cfg.interactive || cfg.compact)) map.panTo');
+    expect(buildMapHtml(options)).toContain('(cfg.interactive || cfg.compact)) map.easeTo');
   });
 
   it('draws pins as a label pill and a dot, with an enlarged selected state', () => {
