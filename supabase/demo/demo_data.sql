@@ -12,6 +12,9 @@ begin;
 -- 1. Remove the previous demo run (offers and claims go with their events).
 delete from public.events where id::text like 'dddddddd-%';
 delete from public.venues where id::text like 'dddddddd-%';
+delete from public.djs where id::text like 'dddddddd-%';
+-- Demo accounts: their profiles and applications go with them.
+delete from auth.users where id::text like 'dddddddd-%';
 
 -- 2. Real venues stay as they are, just published.
 update public.venues set is_published = true
@@ -92,6 +95,48 @@ from (
   from new_events
   where random() < case when starts_at < now() + interval '1 day' then 0.85 else 0.6 end
 ) as o;
+
+-- 6. Demo DJ profiles for every name used in the demo lineups (not linked to a user, so a real
+--    DJ can claim one through an application), and the lineup links for the demo events.
+insert into public.djs (id, stage_name, slug, bio, genres, is_published)
+select
+  ('dddddddd-0000-4000-8000-0000000001' || lpad(n::text, 2, '0'))::uuid,
+  name,
+  'demo-' || slug,
+  'Демо-профіль діджея: тут буде біографія.',
+  genres,
+  true
+from (
+  values
+    (1, 'DJ Kora', 'dj-kora', array['techno']),
+    (2, 'Nova Waves', 'nova-waves', array['house']),
+    (3, 'Marta Lux', 'marta-lux', array['house', 'disco']),
+    (4, 'Kyiv Pulse', 'kyiv-pulse', array['techno']),
+    (5, 'Lemko', 'lemko', array['house']),
+    (6, 'Dnipro Drift', 'dnipro-drift', array['techno']),
+    (7, 'Selecta Yana', 'selecta-yana', array['disco']),
+    (8, 'Tolik Bass', 'tolik-bass', array['techno']),
+    (9, 'Ostap b2b Ira', 'ostap-b2b-ira', array['house']),
+    (10, 'Mira Sound', 'mira-sound', array['house'])
+) as d (n, name, slug, genres);
+
+insert into public.event_djs (event_id, dj_id, position)
+select e.id, d.id, row_number() over (partition by e.id order by u.ord) - 1
+from public.events e
+cross join lateral unnest(e.lineup) with ordinality as u (name, ord)
+join public.djs d on d.stage_name = u.name and d.id::text like 'dddddddd-%'
+where e.id::text like 'dddddddd-%';
+
+-- 7. One pending application of each kind, from demo accounts (no password: nobody can sign in as them).
+insert into auth.users (id, instance_id, aud, role, email, is_anonymous) values
+  ('dddddddd-0000-4000-8000-000000000201', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'demo-venue-applicant@example.invalid', false),
+  ('dddddddd-0000-4000-8000-000000000202', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'demo-dj-applicant@example.invalid', false);
+
+insert into public.account_applications (id, user_id, kind, payload) values
+  ('dddddddd-0000-4000-8000-000000000301', 'dddddddd-0000-4000-8000-000000000201', 'venue',
+   '{"name":"Демо-клуб Пріоритет","address":"вул. Саксаганського, 12","contact":"@demo_club"}'),
+  ('dddddddd-0000-4000-8000-000000000302', 'dddddddd-0000-4000-8000-000000000202', 'dj',
+   '{"stage_name":"DJ Демо","contact":"@demo_dj"}');
 
 commit;
 
