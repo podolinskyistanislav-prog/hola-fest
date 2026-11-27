@@ -4,7 +4,8 @@ import { filterFeedText } from './feed-filter.ts';
 // The demo feed in supabase/demo/demo_data.sql must obey docs/FEED_RULES.md: every demo post and
 // comment has to pass the same server filter real users go through.
 const demoSql = await Deno.readTextFile(new URL('../../demo/demo_data.sql', import.meta.url));
-const feedSection = demoSql.slice(demoSql.indexOf('-- 8. Feed'));
+// Drop SQL comment lines first: an apostrophe in a comment would shift the quote pairing.
+const feedSection = demoSql.slice(demoSql.indexOf('-- 8. Feed')).replace(/^\s*--.*$/gm, '');
 const demoTexts = [...feedSection.matchAll(/'((?:[^']|'')+)'/g)]
   .map((match) => match[1])
   .filter((text) => /[А-Яа-яІіЇїЄє]/.test(text) && text.length > 25);
