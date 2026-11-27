@@ -15,7 +15,7 @@ describe('SignInToPostSheet', () => {
   beforeEach(() => jest.resetAllMocks());
 
   it('goes email → code → confirmed', async () => {
-    jest.mocked(requestEmailCode).mockResolvedValue(undefined);
+    jest.mocked(requestEmailCode).mockResolvedValue('upgrade');
     jest.mocked(confirmEmailCode).mockResolvedValue(undefined);
     const onConfirmed = jest.fn();
     await render(<SignInToPostSheet visible onClose={jest.fn()} onConfirmed={onConfirmed} />);
@@ -29,11 +29,21 @@ describe('SignInToPostSheet', () => {
     await fireEvent.press(screen.getByLabelText(t('feedAuth.confirm')));
 
     await waitFor(() => expect(onConfirmed).toHaveBeenCalled());
-    expect(confirmEmailCode).toHaveBeenCalledWith('a@b.ua', '123456');
+    expect(confirmEmailCode).toHaveBeenCalledWith('a@b.ua', '123456', 'upgrade');
+  });
+
+  it('explains that an existing account will be signed in to', async () => {
+    jest.mocked(requestEmailCode).mockResolvedValue('signin');
+    await render(<SignInToPostSheet visible onClose={jest.fn()} onConfirmed={jest.fn()} />);
+
+    await fireEvent.changeText(screen.getByLabelText(t('auth.email')), 'staff@b.ua');
+    await fireEvent.press(screen.getByLabelText(t('feedAuth.sendCode')));
+
+    await waitFor(() => expect(screen.getByText(t('feedAuth.existingAccount'))).toBeTruthy());
   });
 
   it('shows an error and stays on the code step for a wrong code', async () => {
-    jest.mocked(requestEmailCode).mockResolvedValue(undefined);
+    jest.mocked(requestEmailCode).mockResolvedValue('upgrade');
     jest.mocked(confirmEmailCode).mockRejectedValue(new Error('bad'));
     const onConfirmed = jest.fn();
     await render(<SignInToPostSheet visible onClose={jest.fn()} onConfirmed={onConfirmed} />);

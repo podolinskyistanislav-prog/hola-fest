@@ -16,7 +16,8 @@ export interface SignInToPostSheetProps {
 
 /** "Підтверди пошту": email, then the 6-digit code. The guest keeps the same account. */
 export function SignInToPostSheet({ visible, onClose, onConfirmed }: SignInToPostSheetProps) {
-  const { step, email, requestCode, confirm, changeEmail, isLoading, error } = useEmailUpgrade();
+  const { step, email, mode, requestCode, confirm, changeEmail, isLoading, error } =
+    useEmailUpgrade();
   const [emailInput, setEmailInput] = useState('');
   const [code, setCode] = useState('');
 
@@ -54,6 +55,9 @@ export function SignInToPostSheet({ visible, onClose, onConfirmed }: SignInToPos
         </View>
       ) : (
         <View style={styles.body}>
+          {mode === 'signin' ? (
+            <AppText tone="muted">{t('feedAuth.existingAccount')}</AppText>
+          ) : null}
           <AppText tone="muted">{`${t('feedAuth.codeHint')} ${email}`}</AppText>
           <TextField
             label={t('feedAuth.codeLabel')}
