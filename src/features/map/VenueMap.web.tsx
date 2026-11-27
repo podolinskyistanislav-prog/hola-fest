@@ -13,7 +13,7 @@ export type { VenueMapProps } from './types';
 
 const FRAME_STYLE = { border: 0, width: '100%', height: '100%' } as const;
 
-/** The venue map on web: the same Leaflet page as native, in an iframe. */
+/** The venue map on web: the same MapLibre page as native, in an iframe. */
 export function VenueMap({
   venues,
   selectedId,

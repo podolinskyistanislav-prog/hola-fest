@@ -11,3 +11,7 @@
 - `react-native-maps`, `expo-build-properties` and the R8 keep rules (needed only for WorkManager pulled in by `react-native-maps`) are removed.
 
 **Consequences.** The map is real on every platform with no key. Tiles and Leaflet need network; offline the map is a blank surface with the pins missing (the venue card and list still work). CARTO's free tiles have fair-use limits; revisit before a large public launch. Pins are not native views, so VoiceOver/TalkBack cannot focus them; the venue card remains the accessible path.
+
+## Update 2026-11-27: MapLibre + OpenFreeMap instead of Leaflet + CARTO
+
+CARTO now requires an API key for its raster basemaps and watermarks tiles requested without one ("API KEY REQUIRED"). Its free key is for non-commercial use only. The map page now uses **MapLibre GL JS 5.9.0** (pinned on unpkg, with sha384 SRI) and **OpenFreeMap** vector styles: `dark` in the dark theme and `positron` in the light one. OpenFreeMap is free, with no key, no registration and no usage limits. The WebView/iframe approach and the app ↔ map message protocol are unchanged. Vector tiles also make panning and zooming smoother. Attribution: OpenFreeMap © OpenMapTiles © OpenStreetMap contributors.

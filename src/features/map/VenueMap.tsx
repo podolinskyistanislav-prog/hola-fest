@@ -13,7 +13,7 @@ import { useMapSync } from './useMapSync';
 export type { VenueMapProps } from './types';
 
 /**
- * The venue map on iOS and Android: one Leaflet page (OpenStreetMap data, no API key) in a WebView.
+ * The venue map on iOS and Android: one MapLibre page (OpenFreeMap tiles, no API key) in a WebView.
  * The web twin is `VenueMap.web.tsx`; both show the same HTML.
  */
 export function VenueMap({
