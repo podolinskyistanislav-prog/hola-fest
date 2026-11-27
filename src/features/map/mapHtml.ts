@@ -22,18 +22,26 @@ export const MAPLIBRE_CSS_SRI =
 export const MAPLIBRE_JS_SRI =
   'sha384-81ppUWZZO+pveTPk4qU9cZuScEFULHfuOMHVJHFZ7xVBlWQTG1zsPrVIMGAl1WMb';
 
-/** OpenFreeMap vector styles (free, no key, no limits): dark in the dark theme, Positron in the light one. */
-export function styleUrl(scheme: MapScheme): string {
-  return `https://tiles.openfreemap.org/styles/${scheme === 'dark' ? 'dark' : 'positron'}`;
+/**
+ * OpenFreeMap Positron (free, no key, no limits) in both themes. OpenFreeMap's own Dark style is
+ * unfinished and renders blank, so the dark theme inverts the Positron canvas instead (pins are DOM
+ * markers above the canvas and keep their colours).
+ */
+export function styleUrl(_scheme: MapScheme): string {
+  return 'https://tiles.openfreemap.org/styles/positron';
 }
 
-/** Shown in the map corner; the styles' own source attribution is added by MapLibre too. */
+/** The credit OpenFreeMap asks for (the styles also add it themselves). */
 export const MAP_ATTRIBUTION =
   '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> © <a href="https://www.openmaptiles.org/" target="_blank">OpenMapTiles</a> © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>';
+
+/** Dark theme: invert the light basemap canvas into a dark one. */
+export const DARK_CANVAS_FILTER = 'invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9)';
 
 const STYLE = `
 html,body,#map{margin:0;height:100%;width:100%;background:var(--bg);}
 .maplibregl-map{font-family:-apple-system,system-ui,sans-serif;}
+.maplibregl-ctrl-top-right{top:76px;}
 .pin{display:flex;flex-direction:column;align-items:center;gap:6px;transform-origin:50% 100%;transition:transform .15s;cursor:pointer;}
 .pin-label{padding:0 10px;height:28px;border-radius:14px;line-height:28px;font-size:12px;font-weight:600;white-space:nowrap;color:var(--on-accent);background:var(--accent);}
 .pin-halo{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--halo);}
@@ -59,11 +67,13 @@ const SCRIPT = `
     touchPitch: false,
     attributionControl: false,
   });
-  map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: cfg.attribution }));
-  if (cfg.interactive) {
-    map.touchZoomRotate.disableRotation();
-    if (!cfg.compact) map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-  }
+  // The styles carry their own attribution; keep it as a small (i) button so it never covers the UI.
+  map.addControl(new maplibregl.AttributionControl({ compact: true }), 'top-right');
+  map.on('load', function () {
+    var attribution = document.querySelector('.maplibregl-ctrl-attrib');
+    if (attribution) attribution.classList.remove('maplibregl-compact-show');
+  });
+  if (cfg.interactive) map.touchZoomRotate.disableRotation();
 
   var markers = {};
   var venues = {};
@@ -167,7 +177,9 @@ export function buildMapHtml({ scheme, interactive, compact }: MapHtmlOptions): 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <link rel="stylesheet" href="${MAPLIBRE_CSS_URL}" integrity="${MAPLIBRE_CSS_SRI}" crossorigin="anonymous">
-<style>:root{--bg:${palettes[scheme].surfaceRaised};--on-accent:${brand.onAccent};}${STYLE}</style>
+<style>:root{--bg:${palettes[scheme].surfaceRaised};--on-accent:${brand.onAccent};}${STYLE}${
+    scheme === 'dark' ? `.maplibregl-canvas{filter:${DARK_CANVAS_FILTER};}` : ''
+  }</style>
 </head>
 <body>
 <div id="map"></div>

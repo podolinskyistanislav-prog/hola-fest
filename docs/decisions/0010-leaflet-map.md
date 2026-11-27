@@ -15,3 +15,5 @@
 ## Update 2026-11-27: MapLibre + OpenFreeMap instead of Leaflet + CARTO
 
 CARTO now requires an API key for its raster basemaps and watermarks tiles requested without one ("API KEY REQUIRED"). Its free key is for non-commercial use only. The map page now uses **MapLibre GL JS 5.9.0** (pinned on unpkg, with sha384 SRI) and **OpenFreeMap** vector styles: `dark` in the dark theme and `positron` in the light one. OpenFreeMap is free, with no key, no registration and no usage limits. The WebView/iframe approach and the app ↔ map message protocol are unchanged. Vector tiles also make panning and zooming smoother. Attribution: OpenFreeMap © OpenMapTiles © OpenStreetMap contributors.
+
+**Follow-up (same day):** OpenFreeMap's Dark style is unfinished and rendered a blank black map. Both themes now use **Positron**; the dark theme inverts the basemap canvas with a CSS filter (pins are DOM markers and keep their colours). Zoom buttons were removed (pinch or scroll to zoom), and the attribution is a collapsed (i) button.
