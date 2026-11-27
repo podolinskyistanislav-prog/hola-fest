@@ -9,6 +9,7 @@ type StaffAreaProps = {
   onOpenScanner: () => void;
   onOpenVenueEvents: () => void;
   onOpenApplications: () => void;
+  onOpenModeration: () => void;
   onOpenCabinet: () => void;
   onOpenAcceptInvite: () => void;
   onSignedOut: () => void;
@@ -19,6 +20,7 @@ export function StaffArea({
   onOpenScanner,
   onOpenVenueEvents,
   onOpenApplications,
+  onOpenModeration,
   onOpenCabinet,
   onOpenAcceptInvite,
   onSignedOut,
@@ -44,6 +46,7 @@ export function StaffArea({
       onOpenScanner={onOpenScanner}
       onOpenVenueEvents={onOpenVenueEvents}
       onOpenApplications={superadmin.data === true ? onOpenApplications : undefined}
+      onOpenModeration={superadmin.data === true ? onOpenModeration : undefined}
       onOpenCabinet={cabinetVenue ? onOpenCabinet : undefined}
       onOpenAcceptInvite={access !== null && !access.canScan ? onOpenAcceptInvite : undefined}
       onSignOut={handleSignOut}

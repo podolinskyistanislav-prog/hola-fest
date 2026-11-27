@@ -1,0 +1,1 @@
+export { ModerationContent } from './ModerationContent';
