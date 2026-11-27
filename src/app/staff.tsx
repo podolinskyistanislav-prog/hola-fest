@@ -14,6 +14,7 @@ export default function StaffScreen() {
       onOpenScanner={() => router.push('/scanner')}
       onOpenVenueEvents={() => router.push('/staff-events')}
       onOpenApplications={() => router.push('/staff-applications')}
+      onOpenModeration={() => router.push('/staff-moderation')}
       onOpenCabinet={() => router.push('/cabinet')}
       onOpenAcceptInvite={() => router.push('/accept-invite')}
       onSignedOut={() => router.replace('/')}

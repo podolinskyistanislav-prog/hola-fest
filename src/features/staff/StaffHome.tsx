@@ -18,6 +18,8 @@ export type StaffHomeProps = {
   onOpenVenueEvents: () => void;
   /** Given only to a superadmin: opens the queue of account applications. */
   onOpenApplications?: () => void;
+  /** Given only to a superadmin: opens the feed moderation queue. */
+  onOpenModeration?: () => void;
   /** Given to an owner or admin: opens the "Мій заклад" cabinet. */
   onOpenCabinet?: () => void;
   /** Joins a venue team with an invite token. */
@@ -35,6 +37,7 @@ export function StaffHome({
   onOpenScanner,
   onOpenVenueEvents,
   onOpenApplications,
+  onOpenModeration,
   onOpenCabinet,
   onOpenAcceptInvite,
   onSignOut,
@@ -75,6 +78,9 @@ export function StaffHome({
       ) : null}
       {onOpenApplications ? (
         <Button variant="glass" label={t('staff.applications')} onPress={onOpenApplications} />
+      ) : null}
+      {onOpenModeration ? (
+        <Button variant="glass" label={t('staff.moderation')} onPress={onOpenModeration} />
       ) : null}
 
       {onOpenAcceptInvite ? (
