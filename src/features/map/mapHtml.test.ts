@@ -9,8 +9,8 @@ import {
 const options = { scheme: 'dark', interactive: true, compact: false } as const;
 
 describe('styleUrl', () => {
-  it('uses the OpenFreeMap dark style in the dark theme and Positron in the light one', () => {
-    expect(styleUrl('dark')).toBe('https://tiles.openfreemap.org/styles/dark');
+  it('uses OpenFreeMap Positron in both themes (their Dark style renders blank)', () => {
+    expect(styleUrl('dark')).toBe('https://tiles.openfreemap.org/styles/positron');
     expect(styleUrl('light')).toBe('https://tiles.openfreemap.org/styles/positron');
   });
 });
@@ -30,15 +30,25 @@ describe('buildMapHtml', () => {
     expect(html).not.toMatch(/api[_-]?key/i);
   });
 
-  it('credits OpenFreeMap, OpenMapTiles and OpenStreetMap', () => {
+  it('documents the OpenFreeMap / OpenMapTiles / OpenStreetMap credit', () => {
     expect(MAP_ATTRIBUTION).toContain('OpenFreeMap');
     expect(MAP_ATTRIBUTION).toContain('OpenMapTiles');
-    expect(buildMapHtml(options)).toContain('OpenStreetMap');
+    expect(MAP_ATTRIBUTION).toContain('OpenStreetMap');
   });
 
-  it('picks the style from the theme', () => {
-    expect(buildMapHtml({ ...options, scheme: 'dark' })).toContain('styles/dark');
-    expect(buildMapHtml({ ...options, scheme: 'light' })).toContain('styles/positron');
+  it('darkens the basemap canvas only in the dark theme', () => {
+    expect(buildMapHtml({ ...options, scheme: 'dark' })).toContain(
+      '.maplibregl-canvas{filter:invert(1)',
+    );
+    expect(buildMapHtml({ ...options, scheme: 'light' })).not.toContain(
+      '.maplibregl-canvas{filter',
+    );
+  });
+
+  it('keeps the attribution as a collapsed button and adds no zoom buttons', () => {
+    const html = buildMapHtml(options);
+    expect(html).toContain('AttributionControl({ compact: true })');
+    expect(html).not.toContain('NavigationControl');
   });
 
   it('passes the interactive and compact flags to the page', () => {
