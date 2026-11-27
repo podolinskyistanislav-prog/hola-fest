@@ -318,6 +318,10 @@ export const uk = {
   'feedAuth.changeEmail': 'Змінити пошту',
   'feedAuth.invalidEmail': 'Вкажи коректну пошту.',
   'feedAuth.requestFailed': 'Не вдалося надіслати код. Спробуй ще раз.',
+  'feedAuth.rateLimited': 'Забагато спроб, спробуй за кілька хвилин.',
+  'feedAuth.networkFailed': 'Немає зʼєднання. Перевір інтернет і спробуй ще раз.',
+  'feedAuth.existingAccount':
+    'Ця пошта вже має акаунт — увійдемо в нього. QR, взяті як гість на цьому пристрої, залишаться в гостьовому акаунті.',
   'feedAuth.codeFailed': 'Код не підійшов. Перевір його й спробуй ще раз.',
   'profileSetup.title': 'Створи профіль',
   'profileSetup.name': 'Імʼя',

@@ -8,7 +8,7 @@ jest.mock('@/services/auth', () => ({ requestEmailCode: jest.fn(), confirmEmailC
 
 async function setup(overrides: Partial<Parameters<typeof useEmailUpgrade>[0]> = {}) {
   const deps = {
-    requestEmailCode: jest.fn().mockResolvedValue(undefined),
+    requestEmailCode: jest.fn().mockResolvedValue('upgrade'),
     confirmEmailCode: jest.fn().mockResolvedValue(undefined),
     ...overrides,
   };
@@ -60,7 +60,33 @@ describe('useEmailUpgrade', () => {
       ok = await result.current.confirm('123456');
     });
     expect(ok).toBe(true);
-    expect(deps.confirmEmailCode).toHaveBeenCalledWith('a@b.ua', '123456');
+    expect(deps.confirmEmailCode).toHaveBeenCalledWith('a@b.ua', '123456', 'upgrade');
+  });
+
+  it.each([
+    ['rate_limited', 'feedAuth.rateLimited'],
+    ['invalid_email', 'feedAuth.invalidEmail'],
+    ['network', 'feedAuth.networkFailed'],
+  ] as const)('shows a distinct message for %s', async (code, key) => {
+    const { result } = await setup({ requestEmailCode: jest.fn().mockRejectedValue({ code }) });
+    await act(async () => {
+      await result.current.requestCode('a@b.ua');
+    });
+    expect(result.current.error).toBe(t(key));
+  });
+
+  it('remembers the sign-in mode for an existing account and confirms with it', async () => {
+    const { deps, result } = await setup({
+      requestEmailCode: jest.fn().mockResolvedValue('signin'),
+    });
+    await act(async () => {
+      await result.current.requestCode('a@b.ua');
+    });
+    expect(result.current.mode).toBe('signin');
+    await act(async () => {
+      await result.current.confirm('123456');
+    });
+    expect(deps.confirmEmailCode).toHaveBeenCalledWith('a@b.ua', '123456', 'signin');
   });
 
   it('shows one error for a malformed or wrong code', async () => {
